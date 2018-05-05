@@ -14,4 +14,6 @@ Top-level functions
 .. autosummary::
    :toctree: generated/
 
-
+   cumulatives
+   interpolate
+   numba_extras
