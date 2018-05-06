@@ -100,7 +100,7 @@ def splrep(a, dim, k=3):
             x, a.data, k=k, check_finite=False, dtype=float)
         t_name = spline.name + '_t'
         spline_first_key = (spline.name, ) + (0, ) * spline.ndim
-        t = Array({(t_name, 0): (getattr, spline_first_key)},
+        t = Array({(t_name, 0): (getattr, spline_first_key, 't')},
                   name=t_name, dtype=float,
                   chunks=((x.size + k + 1, ), ))
         c = map_blocks(getattr, spline, 'c',
@@ -192,10 +192,10 @@ def splev(x_new, tck, extrapolate=True):
         x_new = x_new.astype('M8[ns]').astype(float)
 
     if extrapolate == 'clip':
-        x = tck.coords[tck.spline_dim]
+        x = tck.coords[tck.spline_dim].values
         if x.dtype.kind == 'M':
             x = x.astype('M8[ns]').astype(float)
-        x_new = np.clip(x_new, x[0], x[-1])
+        x_new = np.clip(x_new, x[0].tolist(), x[-1].tolist())
         extrapolate = False
 
     c = tck.c.rename({tck.spline_dim: '__c__'})
