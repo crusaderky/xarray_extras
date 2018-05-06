@@ -68,7 +68,7 @@ def splrep(a, dim, k=3):
         # series will be NaN.
         # See why  scipy.interpolate.interp1d does it wrong:
         # https://github.com/scipy/scipy/issues/8781
-        # https://github.com/scipy/scipy/blob/v1.0.0/scipy/interpolate/interpolate.py#L504
+        # https://github.com/scipy/scipy/blob/v1.1.0/scipy/interpolate/interpolate.py#L519
         na_mask = ~a.isnull().any(dim)
         a = a.fillna(1)
     else:
@@ -79,7 +79,6 @@ def splrep(a, dim, k=3):
     if x.dtype.kind == 'M':
         # Same treatment will be applied to x_new.
         # Allow x_new.dtype==M8[D] and x.dtype==M8[ns], or vice versa
-        # Don't use int - see https://github.com/scipy/scipy/issues/8782
         x = x.astype('M8[ns]').astype(float)
 
     if isinstance(a.data, dask_array_type):
@@ -181,7 +180,6 @@ def splev(x_new, tck, extrapolate=True):
         raise ValueError("Interpolated dimension has been sliced")
 
     if x_new.dtype.kind == 'M':
-        # Don't use int - see https://github.com/scipy/scipy/issues/8782
         # Note that we're modifying the x_new values, not the x_new coords
         x_new = x_new.astype('M8[ns]').astype(float)
 
