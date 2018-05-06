@@ -49,18 +49,11 @@ extensions = [
     'numpydoc',
     'IPython.sphinxext.ipython_directive',
     'IPython.sphinxext.ipython_console_highlighting',
-    'sphinx_gallery.gen_gallery',
 ]
 
 extlinks = {'issue': ('https://github.com/crusaderky/xarray_extras/issues/%s', 'GH'),
             'pull': ('https://github.com/crusaderky/xarray_extras/pull/%s', 'PR'),
             }
-
-sphinx_gallery_conf = {'examples_dirs': 'gallery',
-                       'gallery_dirs': 'auto_gallery',
-                       'backreferences_dir': False,
-                       'expected_failing_examples': list(allowed_failures)
-                       }
 
 autosummary_generate = True
 

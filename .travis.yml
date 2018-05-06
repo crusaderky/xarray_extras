@@ -40,7 +40,7 @@ install:
 script:
   - python -OO -c "import xarray_extras"
   - if [[ "$CONDA_ENV" == "docs" ]]; then
-      conda install -c conda-forge sphinx sphinx_rtd_theme sphinx-gallery numpydoc;
+      conda install -c conda-forge sphinx sphinx_rtd_theme numpydoc;
       sphinx-build -n -j auto -b html -d _build/doctrees doc _build/html;
     else
       py.test xarray_extras --cov=xarray_extras --cov-config ci/.coveragerc --cov-report term-missing --verbose $EXTRA_FLAGS;
