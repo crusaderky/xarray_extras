@@ -12,6 +12,7 @@ DTYPES = [
     'complex64', 'complex128'
 ]
 
+
 @guvectorize('{T}[:], {T}[:]', '()->()')
 def dumb_copy(x, y):
     for i in range(x.size):

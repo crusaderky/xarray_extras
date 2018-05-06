@@ -71,7 +71,8 @@ def splrep(a, dim, k=3):
     a = a.transpose(dim, *[d for d in a.dims if d != dim])
 
     if k > 1:
-        # If any series contains NaNs, all (and only) the y_new along that series will be NaN.
+        # If any series contains NaNs, all (and only) the y_new along that
+        # series will be NaN.
         # See why  scipy.interpolate.interp1d does it wrong:
         # https://github.com/scipy/scipy/issues/8781
         # https://github.com/scipy/scipy/blob/v1.0.0/scipy/interpolate/interpolate.py#L504
@@ -91,7 +92,8 @@ def splrep(a, dim, k=3):
     if isinstance(a.data, dask_array_type):
         from dask.array import map_blocks, Array
         if len(a.data.chunks[0]) > 1:
-            raise NotImplementedError("Unsupported: multiple chunks on interpolation dim")
+            raise NotImplementedError(
+                "Unsupported: multiple chunks on interpolation dim")
 
         spline = map_blocks(
             make_interp_spline,
@@ -101,7 +103,8 @@ def splrep(a, dim, k=3):
         t = Array({(t_name, 0): (getattr, spline_first_key)},
                   name=t_name, dtype=float,
                   chunks=((x.size + k + 1, ), ))
-        c = map_blocks(getattr, spline, 'c', name=spline.name + '_c', dtype=float)
+        c = map_blocks(getattr, spline, 'c',
+                       name=spline.name + '_c', dtype=float)
     else:
         spline = make_interp_spline(x, a.data, k=k)
         t = spline.t
@@ -170,8 +173,10 @@ def splev(x_new, tck, extrapolate=True):
         elif x_new.ndim == 1:
             dims = [tck.spline_dim]
         else:
-            raise ValueError("N-dimensional x_new is only supported if x_new is a DataArray")
-        x_new = xarray.DataArray(x_new, dims=dims, coords={tck.spline_dim: x_new})
+            raise ValueError("N-dimensional x_new is only supported if "
+                             "x_new is a DataArray")
+        x_new = xarray.DataArray(x_new, dims=dims,
+                                 coords={tck.spline_dim: x_new})
 
     invalid_dims = {*x_new.dims} & {*tck.c.dims} - {tck.spline_dim}
     if invalid_dims:
@@ -198,9 +203,11 @@ def splev(x_new, tck, extrapolate=True):
 
     if any(isinstance(v.data, dask_array_type) for v in (x_new, tck.t, c)):
         if tck.t.chunks and len(tck.t.chunks[0]) > 1:
-            raise NotImplementedError("Unsupported: multiple chunks on interpolation dim")
+            raise NotImplementedError(
+                "Unsupported: multiple chunks on interpolation dim")
         if c.chunks and len(c.chunks[0]) > 1:
-            raise NotImplementedError("Unsupported: multiple chunks on interpolation dim")
+            raise NotImplementedError(
+                "Unsupported: multiple chunks on interpolation dim")
 
         from dask.array import atop
         # omitting t and c
@@ -214,13 +221,12 @@ def splev(x_new, tck, extrapolate=True):
                      k=tck.k, extrapolate=extrapolate,
                      concatenate=True, dtype=float)
     else:
-        y_new = splev_kernel(
-            x_new.values, tck.t.values, tck.c.values, tck.k, extrapolate=extrapolate)
+        y_new = splev_kernel(x_new.values, tck.t.values, tck.c.values, tck.k,
+                             extrapolate=extrapolate)
 
     y_new = xarray.DataArray(
         y_new, dims=x_new.dims + c.dims[1:],
-        coords=x_new.coords
-    )
+        coords=x_new.coords)
     y_new.coords.update({
         k: c
         for k, c in c.coords.items()

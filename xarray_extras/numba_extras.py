@@ -6,7 +6,8 @@ import numba
 
 def guvectorize(signature, layout, **kwds):
     """Convenience wrapper around :func:`numba.guvectorize`.
-    Generate signature for all possible data types and set a few healthy defaults.
+    Generate signature for all possible data types and set a few healthy
+    defaults.
 
     :param str signature:
         numba signature, containing {T}
@@ -29,7 +30,8 @@ def guvectorize(signature, layout, **kwds):
         ], "(i)->(i)", cache=True)
 
     .. note::
-       Discussing upstream fix; see `https://github.com/numba/numba/issues/2936`_.
+       Discussing upstream fix; see
+       `https://github.com/numba/numba/issues/2936`_.
     """
     DTYPES = [
         'int8', 'int16', 'int32', 'int64',

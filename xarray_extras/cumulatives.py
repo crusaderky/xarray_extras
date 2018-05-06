@@ -77,17 +77,19 @@ def compound_sum(x, c, xdim, cdim):
     :param DataArray c:
         array where every row contains elements of x.coords[xdim] and
         is used to build a point of the output.
-        The cells in the row are matched against x.coords[dim] and perform a sum.
-        If different rows of c require different amounts of points from x,
-        they must be padded on the right with NaN, NaT, or ''
-        (respectively for numbers, datetimes, and strings).
+        The cells in the row are matched against x.coords[dim] and perform a
+        sum. If different rows of c require different amounts of points from x,
+        they must be padded on the right with NaN, NaT, or '' (respectively for
+        numbers, datetimes, and strings).
     :param str xdim:
         dimension of x to acquire data from. The coord associated to it must be
         monotonic ascending.
     :param str cdim:
-        dimension of c that represent the vector of points to be compounded for every point of dim
+        dimension of c that represent the vector of points to be compounded for
+        every point of dim
     :returns:
-        DataArray with all dims from x and c, except xdim and cdim, and the same dtype as x.
+        DataArray with all dims from x and c, except xdim and cdim, and the
+        same dtype as x.
 
     example::
 

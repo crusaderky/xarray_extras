@@ -4,7 +4,7 @@ import numpy
 import xarray
 import pytest
 from xarray.testing import assert_equal
-from xarray_extras.cumulatives import *
+import xarray_extras.cumulatives as cum
 
 
 # Skip 0 and 1 as they're neutral in addition and multiplication
@@ -25,7 +25,7 @@ INPUT = xarray.DataArray(
 
 T_COMPOUND_MATRIX = xarray.DataArray(
     numpy.array([
-        ['1990-12-30', 'NaT'       , 'NaT'],
+        ['1990-12-30', 'NaT', 'NaT'],
         ['1990-12-30', '2005-12-30', 'NaT'],
         ['2000-12-30', '1990-12-30', 'NaT'],
         ['2010-12-30', '1990-12-30', '2005-12-30']], dtype='<M8[D]'),
@@ -50,18 +50,18 @@ DTYPES = (
 
 
 @pytest.mark.parametrize('func, meth', [
-    (compound_sum, 'sum'),
-    (compound_prod, 'prod'),
-    (compound_mean, 'mean')])
+    (cum.compound_sum, 'sum'),
+    (cum.compound_prod, 'prod'),
+    (cum.compound_mean, 'mean')])
 @pytest.mark.parametrize('dtype', DTYPES)
 @pytest.mark.parametrize('chunk', [False, True])
 def test_compound_t(func, meth, dtype, chunk):
     x = INPUT.astype(dtype)
     c = T_COMPOUND_MATRIX
     expect = xarray.concat([
-        getattr(x.isel(t=[0      ]), meth)('t'),
-        getattr(x.isel(t=[0, 2   ]), meth)('t'),
-        getattr(x.isel(t=[1, 0   ]), meth)('t'),
+        getattr(x.isel(t=[0]), meth)('t'),
+        getattr(x.isel(t=[0, 2]), meth)('t'),
+        getattr(x.isel(t=[1, 0]), meth)('t'),
         getattr(x.isel(t=[3, 0, 2]), meth)('t'),
     ], dim='t2').T.astype(dtype)
     expect.coords['t2'] = c.coords['t2']
@@ -83,9 +83,9 @@ def test_compound_t(func, meth, dtype, chunk):
 
 
 @pytest.mark.parametrize('func, meth', [
-    (compound_sum, 'sum'),
-    (compound_prod, 'prod'),
-    (compound_mean, 'mean')])
+    (cum.compound_sum, 'sum'),
+    (cum.compound_prod, 'prod'),
+    (cum.compound_mean, 'mean')])
 @pytest.mark.parametrize('dtype', DTYPES)
 @pytest.mark.parametrize('chunk', [False, True])
 def test_compound_s(func, meth, dtype, chunk):
@@ -93,7 +93,7 @@ def test_compound_s(func, meth, dtype, chunk):
     c = S_COMPOUND_MATRIX
     expect = xarray.concat([
         getattr(x.sel(s=['s3', 's2']), meth)('s'),
-        getattr(x.sel(s=['s1'      ]), meth)('s'),
+        getattr(x.sel(s=['s1']), meth)('s'),
     ], dim='s2').T.astype(dtype)
     expect.coords['s2'] = c.coords['s2']
 
@@ -114,9 +114,9 @@ def test_compound_s(func, meth, dtype, chunk):
 
 
 @pytest.mark.parametrize('func,meth', [
-    (cumulative_sum, 'sum'),
-    (cumulative_prod, 'prod'),
-    (cumulative_mean, 'mean')])
+    (cum.cumulative_sum, 'sum'),
+    (cum.cumulative_prod, 'prod'),
+    (cum.cumulative_mean, 'mean')])
 @pytest.mark.parametrize('dtype', DTYPES)
 @pytest.mark.parametrize('chunk', [False, True])
 def test_cumulative(func, meth, dtype, chunk):
