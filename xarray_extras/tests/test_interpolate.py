@@ -124,6 +124,8 @@ def test_nd(chunk_y, chunk_x_new, expect_chunks_tck, expect_chunks_y_new):
 @pytest.mark.parametrize('contiguous', [False, True])
 @pytest.mark.parametrize('transpose', [False, True])
 def test_transpose(transpose, contiguous):
+    """Test that the interpolation dim does not need to be on axis 0
+    """
     y = DataArray([[10, 20],
                    [30, 40],
                    [50, 60]],
@@ -145,6 +147,26 @@ def test_transpose(transpose, contiguous):
 
     tck = splrep(y, 'x', 1)
     y_new = splev([1.5, 1.0], tck)
+    assert_equal(expect, y_new)
+
+
+@pytest.mark.parametrize('x_new_dtype', [np.uint32, np.uint64, np.int32,
+                                         np.int64, np.float32])
+@pytest.mark.parametrize('x_dtype', [np.uint32, np.uint64, np.int32,
+                                     np.int64, np.float32])
+def test_nonfloat(x_dtype, x_new_dtype):
+    """Test numeric x that isn't float64
+    """
+    x = np.array([0, 100])
+
+    y = DataArray((x * 3).astype(x_dtype), dims=['x'],
+                  coords={'x': x.astype(x_dtype)})
+    x_new = np.array([50]).astype(x_new_dtype)
+    expect = DataArray([150.], dims=['x'],
+                       coords={'x': x_new})
+
+    tck = splrep(y, 'x', k=1)
+    y_new = splev(x_new, tck)
     assert_equal(expect, y_new)
 
 
@@ -174,6 +196,8 @@ def test_dates(x_dtype, x_new_dtype):
     ('periodic', [0.98935825, 0.84147098]),
 ])
 def test_extrapolate(extrapolate, expect):
+    """Test all possible extrapolate parameters
+    """
     x = np.arange(10)
     y = DataArray(np.sin(x), dims=['x'], coords={'x': x})
     x_new = [-1, 10]
@@ -185,6 +209,8 @@ def test_extrapolate(extrapolate, expect):
 
 
 def test_dim_collision():
+    """y and x_new have overlapping dims besides the interpolation dim
+    """
     y = DataArray([[10, 20],
                    [11, 28]],
                   dims=['y', 'x'],
@@ -198,7 +224,18 @@ def test_dim_collision():
                                  'array and x_new: y'
 
 
+def test_duplicates():
+    """x contains non-unique points
+    """
+    y = DataArray([10, 20, 30], dims=['x'], coords={'x': [1, 1, 2]})
+    with pytest.raises(ValueError) as excinfo:
+        splrep(y, 'x', 1)
+    assert str(excinfo.value) == "coord on dim 'x' has duplicate points"
+
+
 def test_chunked_x():
+    """x is chunked
+    """
     y = DataArray([10, 20], dims=['x'], coords={'x': [1, 2]}).chunk(1)
 
     with pytest.raises(NotImplementedError) as excinfo:

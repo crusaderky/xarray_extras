@@ -81,6 +81,9 @@ def splrep(a, dim, k=3):
         # Allow x_new.dtype==M8[D] and x.dtype==M8[ns], or vice versa
         x = x.astype('M8[ns]').astype(float)
 
+    if (x[1:] == x[:-1]).any():
+        raise ValueError("coord on dim '%s' has duplicate points" % dim)
+
     if isinstance(a.data, dask_array_type):
         from dask.array import map_blocks, Array
         if len(a.data.chunks[0]) > 1:
