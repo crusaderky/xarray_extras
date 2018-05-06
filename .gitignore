@@ -56,5 +56,4 @@ Icon*
 .ipynb_checkpoints
 xarray_extras/version.py
 
-doc/api
 doc/_build

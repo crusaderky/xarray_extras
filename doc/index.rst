@@ -11,9 +11,9 @@ API Reference
 
 .. toctree::
 
-   api/xarray_extras.cumulatives
-   api/xarray_extras.interpolate
-   api/xarray_extras.numba_extras
+   api/cumulatives
+   api/interpolate
+   api/numba_extras
 
 License
 -------
