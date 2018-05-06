@@ -15,10 +15,6 @@ matrix:
   - python: 3.6
     env: CONDA_ENV=py36
   - python: 3.6
-    env: CONDA_ENV=py36-nodask
-  - python: 3.6
-    env: CONDA_ENV=py36-nonumba
-  - python: 3.6
     env: CONDA_ENV=docs
   allow_failures:
 

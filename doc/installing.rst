@@ -9,9 +9,6 @@ Required dependencies
 - Python 3.5 or 3.6
 - `xarray <http://xarray.pydata.org/>`__
 - `scipy <http://scipy.pydata.org>`__
-
-Optional dependencies
----------------------
 - `dask <http://dask.pydata.org>`__
 - `numba <http://numba.pydata.org>`__
 
