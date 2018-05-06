@@ -12,17 +12,16 @@ def cumulative_sum(x, dim):
     """
     .. math::
 
-        y_{i} = \sum_{j=0}^{\i} x_{j}
+        y_{i} = \sum_{j=0}^{i} x_{j}
 
     Which is equivalent to
+
     .. math::
 
-       \[
-       \left \{
-          y_{0} = x_{0}
-          y_{i} = y{i-1} + x{i}
-       \right \}
-       \]
+        \cases{
+            y_{0} = x_{0} \cr
+            y_{i} = y_{i-1} + x_{i}
+        }
     """
     return _cumulative(x, dim, kernels.cumulative_sum)
 
@@ -31,17 +30,16 @@ def cumulative_prod(x, dim):
     """
     .. math::
 
-        y_{i} = \prod_{j=0}^{\i} x_{j}
+        y_{i} = \prod_{j=0}^{i} x_{j}
 
     Which is equivalent to
+
     .. math::
 
-       \[
-       \left \{
-          y_{0} = x_{0}
-          y_{i} = y{i-1} * x{i}
-       \right \}
-       \]
+        \cases{
+           y_{0} = x_{0} \cr
+          y_{i} = y_{i-1} * x_{i}
+        }
     """
     return _cumulative(x, dim, kernels.cumulative_prod)
 

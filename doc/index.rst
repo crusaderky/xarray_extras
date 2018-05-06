@@ -1,12 +1,19 @@
 xarray_extras: Advanced algorithms for xarray
 =============================================
 
-Documentation
+.. toctree::
+
+   installing
+   whats-new
+
+API Reference
 -------------
 
-* :doc:`api`
-* :doc:`installing`
-* :doc:`whats-new`
+.. toctree::
+
+   api/xarray_extras.cumulatives
+   api/xarray_extras.interpolate
+   api/xarray_extras.numba_extras
 
 License
 -------

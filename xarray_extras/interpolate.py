@@ -14,8 +14,8 @@ __all__ = ('splrep', 'splev')
 def splrep(a, dim, k=3):
     """Calculate the univariate B-spline for an N-dimensional array
 
-    :param DataArray a:
-        any `xarray.DataArray`
+    :param xarray.DataArray a:
+        any :class:`~xarray.DataArray`
     :param dim:
         dimension of a to be interpolated
     :param int k:
@@ -31,16 +31,9 @@ def splrep(a, dim, k=3):
         = ==================
 
     :returns:
-        `xarray.Dataset` with t, c, k (knots, coefficients, order) variables.
-        the same shape and coords
-        as the input, but without ``dim``.
-        The output has all data variables replaced with dask arrays
-        that cannot be computed and an "eval" method which takes as an input
-        the new coordinate (along the original dimension or on new ones;
-        can also be N-dimensional).
-
-        The method output will be a dask-backed DataArray if the original
-        input was dask-backed, otherwise it will be computed on the fly.
+        :class:`~xarray.Dataset` with t, c, k (knots, coefficients, order)
+        variables, the same shape and coords as the input, that can be passed
+        to :func:`splev`.
 
     Example::
 
@@ -57,8 +50,8 @@ def splrep(a, dim, k=3):
     - Interpolate a ND array on any arbitrary dimension
     - dask supported on both on the interpolated array and x_new
     - Supports ND x_new arrays
-    - The CPU-heavy interpolator generation (splrep) is executed only
-      once and then can be applied to multiple x_new (splev)
+    - The CPU-heavy interpolator generation (:func:`splrep`) is executed only
+      once and then can be applied to multiple x_new (:func:`splev`)
     - memory-efficient
     - Can be pickled and used on dask distributed
 
@@ -131,12 +124,13 @@ def splev(x_new, tck, extrapolate=True):
     """Evaluate the B-spline generated with :func:`splrep`.
 
     :param x_new:
-        Any DataArray with any number of dims, not necessarily the original
-        interpolation dim.
+        Any :class:`~xarray.DataArray` with any number of dims, not necessarily
+        the original interpolation dim.
         Alternatively, it can be any 1-dimensional array-like; it will be
-        automatically converted to a DataArray on dim.
+        automatically converted to a :class:`~xarray.DataArray` on the
+        interpolation dim.
 
-    :param Dataset tck:
+    :param xarray.Dataset tck:
         As returned by :func:`splrep`.
         It can have been:
 
@@ -154,13 +148,13 @@ def splev(x_new, tck, extrapolate=True):
         False
             Return NaNs outside of the base interval
         'periodic'
-            periodic extrapolation is used
+            Periodic extrapolation is used
         'clip'
             Return y[0] and y[-1] outside of the base interval
 
     :returns:
-        DataArray with all dims of the interpolated array, minus the
-        interpolation dim, plus all dims of x_new
+        :class:`~xarray.DataArray` with all dims of the interpolated array,
+        minus the interpolation dim, plus all dims of x_new
 
     See :func:`splrep` for usage example.
     """

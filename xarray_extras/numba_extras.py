@@ -19,11 +19,11 @@ def guvectorize(signature, layout, **kwds):
 
     example::
 
-        _guvectorize("{T}[:], {T}[:]", "(i)->(i)")
+        guvectorize("{T}[:], {T}[:]", "(i)->(i)")
 
-    Is the same as:
+    Is the same as::
 
-        _guvectorize([
+        numba.guvectorize([
             "float32[:], float32[:]",
             "float64[:], float64[:]",
             ...
@@ -31,7 +31,7 @@ def guvectorize(signature, layout, **kwds):
 
     .. note::
        Discussing upstream fix; see
-       `https://github.com/numba/numba/issues/2936`_.
+       `<https://github.com/numba/numba/issues/2936>`_.
     """
     DTYPES = [
         'int8', 'int16', 'int32', 'int64',

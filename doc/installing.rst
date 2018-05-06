@@ -7,8 +7,8 @@ Required dependencies
 ---------------------
 
 - Python 3.5 or 3.6
+- `scipy <https://docs.scipy.org/doc/>`__
 - `xarray <http://xarray.pydata.org/>`__
-- `scipy <http://scipy.pydata.org>`__
 - `dask <http://dask.pydata.org>`__
 - `numba <http://numba.pydata.org>`__
 
