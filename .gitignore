@@ -54,3 +54,4 @@ dask-worker-space/
 Icon*
 
 .ipynb_checkpoints
+xarray_extras/version.py
