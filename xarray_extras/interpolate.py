@@ -82,28 +82,24 @@ def splrep(a, dim, k=3):
         # Allow x_new.dtype==M8[D] and x.dtype==M8[ns], or vice versa
         x = x.astype('M8[ns]').astype(float)
 
+    t = kernels.make_interp_knots(x, k, check_finite=False)
+    if k < 2:
+        t_c_param = None
+    else:
+        t_c_param = t
 
     if isinstance(a.data, dask_array_type):
-        from dask.array import map_blocks, Array
-        from dask.base import tokenize
+        from dask.array import map_blocks
         if len(a.data.chunks[0]) > 1:
             raise NotImplementedError(
                 "Unsupported: multiple chunks on interpolation dim")
 
-        spline = map_blocks(
-            make_interp_spline,
-            x, a.data, k=k, check_finite=False, dtype=float)
-        t_name = 'spline_t-' + tokenize(getattr, spline.name, 't')
-        spline_first_key = (spline.name, ) + (0, ) * spline.ndim
-        t = Array({(t_name, 0): (getattr, spline_first_key, 't')},
-                  name=t_name, dtype=float,
-                  chunks=((x.size + k + 1, ), ))
-        t.dask.update(spline.dask)
-        c = map_blocks(getattr, spline, 'c', dtype=float)
+        c = map_blocks(
+            kernels.make_interp_coeffs,
+            a.data, k=k, t=t_c_param, check_finite=False, dtype=float)
     else:
-        spline = make_interp_spline(x, a.data, k=k)
-        t = spline.t
-        c = spline.c
+        c = kernels.make_interp_coeffs(a.data, k=k, t=t_c_param,
+                                       check_finite=False)
 
     tck = xarray.Dataset(
         data_vars={
