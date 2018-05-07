@@ -253,7 +253,7 @@ def test_duplicates():
     y = DataArray([10, 20, 30], dims=['x'], coords={'x': [1, 1, 2]})
     with pytest.raises(ValueError) as excinfo:
         splrep(y, 'x', 1)
-    assert str(excinfo.value) == "coord on dim 'x' has duplicate points"
+    assert str(excinfo.value) == "Expect x to be a 1-D sorted array_like."
 
 
 def test_chunked_x():

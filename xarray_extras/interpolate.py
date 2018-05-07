@@ -67,7 +67,7 @@ def splrep(a, dim, k=3):
     if k > 1:
         # If any series contains NaNs, all (and only) the y_new along that
         # series will be NaN.
-        # See why  scipy.interpolate.interp1d does it wrong:
+        # See why scipy.interpolate.interp1d does it wrong:
         # https://github.com/scipy/scipy/issues/8781
         # https://github.com/scipy/scipy/blob/v1.1.0/scipy/interpolate/interpolate.py#L519
         na_mask = ~a.isnull().any(dim)
@@ -82,8 +82,6 @@ def splrep(a, dim, k=3):
         # Allow x_new.dtype==M8[D] and x.dtype==M8[ns], or vice versa
         x = x.astype('M8[ns]').astype(float)
 
-    if (x[1:] == x[:-1]).any():
-        raise ValueError("coord on dim '%s' has duplicate points" % dim)
 
     if isinstance(a.data, dask_array_type):
         from dask.array import map_blocks, Array
