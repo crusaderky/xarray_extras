@@ -31,7 +31,7 @@ CLASSIFIERS = [
 ]
 
 INSTALL_REQUIRES = ['numpy >= 1.11', 'pandas >= 0.18.0', 'xarray >= 0.10.3',
-                    'numba', 'dask']
+                    'numba', 'dask', 'scipy']
 TESTS_REQUIRE = ['pytest >= 2.7.1']
 
 DESCRIPTION = "Advanced / experimental algorithms for xarray"

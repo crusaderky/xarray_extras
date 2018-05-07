@@ -5,7 +5,8 @@
 import xarray
 import numpy as np
 from xarray.core.pycompat import dask_array_type
-from scipy.interpolate import make_interp_spline, BSpline
+from scipy.interpolate import make_interp_spline
+from .kernels import interpolate as kernels
 
 
 __all__ = ('splrep', 'splev')
@@ -209,7 +210,7 @@ def splev(x_new, tck, extrapolate=True):
         # omitting t and c
         x_new_axes = 'abdefghijklm'[:x_new.ndim]
         c_axes = 'nopqrsuvwxyz'[:c.ndim - 1]
-        y_new = atop(splev_kernel,
+        y_new = atop(kernels.splev,
                      x_new_axes + c_axes,
                      x_new.data, x_new_axes,
                      tck.t.data, 't',
@@ -217,8 +218,8 @@ def splev(x_new, tck, extrapolate=True):
                      k=tck.k, extrapolate=extrapolate,
                      concatenate=True, dtype=float)
     else:
-        y_new = splev_kernel(x_new.values, tck.t.values, tck.c.values, tck.k,
-                             extrapolate=extrapolate)
+        y_new = kernels.splev(x_new.values, tck.t.values, tck.c.values, tck.k,
+                              extrapolate=extrapolate)
 
     y_new = xarray.DataArray(
         y_new, dims=x_new.dims + c.dims[1:],
@@ -234,7 +235,3 @@ def splev(x_new, tck, extrapolate=True):
     return y_new
 
 
-def splev_kernel(x_new, t, c, k, extrapolate):
-    # spline = BSpline(t, c, k, axis=0, extrapolate=extrapolate)
-    spline = BSpline.construct_fast(t, c, k, axis=0, extrapolate=extrapolate)
-    return spline(x_new)
