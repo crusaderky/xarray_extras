@@ -112,7 +112,7 @@ def make_interp_coeffs(y, k=3, t=None, bc_type=None, axis=0, check_finite=True):
         raise ValueError("t can be None only for k<2.")
 
     return make_interp_spline(
-        x=np.arange(y.shape[axis]),
+        x=np.linspace(t[0], t[-1], y.shape[axis]),
         y=y, k=k, t=t, bc_type=bc_type, axis=axis, check_finite=check_finite).c
 
 

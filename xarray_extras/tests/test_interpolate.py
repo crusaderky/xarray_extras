@@ -76,10 +76,10 @@ def test_1d(x_new, expect):
         (False, False, {}, None),
         (False, True, {}, ((1, 1), (1, 1), (2, ))),
         (True, False,
-         {'__t__': (10, ), 'y': (1, 1), 'x': (6, )},
+         {'y': (1, 1), 'x': (6, )},
          ((2, ), (2, ), (1, 1))),
         (True, True,
-         {'__t__': (10,), 'y': (1, 1), 'x': (6,)},
+         {'y': (1, 1), 'x': (6,)},
          ((1, 1), (1, 1), (1, 1))),
     ])
 def test_nd(chunk_y, chunk_x_new, expect_chunks_tck, expect_chunks_y_new):
