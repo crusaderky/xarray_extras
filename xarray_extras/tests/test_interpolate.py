@@ -20,11 +20,11 @@ def test_0d(k, expect):
     - Test unsorted x
     - Test what happens when a series contains NaN
     """
-    y = DataArray([[10, 20, 40, 30, 50, 60],
-                   [11, 28, 55, 39, 15, -2],
-                   [np.nan, 2, 4, 3, 5, 6]],
+    y = DataArray([[10, 20, 30, 40, 50, 60],
+                   [11, 28, 39, 55, 15, -2],
+                   [np.nan, 2, 3, 4, 5, 6]],
                   dims=['y', 'x'],
-                  coords={'x': [1, 2, 4, 3, 5, 6],
+                  coords={'x': [1, 2, 3, 4, 5, 6],
                           'y': ['y1', 'y2', 'y3']})
     tck = splrep(y, 'x', k)
     expect = DataArray(expect, dims=['y'],

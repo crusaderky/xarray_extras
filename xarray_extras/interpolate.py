@@ -18,7 +18,9 @@ def splrep(a, dim, k=3):
     :param xarray.DataArray a:
         any :class:`~xarray.DataArray`
     :param dim:
-        dimension of a to be interpolated
+        dimension of a to be interpolated. ``a.coords[dim]`` must be strictly
+        monotonic ascending. All int, float (not complex), or datetime dtypes
+        are supported.
     :param int k:
         B-spline order:
 
@@ -60,8 +62,7 @@ def splrep(a, dim, k=3):
 
     - Chunks are not supported along dim on the interpolated dimension.
     """
-    # Make sure that dim is monotonic ascending and is on axis 0
-    a = a.sortby(dim)
+    # Make sure that dim is on axis 0
     a = a.transpose(dim, *[d for d in a.dims if d != dim])
 
     if k > 1:
