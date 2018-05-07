@@ -2,7 +2,7 @@ import dask.array as da
 import dask
 import numpy as np
 import pytest
-from xarray import DataArray, apply_ufunc
+from xarray import DataArray, Dataset, apply_ufunc
 from xarray.testing import assert_equal, assert_allclose
 from xarray_extras.interpolate import splrep, splev
 
@@ -76,10 +76,10 @@ def test_1d(x_new, expect):
         (False, False, {}, None),
         (False, True, {}, ((1, 1), (1, 1), (2, ))),
         (True, False,
-         {'__t__': (8, ), 'y': (1, 1), 'x': (6, )},
+         {'__t__': (10, ), 'y': (1, 1), 'x': (6, )},
          ((2, ), (2, ), (1, 1))),
         (True, True,
-         {'__t__': (8,), 'y': (1, 1), 'x': (6,)},
+         {'__t__': (10,), 'y': (1, 1), 'x': (6,)},
          ((1, 1), (1, 1), (1, 1))),
     ])
 def test_nd(chunk_y, chunk_x_new, expect_chunks_tck, expect_chunks_y_new):
@@ -97,25 +97,48 @@ def test_nd(chunk_y, chunk_x_new, expect_chunks_tck, expect_chunks_y_new):
                       dims=['w', 'z'],
                       coords={'w': [100, 200],
                               'z': ['foo', 'bar']})
-    expect = DataArray([[[35., 47.],
-                         [45., 35.]],
-                        [[15., 19.5],
-                         [55., 6.5]]],
-                       dims=['w', 'z', 'y'],
-                       coords={
-                           'w': [100, 200],
-                           'y': ['y1', 'y2'],
-                           'z': ['foo', 'bar'],
-                       })
+    expect_tck = Dataset(
+        data_vars={
+            't': ('__t__', [1., 1., 1., 1., 3., 4., 6., 6., 6., 6.]),
+            'c': (('x', 'y'),
+                  [[10., 11.],
+                   [16.666667, 33.118519],
+                   [26.666667, 20.762963],
+                   [43.333333, 84.003704],
+                   [53.333333, -25.251852],
+                   [60., -2]]),
+            'na_mask': ('y', [True, True]),
+        },
+        coords={
+            'x': [1, 2, 3, 4, 5, 6],
+            'y': ['y1', 'y2'],
+        },
+        attrs={
+            'spline_dim': 'x',
+            'k': 3,
+        })
+
+    expect_y_new = DataArray(
+        [[[35., 51.0375],
+          [45., 39.69583333]],
+         [[15., 22.72083333],
+          [55., -3.945833]]],
+        dims=['w', 'z', 'y'],
+        coords={
+             'w': [100, 200],
+             'y': ['y1', 'y2'],
+             'z': ['foo', 'bar'],
+         })
 
     if chunk_y:
         y = y.chunk({'y': 1})
     if chunk_x_new:
         x_new = x_new.chunk(1)
 
-    tck = splrep(y, 'x', k=1)
+    tck = splrep(y, 'x', k=3)
+    assert_allclose(tck.compute(), expect_tck, atol=1e-6, rtol=0)
     y_new = splev(x_new, tck)
-    assert_equal(y_new.compute(), expect)
+    assert_allclose(y_new.compute(), expect_y_new, atol=1e-6, rtol=0)
 
     assert tck.chunks == expect_chunks_tck
     assert y_new.chunks == expect_chunks_y_new

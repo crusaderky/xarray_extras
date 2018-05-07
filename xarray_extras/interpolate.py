@@ -86,6 +86,7 @@ def splrep(a, dim, k=3):
 
     if isinstance(a.data, dask_array_type):
         from dask.array import map_blocks, Array
+        from dask.base import tokenize
         if len(a.data.chunks[0]) > 1:
             raise NotImplementedError(
                 "Unsupported: multiple chunks on interpolation dim")
@@ -93,13 +94,13 @@ def splrep(a, dim, k=3):
         spline = map_blocks(
             make_interp_spline,
             x, a.data, k=k, check_finite=False, dtype=float)
-        t_name = spline.name + '_t'
+        t_name = 'spline_t-' + tokenize(getattr, spline.name, 't')
         spline_first_key = (spline.name, ) + (0, ) * spline.ndim
         t = Array({(t_name, 0): (getattr, spline_first_key, 't')},
                   name=t_name, dtype=float,
                   chunks=((x.size + k + 1, ), ))
-        c = map_blocks(getattr, spline, 'c',
-                       name=spline.name + '_c', dtype=float)
+        t.dask.update(spline.dask)
+        c = map_blocks(getattr, spline, 'c', dtype=float)
     else:
         spline = make_interp_spline(x, a.data, k=k)
         t = spline.t
