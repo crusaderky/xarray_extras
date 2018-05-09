@@ -97,9 +97,9 @@ def splrep(a, dim, k=3):
 
         c = map_blocks(
             kernels.make_interp_coeffs,
-            a.data, k=k, t=t_c_param, check_finite=False, dtype=float)
+            x, a.data, k=k, t=t_c_param, check_finite=False, dtype=float)
     else:
-        c = kernels.make_interp_coeffs(a.data, k=k, t=t_c_param,
+        c = kernels.make_interp_coeffs(x, a.data, k=k, t=t_c_param,
                                        check_finite=False)
 
     tck = xarray.Dataset(

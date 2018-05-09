@@ -42,19 +42,19 @@ def make_interp_knots(x, k=3, bc_type=None, check_finite=True):
     """
     if bc_type is None:
         bc_type = (None, None)
-    deriv_l, deriv_r = bc_type
 
-    if k < 2 and (deriv_l is not None or deriv_r is not None):
+    if k < 2 and bc_type != (None, None):
         raise ValueError("Too much info for k<2: bc_type can only be None.")
 
+    x = np.array(x)
     if x.ndim != 1 or np.any(x[1:] <= x[:-1]):
-        raise ValueError("Expect x to be a 1-D sorted array_like.")
+        raise ValueError("Expect x to be a 1-D sorted array-like.")
 
     if k == 0:
         t = np.r_[x, x[-1]]
     elif k == 1:
         t = np.r_[x[0], x, x[-1]]
-    elif deriv_l is None and deriv_r is None:
+    elif bc_type == (None, None):
         if k == 2:
             # OK, it's a bit ad hoc: Greville sites + omit
             # 2nd and 2nd-to-last points, a la not-a-knot
@@ -70,7 +70,8 @@ def make_interp_knots(x, k=3, bc_type=None, check_finite=True):
     return _as_float_array(t, check_finite)
 
 
-def make_interp_coeffs(y, k=3, t=None, bc_type=None, axis=0, check_finite=True):
+def make_interp_coeffs(x, y, k=3, t=None, bc_type=None, axis=0,
+                       check_finite=True):
     """Compute the knots of the B-spline.
 
     .. note::
@@ -89,31 +90,8 @@ def make_interp_coeffs(y, k=3, t=None, bc_type=None, axis=0, check_finite=True):
         - For k=2 and k=3, must always pass either the output of
           :func:`make_interp_knots` or a pre-generated vector.
     """
-    if bc_type is None:
-        bc_type = (None, None)
-    deriv_l, deriv_r = bc_type
-
-    if k == 0:
-        if any(_ is not None for _ in (t, deriv_l, deriv_r)):
-            raise ValueError("Too much info for k=0: t and bc_type can only be "
-                             "None.")
-        c = np.asarray(y)
-        c = np.ascontiguousarray(c, dtype=_get_dtype(c.dtype))
-        return c
-
-    if k == 1 and t is None:
-        if deriv_l is not None or deriv_r is not None:
-            raise ValueError("Too much info for k=1: bc_type can only be None.")
-        c = np.asarray(y)
-        c = np.ascontiguousarray(c, dtype=_get_dtype(c.dtype))
-        return c
-
-    if t is None:
-        raise ValueError("t can be None only for k<2.")
-
     return make_interp_spline(
-        x=np.linspace(t[0], t[-1], y.shape[axis]),
-        y=y, k=k, t=t, bc_type=bc_type, axis=axis, check_finite=check_finite).c
+        x, y, k, t, bc_type=bc_type, axis=axis, check_finite=check_finite).c
 
 
 def splev(x_new, t, c, k, extrapolate):
