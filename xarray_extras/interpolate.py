@@ -171,30 +171,36 @@ def splev(x_new, tck, extrapolate=True):
         x_new = xarray.DataArray(x_new, dims=dims,
                                  coords={tck.spline_dim: x_new})
 
-    invalid_dims = {*x_new.dims} & {*tck.c.dims} - {tck.spline_dim}
+    dim = tck.spline_dim
+    t = tck.t
+    c = tck.c
+    k = tck.k
+
+    invalid_dims = {*x_new.dims} & {*c.dims} - {dim}
     if invalid_dims:
         raise ValueError("Overlapping dims between interpolated "
                          "array and x_new: %s" % ",".join(invalid_dims))
 
-    if tck.t.shape != (tck.c.sizes[tck.spline_dim] + tck.k + 1, ):
+    if t.shape != (c.sizes[dim] + k + 1, ):
         raise ValueError("Interpolated dimension has been sliced")
 
     if x_new.dtype.kind == 'M':
         # Note that we're modifying the x_new values, not the x_new coords
-        x_new = x_new.astype('M8[ns]').astype(float)
+        # xarray datetime objects are always in ns
+        x_new = x_new.astype(float)
 
     if extrapolate == 'clip':
-        x = tck.coords[tck.spline_dim].values
+        x = tck.coords[dim].values
         if x.dtype.kind == 'M':
             x = x.astype('M8[ns]').astype(float)
         x_new = np.clip(x_new, x[0].tolist(), x[-1].tolist())
         extrapolate = False
 
-    c = tck.c.rename({tck.spline_dim: '__c__'})
-    c = c.transpose('__c__', *[dim for dim in c.dims if dim != '__c__'])
+    if c.dims[0] != dim:
+        c = c.transpose(dim, *[d for d in c.dims if d != dim])
 
-    if any(isinstance(v.data, dask_array_type) for v in (x_new, tck.t, c)):
-        if tck.t.chunks and len(tck.t.chunks[0]) > 1:
+    if any(isinstance(v.data, dask_array_type) for v in (x_new, t, c)):
+        if t.chunks and len(t.chunks[0]) > 1:
             raise NotImplementedError(
                 "Unsupported: multiple chunks on interpolation dim")
         if c.chunks and len(c.chunks[0]) > 1:
@@ -208,12 +214,12 @@ def splev(x_new, tck, extrapolate=True):
         y_new = atop(kernels.splev,
                      x_new_axes + c_axes,
                      x_new.data, x_new_axes,
-                     tck.t.data, 't',
+                     t.data, 't',
                      c.data, 'c' + c_axes,
-                     k=tck.k, extrapolate=extrapolate,
+                     k=k, extrapolate=extrapolate,
                      concatenate=True, dtype=float)
     else:
-        y_new = kernels.splev(x_new.values, tck.t.values, tck.c.values, tck.k,
+        y_new = kernels.splev(x_new.values, t.values, c.values, k,
                               extrapolate=extrapolate)
 
     y_new = xarray.DataArray(
@@ -222,7 +228,7 @@ def splev(x_new, tck, extrapolate=True):
     y_new.coords.update({
         k: c
         for k, c in c.coords.items()
-        if '__c__' not in c.dims})
+        if dim not in c.dims})
 
     # Reinstate NaNs that had been replaced with stubs
     if tck.k > 1:
