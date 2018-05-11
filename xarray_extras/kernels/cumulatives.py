@@ -4,36 +4,6 @@
 from ..numba_extras import guvectorize
 
 
-@guvectorize("{T}[:], {T}[:]", "(i)->(i)")
-def cumulative_sum(x, y):
-    """y[i] = x[0] + x[1] + ... + x[i]
-    """
-    acc = 0
-    for i in range(x.size):
-        acc += x[i]
-        y[i] = acc
-
-
-@guvectorize("{T}[:], {T}[:]", "(i)->(i)")
-def cumulative_prod(x, y):
-    """y[i] = x[0] * x[1] * ... * x[i]
-    """
-    acc = 1
-    for i in range(x.size):
-        acc *= x[i]
-        y[i] = acc
-
-
-@guvectorize("{T}[:], {T}[:]", "(i)->(i)")
-def cumulative_mean(x, y):
-    """y[i] = mean(x[0], x[1], ... x[i])
-    """
-    acc = 0
-    for i in range(x.size):
-        acc += x[i]
-        y[i] = acc / (i + 1)
-
-
 @guvectorize("{T}[:], intp[:], {T}[:]", "(i),(j)->()")
 def compound_sum(x, c, y):
     """y = x[c[0]] + x[c[1]] + ... x[c[n]]

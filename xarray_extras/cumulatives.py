@@ -1,56 +1,27 @@
 #!/usr/bin/env python
 
+import dask.array as da
+import numpy as np
 import xarray
 
 from .kernels import cumulatives as kernels
 
-__all__ = ('cumulative_sum', 'cumulative_prod', 'cumulative_mean',
-           'compound_sum', 'compound_prod', 'compound_mean')
+
+__all__ = ('cummean', 'compound_sum', 'compound_prod', 'compound_mean')
 
 
-def cumulative_sum(x, dim):
-    """
-    .. math::
-
-        y_{i} = \sum_{j=0}^{i} x_{j}
-
-    Which is equivalent to
-
-    .. math::
-
-        \cases{
-            y_{0} = x_{0} \cr
-            y_{i} = y_{i-1} + x_{i}
-        }
-    """
-    return _cumulative(x, dim, kernels.cumulative_sum)
-
-
-def cumulative_prod(x, dim):
-    """
-    .. math::
-
-        y_{i} = \prod_{j=0}^{i} x_{j}
-
-    Which is equivalent to
-
-    .. math::
-
-        \cases{
-           y_{0} = x_{0} \cr
-          y_{i} = y_{i-1} * x_{i}
-        }
-    """
-    return _cumulative(x, dim, kernels.cumulative_prod)
-
-
-def cumulative_mean(x, dim):
+def cummean(x, dim):
     """
     .. math::
 
         y_{i} = mean(x_{0}, x_{1}, ... x_{i})
     """
-    return _cumulative(x, dim, kernels.cumulative_mean)
+    if x.chunks:
+        n = da.arange(1, x.sizes[dim] + 1, chunks=x.chunks[x.dims.index(dim)])
+    else:
+        n = np.arange(1, x.sizes[dim] + 1)
+    n = xarray.DataArray(n, dims=[dim], coords={dim: x.coords[dim]})
+    return x.cumsum(dim) / n
 
 
 def _cumulative(x, dim, kernel):

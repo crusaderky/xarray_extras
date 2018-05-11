@@ -113,28 +113,22 @@ def test_compound_s(func, meth, dtype, chunk):
     assert actual.chunks == expect.chunks
 
 
-@pytest.mark.parametrize('func,meth', [
-    (cum.cumulative_sum, 'sum'),
-    (cum.cumulative_prod, 'prod'),
-    (cum.cumulative_mean, 'mean')])
-@pytest.mark.parametrize('dtype', DTYPES)
 @pytest.mark.parametrize('chunk', [False, True])
-def test_cumulative(func, meth, dtype, chunk):
-    x = INPUT.astype(dtype)
+def test_cummean(chunk):
+    x = INPUT
 
     expect = xarray.concat([
-        getattr(x[:1], meth)('t'),
-        getattr(x[:2], meth)('t'),
-        getattr(x[:3], meth)('t'),
-        getattr(x[:4], meth)('t'),
-    ], dim='t').T
-    expect = expect.astype(dtype)
+        x[:1].mean('t'),
+        x[:2].mean('t'),
+        x[:3].mean('t'),
+        x[:4].mean('t'),
+    ], dim='t')
     expect.coords['t'] = x.coords['t']
     if chunk:
         x = x.chunk({'s': 2})
         expect = expect.chunk({'s': 2})
 
-    actual = func(x, 't')
+    actual = cum.cummean(x, 't')
     assert_equal(expect, actual)
     assert expect.dtype == actual.dtype
     assert actual.chunks == expect.chunks
