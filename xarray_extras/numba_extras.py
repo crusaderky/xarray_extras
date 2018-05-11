@@ -34,8 +34,10 @@ def guvectorize(signature, layout, **kwds):
        `<https://github.com/numba/numba/issues/2936>`_.
     """
     DTYPES = [
-        'int8', 'int16', 'int32', 'int64',
+        # uint needs to appear before signed int:
+        # https://github.com/numba/numba/issues/2934
         'uint8', 'uint16', 'uint32', 'uint64',
+        'int8', 'int16', 'int32', 'int64',
         'float32', 'float64',
         'complex64', 'complex128'
     ]
