@@ -100,5 +100,10 @@ def splev(x_new, t, c, k, extrapolate):
 
     See :class:`scipy.interpolate.BSpline` for all parameters.
     """
+    # Prevent `ValueError: buffer source array is read-only` when running in
+    # dask distributed
+    t.setflags(write=True)
+    c.setflags(write=True)
+
     spline = BSpline.construct_fast(t, c, k, axis=0, extrapolate=extrapolate)
     return spline(x_new)

@@ -265,3 +265,21 @@ def test_chunked_x():
         splrep(y, 'x', 1)
     assert str(excinfo.value) == 'Unsupported: multiple chunks on ' \
                                  'interpolation dim'
+
+
+def test_dask_distributed():
+    """
+    - Test when t and/or c are not C-contiguous for any reason once they
+      reach splev
+    - Test splev running in dask distributed, where input arrays are read-only
+    """
+    y = DataArray([10, 20], dims=['x'], coords={'x': [1, 2]})
+    tck = splrep(y, 'x', 1)
+    tck['t'] = tck['t'].dims, np.asfortranarray(tck['t'])
+    tck['c'] = tck['c'].dims, np.asfortranarray(tck['c'])
+    x_new = np.array([1.5, 1.8])
+    x_new.setflags(write=False)
+    tck.t.values.setflags(write=False)
+    tck.c.values.setflags(write=False)
+    expect = DataArray([15., 18.], dims=['x'], coords={'x': x_new})
+    assert_equal(splev(x_new, tck), expect)
