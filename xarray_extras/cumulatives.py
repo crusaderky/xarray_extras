@@ -10,18 +10,35 @@ from .kernels import cumulatives as kernels
 __all__ = ('cummean', 'compound_sum', 'compound_prod', 'compound_mean')
 
 
-def cummean(x, dim):
+def cummean(x, dim, skipna=None):
     """
     .. math::
 
         y_{i} = mean(x_{0}, x_{1}, ... x_{i})
+
+    :param x:
+        any xarray object
+    :param str dim:
+        dimension along which to calculate the mean
+    :param bool skipna:
+        If True, skip missing values (as marked by NaN). By default, only skips
+        missing values for float dtypes; other dtypes either do not have a
+        sentinel missing value (int) or skipna=True has not been implemented
+        (object, datetime64 or timedelta64).
     """
-    if x.chunks:
-        n = da.arange(1, x.sizes[dim] + 1, chunks=x.chunks[x.dims.index(dim)])
+    if skipna is False or (skipna is None and x.dtype.kind not in 'fc'):
+        # n is a simple arange
+        if x.chunks:
+            n = da.arange(1, x.sizes[dim] + 1,
+                          chunks=x.chunks[x.dims.index(dim)])
+        else:
+            n = np.arange(1, x.sizes[dim] + 1)
+        n = xarray.DataArray(n, dims=[dim], coords={dim: x.coords[dim]})
     else:
-        n = np.arange(1, x.sizes[dim] + 1)
-    n = xarray.DataArray(n, dims=[dim], coords={dim: x.coords[dim]})
-    return x.cumsum(dim) / n
+        # heavier computation
+        n = (~x.isnull()).cumsum(dim, skipna=False)
+
+    return x.cumsum(dim, skipna=skipna) / n
 
 
 def _cumulative(x, dim, kernel):

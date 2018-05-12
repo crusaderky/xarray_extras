@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import numpy
+import pandas
 import xarray
 import pytest
 from xarray.testing import assert_equal
@@ -113,22 +114,26 @@ def test_compound_s(func, meth, dtype, chunk):
     assert actual.chunks == expect.chunks
 
 
+@pytest.mark.parametrize('dtype', [float, int, 'complex128'])
+@pytest.mark.parametrize('skipna', [False, True, None])
 @pytest.mark.parametrize('chunk', [False, True])
-def test_cummean(chunk):
-    x = INPUT
+def test_cummean(chunk, skipna, dtype):
+    x = INPUT.copy(deep=True).astype(dtype)
+    if dtype in (float, 'complex128'):
+        x[2, 1] = numpy.nan
 
     expect = xarray.concat([
-        x[:1].mean('t'),
-        x[:2].mean('t'),
-        x[:3].mean('t'),
-        x[:4].mean('t'),
+        x[:1].mean('t', skipna=skipna),
+        x[:2].mean('t', skipna=skipna),
+        x[:3].mean('t', skipna=skipna),
+        x[:4].mean('t', skipna=skipna),
     ], dim='t')
     expect.coords['t'] = x.coords['t']
     if chunk:
-        x = x.chunk({'s': 2})
-        expect = expect.chunk({'s': 2})
+        x = x.chunk({'s': 2, 't': 3})
+        expect = expect.chunk({'s': 2, 't': 3})
 
-    actual = cum.cummean(x, 't')
+    actual = cum.cummean(x, 't', skipna=skipna)
     assert_equal(expect, actual)
     assert expect.dtype == actual.dtype
     assert actual.chunks == expect.chunks
