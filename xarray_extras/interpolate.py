@@ -5,7 +5,6 @@
 import xarray
 import numpy as np
 from xarray.core.pycompat import dask_array_type
-from scipy.interpolate import make_interp_spline
 from .kernels import interpolate as kernels
 
 
@@ -234,5 +233,3 @@ def splev(x_new, tck, extrapolate=True):
     if tck.k > 1:
         y_new = y_new.where(tck.na_mask, np.nan)
     return y_new
-
-

@@ -1,5 +1,5 @@
 try:
-    from .version import version as __version__
+    from .version import version as __version__  # noqa: F401
 except ImportError:  # pragma: no cover
     raise ImportError('xarray not properly installed. If you are running from '
                       'the source directory, please instead create a new '

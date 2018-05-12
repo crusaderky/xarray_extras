@@ -5,7 +5,7 @@
 import numpy as np
 from scipy.interpolate import BSpline, make_interp_spline
 from scipy.interpolate._bsplines import _as_float_array, _not_a_knot, \
-    _augknt, _get_dtype
+    _augknt
 
 
 def make_interp_knots(x, k=3, bc_type=None, check_finite=True):
@@ -59,9 +59,9 @@ def make_interp_knots(x, k=3, bc_type=None, check_finite=True):
             # OK, it's a bit ad hoc: Greville sites + omit
             # 2nd and 2nd-to-last points, a la not-a-knot
             t = (x[1:] + x[:-1]) / 2.
-            t = np.r_[(x[0],)*(k+1),
-                       t[1:-1],
-                       (x[-1],)*(k+1)]
+            t = np.r_[(x[0],) * (k + 1),
+                      t[1:-1],
+                      (x[-1],) * (k + 1)]
         else:
             t = _not_a_knot(x, k)
     else:
@@ -86,7 +86,8 @@ def make_interp_coeffs(x, y, k=3, t=None, bc_type=None, axis=0,
         - For k=0, must always be None (the coefficients are not a function of
           the knots).
         - For k=1, set to None if t has been calculated by
-          :func:`make_interp_knots`; pass a vector if it already existed before.
+          :func:`make_interp_knots`; pass a vector if it already existed
+          before.
         - For k=2 and k=3, must always pass either the output of
           :func:`make_interp_knots` or a pre-generated vector.
     """
@@ -94,7 +95,7 @@ def make_interp_coeffs(x, y, k=3, t=None, bc_type=None, axis=0,
         x, y, k, t, bc_type=bc_type, axis=axis, check_finite=check_finite).c
 
 
-def splev(x_new, t, c, k, extrapolate):
+def splev(x_new, t, c, k=3, extrapolate=True):
     """Generate a BSpline object on the fly from knots and coefficients and
     evaluate it on x_new.
 

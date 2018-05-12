@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import numpy
-import pandas
 import xarray
 import pytest
 from xarray.testing import assert_equal

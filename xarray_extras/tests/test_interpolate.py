@@ -12,7 +12,7 @@ dask.set_options(scheduler='single-threaded')
 @pytest.mark.parametrize('k,expect', [
     (0, [40, 55, 4]),
     (1, [45, 35, 4.5]),
-    (2, [45, 37.90073529 , np.nan]),
+    (2, [45, 37.90073529, np.nan]),
     (3, [45, 39.69583333, np.nan])])
 def test_0d(k, expect):
     """
@@ -28,10 +28,8 @@ def test_0d(k, expect):
                           'y': ['y1', 'y2', 'y3']})
     tck = splrep(y, 'x', k)
     expect = DataArray(expect, dims=['y'],
-                       coords={
-                           'x': 4.5,
-                           'y': ['y1', 'y2', 'y3']
-                       }).astype(float)
+                       coords={'x': 4.5,
+                               'y': ['y1', 'y2', 'y3']}).astype(float)
     assert_allclose(splev(4.5, tck), expect, rtol=0, atol=1e-6)
 
 
@@ -74,10 +72,10 @@ def test_1d(x_new, expect):
 @pytest.mark.parametrize(
     'chunk_y,chunk_x_new,expect_chunks_tck,expect_chunks_y_new', [
         (False, False, {}, None),
-        (False, True, {}, ((1, 1), (1, 1), (2, ))),
+        (False, True, {}, ((1, 1), (1, 1), (2,))),
         (True, False,
-         {'y': (1, 1), 'x': (6, )},
-         ((2, ), (2, ), (1, 1))),
+         {'y': (1, 1), 'x': (6,)},
+         ((2,), (2,), (1, 1))),
         (True, True,
          {'y': (1, 1), 'x': (6,)},
          ((1, 1), (1, 1), (1, 1))),
@@ -109,14 +107,10 @@ def test_nd(chunk_y, chunk_x_new, expect_chunks_tck, expect_chunks_y_new):
                    [60., -2]]),
             'na_mask': ('y', [True, True]),
         },
-        coords={
-            'x': [1, 2, 3, 4, 5, 6],
-            'y': ['y1', 'y2'],
-        },
-        attrs={
-            'spline_dim': 'x',
-            'k': 3,
-        })
+        coords={'x': [1, 2, 3, 4, 5, 6],
+                'y': ['y1', 'y2']},
+        attrs={'spline_dim': 'x',
+               'k': 3})
 
     expect_y_new = DataArray(
         [[[35., 51.0375],
@@ -125,10 +119,10 @@ def test_nd(chunk_y, chunk_x_new, expect_chunks_tck, expect_chunks_y_new):
           [55., -3.945833]]],
         dims=['w', 'z', 'y'],
         coords={
-             'w': [100, 200],
-             'y': ['y1', 'y2'],
-             'z': ['foo', 'bar'],
-         })
+            'w': [100, 200],
+            'y': ['y1', 'y2'],
+            'z': ['foo', 'bar'],
+        })
 
     if chunk_y:
         y = y.chunk({'y': 1})
@@ -158,10 +152,8 @@ def test_transpose(transpose, contiguous):
     expect = DataArray([[15., 35., 55.],
                         [10., 30., 50.]],
                        dims=['x', 'y'],
-                       coords={
-                           'x': [1.5, 1.0],
-                           'y': ['y1', 'y2', 'y3'],
-                       })
+                       coords={'x': [1.5, 1.0],
+                               'y': ['y1', 'y2', 'y3']})
 
     if transpose:
         y = y.T
@@ -201,7 +193,7 @@ def test_dates(x_dtype, x_new_dtype):
     - Test clip extrapolation on test_dates
     """
     y = DataArray([10, 20], dims=['x'],
-                  coords={'x': np.array(["2000-01-01","2001-01-01"])
+                  coords={'x': np.array(["2000-01-01", "2001-01-01"])
                   .astype(x_dtype)})
     x_new = np.array(["2000-04-20", "2002-07-28"]).astype(x_new_dtype)
     expect = DataArray([13.00546448, 20.], dims=['x'],
