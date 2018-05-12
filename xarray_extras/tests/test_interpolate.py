@@ -1,12 +1,10 @@
 import dask.array as da
-import dask
 import numpy as np
 import pytest
 from xarray import DataArray, Dataset, apply_ufunc
 from xarray.testing import assert_equal, assert_allclose
 from xarray_extras.interpolate import splrep, splev
-
-dask.set_options(scheduler='single-threaded')
+import xarray_extras.kernels.interpolate as kernels
 
 
 @pytest.mark.parametrize('k,expect', [
@@ -259,25 +257,19 @@ def test_chunked_x():
                                  'interpolation dim'
 
 
-def test_dask_distributed():
-    """
-    - Test when t and/or c are not C-contiguous for any reason once they
-      reach splev
-    - Test splev running in dask distributed, where input arrays are read-only
-    """
-    y = DataArray([10, 20], dims=['x'], coords={'x': [1, 2]})
-    tck = splrep(y, 'x', 1)
-
-    def _break_array(a):
-        a = np.asfortranarray(a)
+def test_distributed():
+    def ro_array(a):
+        a = np.array(a)
         a.setflags(write=False)
-        # Return a view of a, so that setting the write flag on the view is
-        # not enough
+        # Return a view of a, so that setting the write flag on the view is not
+        # enough
         return a[:]
 
-    tck['t'] = tck['t'].dims, _break_array(tck['t'])
-    tck['c'] = tck['c'].dims, _break_array(tck['c'])
-    x_new = _break_array(np.array([1.5, 1.8]))
-
-    expect = DataArray([15., 18.], dims=['x'], coords={'x': x_new})
-    assert_equal(splev(x_new, tck), expect)
+    x = ro_array([1., 2.])
+    y = ro_array([10., 20.])
+    t = kernels.make_interp_knots(x, k=1)
+    t = ro_array(t)
+    c = kernels.make_interp_coeffs(x, y, k=1, t=t)
+    c = ro_array(c)
+    x_new = ro_array([1.5, 1.8])
+    kernels.splev(x_new, t, c, k=1)

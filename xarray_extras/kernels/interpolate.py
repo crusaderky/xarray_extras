@@ -8,6 +8,18 @@ from scipy.interpolate._bsplines import _as_float_array, _not_a_knot, \
     _augknt
 
 
+def _memoryview_safe(x):
+    """Make array safe to run in a Cython memoryview-based kernel. These
+    kernels typically break down with the error ``ValueError: buffer source
+    array is read-only`` when running in dask distributed.
+    """
+    if not x.flags.writeable:
+        if not x.flags.owndata:
+            x = x.copy(order='C')
+        x.setflags(write=True)
+    return x
+
+
 def make_interp_knots(x, k=3, bc_type=None, check_finite=True):
     """Compute the knots of the B-spline.
 
@@ -91,6 +103,11 @@ def make_interp_coeffs(x, y, k=3, t=None, bc_type=None, axis=0,
         - For k=2 and k=3, must always pass either the output of
           :func:`make_interp_knots` or a pre-generated vector.
     """
+    x = _memoryview_safe(x)
+    y = _memoryview_safe(y)
+    if t is not None:
+        t = _memoryview_safe(t)
+
     return make_interp_spline(
         x, y, k, t, bc_type=bc_type, axis=axis, check_finite=check_finite).c
 
@@ -101,12 +118,8 @@ def splev(x_new, t, c, k=3, extrapolate=True):
 
     See :class:`scipy.interpolate.BSpline` for all parameters.
     """
-    # Prevent `ValueError: buffer source array is read-only` when running in
-    # dask distributed. Note: calling .setflags(write=True) is not enough!
-    if not c.flags['WRITEABLE']:
-        c = c.copy(order='C')
-    if not t.flags['WRITEABLE']:
-        t = t.copy(order='C')
-
+    t = _memoryview_safe(t)
+    c = _memoryview_safe(c)
+    x_new = _memoryview_safe(x_new)
     spline = BSpline.construct_fast(t, c, k, axis=0, extrapolate=extrapolate)
     return spline(x_new)
