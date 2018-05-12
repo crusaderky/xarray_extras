@@ -275,11 +275,17 @@ def test_dask_distributed():
     """
     y = DataArray([10, 20], dims=['x'], coords={'x': [1, 2]})
     tck = splrep(y, 'x', 1)
-    tck['t'] = tck['t'].dims, np.asfortranarray(tck['t'])
-    tck['c'] = tck['c'].dims, np.asfortranarray(tck['c'])
-    x_new = np.array([1.5, 1.8])
-    x_new.setflags(write=False)
-    tck.t.values.setflags(write=False)
-    tck.c.values.setflags(write=False)
+
+    def _break_array(a):
+        a = np.asfortranarray(a)
+        a.setflags(write=False)
+        # Return a view of a, so that setting the write flag on the view is
+        # not enough
+        return a[:]
+
+    tck['t'] = tck['t'].dims, _break_array(tck['t'])
+    tck['c'] = tck['c'].dims, _break_array(tck['c'])
+    x_new = _break_array(np.array([1.5, 1.8]))
+
     expect = DataArray([15., 18.], dims=['x'], coords={'x': x_new})
     assert_equal(splev(x_new, tck), expect)
