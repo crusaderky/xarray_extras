@@ -14,6 +14,7 @@ API Reference
    api/cumulatives
    api/interpolate
    api/numba_extras
+   api/sort
 
 License
 -------
