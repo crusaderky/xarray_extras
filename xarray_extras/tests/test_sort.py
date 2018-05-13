@@ -1,7 +1,7 @@
 import pytest
 from xarray import DataArray
 from xarray.testing import assert_equal
-from xarray_extras.sort import topk, argtopk
+from xarray_extras.sort import topk, argtopk, take_along_dim
 
 
 @pytest.mark.parametrize('use_dask', [False, True])
@@ -31,3 +31,39 @@ def test_topk_argtopk(use_dask, split_every, transpose,
     if use_dask:
         assert actual.chunks
     assert_equal(expect, actual)
+
+
+@pytest.mark.parametrize('ind_use_dask', [False, True])
+@pytest.mark.parametrize('a_use_dask', [False, True])
+def test_take_along_dim(a_use_dask, ind_use_dask):
+    a = DataArray([[[1, 2, 3],
+                    [4, 5, 6]],
+                   [[7, 8, 9],
+                    [10, 11, 12]]],
+                  dims=['z', 'y', 'x'],
+                  coords={'z': ['z1', 'z2'],
+                          'y': ['y1', 'y2'],
+                          'x': ['x1', 'x2', 'x3']})
+    ind = DataArray([[1, 0],
+                     [2, 1]],
+                    dims=['y', 'x'],
+                    coords={'y': ['y1', 'y2']})
+
+    expect = DataArray([[[2, 1],
+                         [6, 5]],
+                        [[8, 7],
+                         [12, 11]]],
+                       dims=['z', 'y', 'x'],
+                       coords={'z': ['z1', 'z2'],
+                               'y': ['y1', 'y2']})
+
+    if a_use_dask:
+        a = a.chunk(1)
+    if ind_use_dask:
+        ind = ind.chunk(1)
+
+    actual = take_along_dim(a, ind, 'x')
+    if a_use_dask or ind_use_dask:
+        assert actual.chunks
+    assert_equal(expect, actual)
+

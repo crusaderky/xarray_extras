@@ -3,6 +3,8 @@ numpy arrays or dask arrays.
 """
 import dask.array as da
 import numpy as np
+from ..backport import dask as backport_dask
+from ..backport import numpy as backport_numpy
 
 
 def topk(a, k, split_every=None):
@@ -45,3 +47,34 @@ def argtopk(a, k, split_every=None):
     rec.idx = idx
 
     return topk(rec, k).idx
+
+
+def take_along_axis(a, ind):
+    """Easily use the outputs of argsort on ND arrays to pick the results.
+    """
+    if isinstance(a, np.ndarray) and isinstance(ind, np.ndarray):
+        return backport_numpy.take_along_axis(a, ind)
+
+    # This is going to be an ugly and slow mess, as dask does not support
+    # fancy indexing at all; also selection by dask arrays of ints has not
+    # been merged yet.
+
+    assert a.shape[:-1] == ind.shape[:-1]
+    final_shape = ind.shape
+    ind = ind.reshape(ind.size // ind.shape[-1], ind.shape[-1])
+    a = a.reshape(a.size // a.shape[-1], a.shape[-1])
+    res = []
+
+    for a_i, ind_i in zip(a, ind):
+        if not isinstance(a_i, da.Array):
+            a_i = da.from_array(a_i, chunks=a_i.shape)
+
+        if isinstance(ind_i, da.Array):
+            res_i = backport_dask.slice_with_int_dask_array_on_axis(
+                a_i, ind_i, axis=0)
+        else:
+            res_i = a_i[ind_i]
+        res.append(res_i)
+
+    res = da.stack(res)
+    return res.reshape(*final_shape)

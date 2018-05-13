@@ -3,7 +3,7 @@
 import xarray
 from .duck import sort as duck
 
-__all__ = ('topk', 'argtopk')
+__all__ = ('topk', 'argtopk', 'take_along_dim')
 
 
 def topk(a, k, dim, split_every=None):
@@ -37,3 +37,23 @@ def argtopk(a, k, dim, split_every=None):
         input_core_dims=[[dim]],
         output_core_dims=[[dim + '.topk']],
         dask='allowed').rename({dim + '.topk': dim})
+
+
+def take_along_dim(a, ind, dim):
+    """Use the output of :func:`argtopk` to pick points from a.
+
+    :param a:
+        any xarray object
+    :param ind:
+        array of ints, as returned by :func:`argtopk`
+    :param dim:
+        dimension along which argtopk was executed
+    """
+    a, ind = xarray.broadcast(a, ind, exclude=dim)
+    a = a.rename({dim: dim + '.orig'})
+
+    return xarray.apply_ufunc(
+        duck.take_along_axis, a, ind,
+        input_core_dims=[[dim + '.orig'], [dim]],
+        output_core_dims=[[dim]],
+        dask='allowed')
