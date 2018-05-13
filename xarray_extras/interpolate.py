@@ -1,6 +1,4 @@
 """xarray interpolation functions
-
-.. codeauthor:: Guido Imperiale
 """
 import xarray
 import numpy as np

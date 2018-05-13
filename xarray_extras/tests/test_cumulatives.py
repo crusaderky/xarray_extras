@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 import numpy
 import xarray
 import pytest
@@ -54,8 +52,8 @@ DTYPES = (
     (cum.compound_prod, 'prod'),
     (cum.compound_mean, 'mean')])
 @pytest.mark.parametrize('dtype', DTYPES)
-@pytest.mark.parametrize('chunk', [False, True])
-def test_compound_t(func, meth, dtype, chunk):
+@pytest.mark.parametrize('use_dask', [False, True])
+def test_compound_t(func, meth, dtype, use_dask):
     x = INPUT.astype(dtype)
     c = T_COMPOUND_MATRIX
     expect = xarray.concat([
@@ -66,14 +64,14 @@ def test_compound_t(func, meth, dtype, chunk):
     ], dim='t2').T.astype(dtype)
     expect.coords['t2'] = c.coords['t2']
 
-    if chunk:
+    if use_dask:
         x = x.chunk({'s': 2})
         expect = expect.chunk({'s': 2})
         c = c.chunk()
 
     actual = func(x, c, 't', 'c')
 
-    if chunk:
+    if use_dask:
         assert_equal(expect.compute(), actual.compute())
     else:
         assert_equal(expect, actual)
@@ -87,8 +85,8 @@ def test_compound_t(func, meth, dtype, chunk):
     (cum.compound_prod, 'prod'),
     (cum.compound_mean, 'mean')])
 @pytest.mark.parametrize('dtype', DTYPES)
-@pytest.mark.parametrize('chunk', [False, True])
-def test_compound_s(func, meth, dtype, chunk):
+@pytest.mark.parametrize('use_dask', [False, True])
+def test_compound_s(func, meth, dtype, use_dask):
     x = INPUT.astype(dtype)
     c = S_COMPOUND_MATRIX
     expect = xarray.concat([
@@ -97,14 +95,14 @@ def test_compound_s(func, meth, dtype, chunk):
     ], dim='s2').T.astype(dtype)
     expect.coords['s2'] = c.coords['s2']
 
-    if chunk:
+    if use_dask:
         x = x.chunk({'t': 2})
         expect = expect.chunk({'t': 2})
         c = c.chunk()
 
     actual = func(x, c, 's', 'c')
 
-    if chunk:
+    if use_dask:
         assert_equal(expect.compute(), actual.compute())
     else:
         assert_equal(expect, actual)
@@ -115,8 +113,8 @@ def test_compound_s(func, meth, dtype, chunk):
 
 @pytest.mark.parametrize('dtype', [float, int, 'complex128'])
 @pytest.mark.parametrize('skipna', [False, True, None])
-@pytest.mark.parametrize('chunk', [False, True])
-def test_cummean(chunk, skipna, dtype):
+@pytest.mark.parametrize('use_dask', [False, True])
+def test_cummean(use_dask, skipna, dtype):
     x = INPUT.copy(deep=True).astype(dtype)
     if dtype in (float, 'complex128'):
         x[2, 1] = numpy.nan
@@ -128,7 +126,7 @@ def test_cummean(chunk, skipna, dtype):
         x[:4].mean('t', skipna=skipna),
     ], dim='t')
     expect.coords['t'] = x.coords['t']
-    if chunk:
+    if use_dask:
         x = x.chunk({'s': 2, 't': 3})
         expect = expect.chunk({'s': 2, 't': 3})
 

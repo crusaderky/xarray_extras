@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-
+"""xarray extensions to cumsum and cumprod
+"""
 import dask.array as da
 import numpy as np
 import xarray
