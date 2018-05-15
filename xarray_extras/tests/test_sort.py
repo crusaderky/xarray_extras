@@ -36,6 +36,8 @@ def test_topk_argtopk(use_dask, split_every, transpose,
 @pytest.mark.parametrize('ind_use_dask', [False, True])
 @pytest.mark.parametrize('a_use_dask', [False, True])
 def test_take_along_dim(a_use_dask, ind_use_dask):
+    """ind.ndim < a.ndim after broadcast
+    """
     a = DataArray([[[1, 2, 3],
                     [4, 5, 6]],
                    [[7, 8, 9],
@@ -44,16 +46,22 @@ def test_take_along_dim(a_use_dask, ind_use_dask):
                   coords={'z': ['z1', 'z2'],
                           'y': ['y1', 'y2'],
                           'x': ['x1', 'x2', 'x3']})
-    ind = DataArray([[1, 0],
-                     [2, 1]],
-                    dims=['y', 'x'],
+    ind = DataArray([[[1, 0],
+                      [2, 1]],
+                     [[2, 0],
+                      [2, 2]]],
+                    dims=['w', 'y', 'x'],
                     coords={'y': ['y1', 'y2']})
 
-    expect = DataArray([[[2, 1],
-                         [6, 5]],
-                        [[8, 7],
-                         [12, 11]]],
-                       dims=['z', 'y', 'x'],
+    expect = DataArray([[[[2, 1],
+                          [3, 1]],
+                         [[6, 5],
+                          [6, 6]]],
+                        [[[8, 7],
+                          [9, 7]],
+                         [[12, 11],
+                          [12, 12]]]],
+                       dims=['z', 'y', 'w', 'x'],
                        coords={'z': ['z1', 'z2'],
                                'y': ['y1', 'y2']})
 
@@ -65,5 +73,29 @@ def test_take_along_dim(a_use_dask, ind_use_dask):
     actual = take_along_dim(a, ind, 'x')
     if a_use_dask or ind_use_dask:
         assert actual.chunks
-    assert_equal(expect, actual)
+    assert_equal(expect, actual.compute())
 
+
+@pytest.mark.parametrize('ind_use_dask', [False, True])
+@pytest.mark.parametrize('a_use_dask', [False, True])
+def test_take_along_dim2(a_use_dask, ind_use_dask):
+    """ind.ndim < a.ndim after broadcast
+    """
+    a = DataArray([1, 2, 3], dims=['x'])
+    ind = DataArray([[1, 0],
+                     [2, 1]],
+                    dims=['x', 'y'])
+
+    expect = DataArray([[2, 3],
+                        [1, 2]],
+                       dims=['y', 'x'])
+
+    if a_use_dask:
+        a = a.chunk(1)
+    if ind_use_dask:
+        ind = ind.chunk(1)
+
+    actual = take_along_dim(a, ind, 'x')
+    if a_use_dask or ind_use_dask:
+        assert actual.chunks
+    assert_equal(expect, actual.compute())

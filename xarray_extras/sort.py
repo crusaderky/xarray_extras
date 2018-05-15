@@ -49,7 +49,6 @@ def take_along_dim(a, ind, dim):
     :param dim:
         dimension along which argtopk was executed
     """
-    a, ind = xarray.broadcast(a, ind, exclude=dim)
     a = a.rename({dim: dim + '.orig'})
 
     return xarray.apply_ufunc(
