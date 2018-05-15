@@ -37,17 +37,18 @@ def argtopk(a, k, split_every=None):
     if isinstance(a, da.Array):
         return a.argtopk(k, split_every=split_every)
 
-    # Preprocess data, by putting it together with its indexes in a recarray
-    # np.core.records.fromarrays won't work if a and idx don't have the same
-    # shape
-    idx = np.arange(a.shape[-1], dtype=np.int64)
-    idx = idx[(np.newaxis, ) * (a.ndim - 1)]
+    idx = np.argpartition(a, -k)
+    if k > 0:
+        idx = idx[..., -k:]
+    else:
+        idx = idx[..., :-k]
 
-    rec = np.recarray(a.shape, dtype=[('values', a.dtype), ('idx', idx.dtype)])
-    rec.values = a
-    rec.idx = idx
-
-    return topk(rec, k).idx
+    a = backport_numpy.take_along_axis(a, idx, axis=-1)
+    idx = backport_numpy.take_along_axis(idx, a.argsort(), axis=-1)
+    if k > 0:
+        # Sort from greatest to smallest
+        return idx[..., ::-1]
+    return idx
 
 
 def take_along_axis(a, ind):
