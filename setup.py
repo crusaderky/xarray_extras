@@ -20,7 +20,7 @@ AUTHOR_EMAIL = 'guido.imperiale@gmail.com'
 URL = 'https://github.com/crusaderky/xarray_extras'
 CLASSIFIERS = [
     'Development Status :: 3 - Alpha',
-    'License :: OSI Approved :: LGPL v3',
+    'License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)',
     'Operating System :: OS Independent',
     'Intended Audience :: Science/Research',
     'Programming Language :: Python',
