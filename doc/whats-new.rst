@@ -13,7 +13,7 @@ What's New
 
 .. _whats-new.0.1.0:
 
-v0.1.0 (unreleased)
+v0.1.0 (2018-05-19)
 -------------------
 
 Initial release.
