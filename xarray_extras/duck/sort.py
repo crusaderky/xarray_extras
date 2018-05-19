@@ -60,8 +60,7 @@ def take_along_axis(a, ind):
         return res
 
     # This is going to be an ugly and slow mess, as dask does not support
-    # fancy indexing at all; also selection by dask arrays of ints has not
-    # been merged yet.
+    # fancy indexing.
 
     # Normalize a and ind. The end result is that a can have more axes than
     # ind on the left, but not vice versa, and that all axes except the
