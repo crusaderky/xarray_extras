@@ -21,7 +21,7 @@ install:
   # the parent CMD process).
   - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
 
-  # install xarray and dependencies
+  # install xarray_extras and dependencies
   - "conda env create --file ./ci/requirements-%CONDA_ENV%.yml"
   - "activate test_env"
   - "conda list"

@@ -1,4 +1,4 @@
-"""xarray sorting functions
+"""Sorting functions
 """
 import xarray
 from .duck import sort as duck

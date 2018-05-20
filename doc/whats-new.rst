@@ -1,4 +1,4 @@
-.. currentmodule:: xarray
+.. currentmodule:: xarray_extras
 
 What's New
 ==========
