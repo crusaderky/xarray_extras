@@ -43,7 +43,7 @@ Time required: about an hour.
 13. Issue the release on GitHub. Click on "Draft a new release" at
     https://github.com/crusaderky/xarray_extras/releases and paste in the latest from
     whats-new.rst.
-14. Update the docs. Login to https://readthedocs.org/projects/xray/versions/
+14. Update the docs. Login to https://readthedocs.org/projects/xarray_extras/versions/
     and switch your new release tag (at the bottom) from "Inactive" to "Active".
     It should now build automatically.
 15. Update conda-forge. Clone https://github.com/conda-forge/xarray_extras-feedstock
