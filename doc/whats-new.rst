@@ -16,7 +16,7 @@ What's New
 v0.1.1 (Unreleased)
 -------------------
 
-
+- Rigorous tracking of minimum dependency versions
 
 .. _whats-new.0.1.0:
 

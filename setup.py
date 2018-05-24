@@ -31,9 +31,15 @@ CLASSIFIERS = [
     'Topic :: Scientific/Engineering',
 ]
 
-INSTALL_REQUIRES = ['numpy >= 1.11', 'pandas >= 0.18.0', 'xarray >= 0.10.3',
-                    'numba', 'dask', 'scipy']
-TESTS_REQUIRE = ['pytest >= 2.7.1']
+INSTALL_REQUIRES = [
+    'dask >= 0.17.3',
+    'numba >= 0.34',
+    'numpy >= 1.13',
+    'pandas >= 0.20',
+    'scipy >= 1.0',
+    'xarray >= 0.10',
+]
+TESTS_REQUIRE = ['pytest >= 3.1']
 
 DESCRIPTION = "Advanced / experimental algorithms for xarray"
 LONG_DESCRIPTION = """
