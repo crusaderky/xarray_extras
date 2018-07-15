@@ -60,7 +60,7 @@ def compound_sum(x, c, xdim, cdim):
 
     :param x:
         Any xarray object containing the data to be compounded
-    :param DataArray c:
+    :param xarray.DataArray c:
         array where every row contains elements of x.coords[xdim] and
         is used to build a point of the output.
         The cells in the row are matched against x.coords[dim] and perform a

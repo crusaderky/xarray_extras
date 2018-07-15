@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Extensions to :mod:`numba`
+"""Extensions to numba
 """
 import numba
 
