@@ -11,6 +11,7 @@ API Reference
 
 .. toctree::
 
+   api/csv
    api/cumulatives
    api/interpolate
    api/numba_extras

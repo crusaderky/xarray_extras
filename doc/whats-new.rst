@@ -11,11 +11,12 @@ What's New
     import xarray
     np.random.seed(123456)
 
-.. _whats-new.0.1.1:
+.. _whats-new.0.2.0:
 
 v0.2.0 (Unreleased)
 -------------------
 
+- New function :func:`xarray_extras.csv.to_csv`
 - Speed up in interpolate for k=2 and k=3
 - Rigorous tracking of minimum dependency versions
 - Explicit support for Python 3.7
