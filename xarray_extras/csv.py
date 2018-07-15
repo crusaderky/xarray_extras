@@ -40,6 +40,7 @@ def to_csv(x, path_or_buf, **kwargs):
     # to become unstable
     index = da.from_array(indices[0], chunks=((x.chunks[0], )))
 
+    # Manually define the dask graph
     tok = tokenize(x.data, index, indices[1:])
     name1 = 'to_csv_encode-' + tok
     name2 = 'to_csv_write-' + tok

@@ -7,8 +7,9 @@ def to_csv(x, constructor, indices, kwargs):
     queue = Queue()
     p = Process(target=to_csv_subprocess, args=(queue, x, kwargs))
     p.start()
+    out = queue.get()
     p.join()  # this blocks until the process terminates
-    return queue.get()
+    return out
 
 
 def to_csv_subprocess(queue, x, kwargs):
