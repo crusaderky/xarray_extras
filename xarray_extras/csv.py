@@ -91,7 +91,7 @@ def to_csv(x, path_or_buf, **kwargs):
         raise ValueError("Unrecognized compression: %s" % compression)
 
     # Merge chunks on all dimensions beyond the first
-    x = x.chunk({d: -1 for d in x.dims[1:]})
+    x = x.chunk((x.chunks[0],) + tuple((s, ) for s in x.shape[1:]))
 
     # Extract row and columns indices
     indices = [x.get_index(dim) for dim in x.dims]

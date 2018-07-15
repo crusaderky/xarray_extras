@@ -3,6 +3,7 @@ import gzip
 import lzma
 import pickle
 import tempfile
+import pandas
 import pytest
 import xarray
 
@@ -91,6 +92,9 @@ def test_compression(compression, open_func):
     # Notes:
     # - compressed outputs won't be binary identical; only once uncompressed
     # - we are forcing the dask-based algorithm to compress two chunks
+    if pandas.__version__ < '0.23':
+        pytest.xfail("compression param requires pandas >=0.23")
+
     x = xarray.DataArray([1, 2])
     assert_to_csv(x, 1, compression=compression, open_func=open_func)
 

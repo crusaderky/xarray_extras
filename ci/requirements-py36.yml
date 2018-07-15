@@ -1,14 +1,14 @@
 name: test_env
 channels:
-  - conda-forge
+  - anaconda
 dependencies:
   - python=3.6
   - dask
-  - pytest
   - flake8
   - numba
   - numpy
   - pandas
+  - pytest
   - scipy
   - xarray
   - pip:
