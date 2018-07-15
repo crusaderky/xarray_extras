@@ -57,9 +57,7 @@ def to_csv(x, path_or_buf, **kwargs):
     if not isinstance(x, xarray.DataArray):
         raise ValueError("first argument must be a DataArray")
 
-    # Fast exit for numpy backend or empty array
-    if x.chunks and not x.chunks[0]:
-        x = x.compute(scheduler='single-threaded')
+    # Fast exit for numpy backend
     if not x.chunks:
         x.to_pandas().to_csv(path_or_buf, ** kwargs)
         return None
@@ -104,7 +102,7 @@ def to_csv(x, path_or_buf, **kwargs):
 
     # Convert row index to dask. Do not use DataArray(indices[0]).chunk(), as
     # it will cause the token to become unstable
-    index = da.from_array(index, chunks=((x.chunks[0], )))
+    index = da.from_array(index, chunks=(x.chunks[0], ))
 
     # Manually define the dask graph
     tok = tokenize(x.data, index, columns, compression, path_or_buf, kwargs)
@@ -114,6 +112,7 @@ def to_csv(x, path_or_buf, **kwargs):
 
     dsk = {}
 
+    assert x.chunks[0]
     for i in range(len(x.chunks[0])):
         x_i = (x.data.name, i) + (0, ) * (x.ndim - 1)
         idx_i = (index.name, i)

@@ -1,5 +1,5 @@
-cumulatives
-===========
+csv
+===
 
 .. automodule:: xarray_extras.csv
     :members:
