@@ -1,6 +1,7 @@
 import bz2
 import gzip
 import lzma
+import pickle
 import tempfile
 import pytest
 import xarray
@@ -92,3 +93,20 @@ def test_compression(compression, open_func):
     # - we are forcing the dask-based algorithm to compress two chunks
     x = xarray.DataArray([1, 2])
     assert_to_csv(x, 1, compression=compression, open_func=open_func)
+
+
+def test_pickle():
+    x = xarray.DataArray([1, 2])
+    with tempfile.TemporaryDirectory() as tmp:
+        x.to_pandas().to_csv(tmp + '/1.csv')
+        d = to_csv(x.chunk(1), tmp + '/2.csv')
+        d = pickle.loads(pickle.dumps(d))
+        d.compute()
+
+        with open(tmp + '/1.csv', 'rb') as fh:
+            d1 = fh.read()
+        with open(tmp + '/2.csv', 'rb') as fh:
+            d2 = fh.read()
+        print(d1)
+        print(d2)
+        assert d1 == d2
