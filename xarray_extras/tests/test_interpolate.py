@@ -103,7 +103,6 @@ def test_nd(chunk_y, chunk_x_new, expect_chunks_tck, expect_chunks_y_new):
                    [43.333333, 84.003704],
                    [53.333333, -25.251852],
                    [60., -2]]),
-            'na_mask': ('y', [True, True]),
         },
         coords={'x': [1, 2, 3, 4, 5, 6],
                 'y': ['y1', 'y2']},

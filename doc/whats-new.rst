@@ -13,9 +13,10 @@ What's New
 
 .. _whats-new.0.1.1:
 
-v0.1.1 (Unreleased)
+v0.2.0 (Unreleased)
 -------------------
 
+- Speed up in interpolate for k=2 and k=3
 - Rigorous tracking of minimum dependency versions
 
 .. _whats-new.0.1.0:

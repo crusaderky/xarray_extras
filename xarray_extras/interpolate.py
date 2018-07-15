@@ -61,18 +61,6 @@ def splrep(a, dim, k=3):
     """
     # Make sure that dim is on axis 0
     a = a.transpose(dim, *[d for d in a.dims if d != dim])
-
-    if k > 1:
-        # If any series contains NaNs, all (and only) the y_new along that
-        # series will be NaN.
-        # See why scipy.interpolate.interp1d does it wrong:
-        # https://github.com/scipy/scipy/issues/8781
-        # https://github.com/scipy/scipy/blob/v1.1.0/scipy/interpolate/interpolate.py#L519
-        na_mask = ~a.isnull().any(dim)
-        a = a.fillna(1)
-    else:
-        na_mask = None
-
     x = a.coords[dim].values
 
     if x.dtype.kind == 'M':
@@ -99,7 +87,7 @@ def splrep(a, dim, k=3):
         c = kernels.make_interp_coeffs(x, a.data, k=k, t=t_c_param,
                                        check_finite=False)
 
-    tck = xarray.Dataset(
+    return xarray.Dataset(
         data_vars={
             't': ('__t__', t),
             'c': (a.dims, c),
@@ -109,11 +97,6 @@ def splrep(a, dim, k=3):
             'spline_dim': dim,
             'k': k,
         })
-
-    if na_mask is not None:
-        tck['na_mask'] = na_mask
-
-    return tck
 
 
 def splev(x_new, tck, extrapolate=True):
@@ -226,8 +209,4 @@ def splev(x_new, tck, extrapolate=True):
         k: c
         for k, c in c.coords.items()
         if dim not in c.dims})
-
-    # Reinstate NaNs that had been replaced with stubs
-    if tck.k > 1:
-        y_new = y_new.where(tck.na_mask, np.nan)
     return y_new
