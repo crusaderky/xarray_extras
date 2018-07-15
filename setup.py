@@ -35,9 +35,9 @@ INSTALL_REQUIRES = [
     'dask >= 0.17.3',
     'numba >= 0.34',
     'numpy >= 1.13',
-    'pandas >= 0.20',
-    'scipy >= 1.0',
-    'xarray >= 0.10',
+    'pandas >= 0.20.2',
+    'scipy >= 1.0.0',
+    'xarray >= 0.10.0',
 ]
 TESTS_REQUIRE = ['pytest >= 3.1']
 
