@@ -13,7 +13,7 @@ What's New
 
 .. _whats-new.0.2.0:
 
-v0.2.0 (Unreleased)
+v0.2.0 (2018-07-15)
 -------------------
 
 - New function :func:`xarray_extras.csv.to_csv`
