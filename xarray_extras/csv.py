@@ -1,5 +1,6 @@
 import xarray
 import pandas as pd
+import dask.array as da
 from dask.base import tokenize
 from dask.delayed import Delayed
 from dask import sharedict
@@ -35,9 +36,11 @@ def to_csv(x, path_or_buf, **kwargs):
     # Merge chunks on all dimensions beyond the first
     x = x.chunk({d: -1 for d in x.dims[1:]})
 
-    index = xarray.DataArray(indices[0]).chunk((x.chunks[0], ))
+    # DO NOT use DataArray(indices[0]).chunk(), as it will cause the token
+    # to become unstable
+    index = da.from_array(indices[0], chunks=((x.chunks[0], )))
 
-    tok = tokenize(x, index, indices[1:])
+    tok = tokenize(x.data, index, indices[1:])
     name1 = 'to_csv_encode-' + tok
     name2 = 'to_csv_write-' + tok
     name3 = 'to_csv-' + tok
@@ -45,7 +48,7 @@ def to_csv(x, path_or_buf, **kwargs):
     dsk = {}
 
     for i in range(len(x.chunks[0])):
-        xi = (x.name, i) + (0, ) * (x.ndim - 1)
+        xi = (x.data.name, i) + (0, ) * (x.ndim - 1)
         idx_i = (index.name, i)
 
         if 'header' in kwargs and i > 0:
@@ -62,9 +65,10 @@ def to_csv(x, path_or_buf, **kwargs):
                 kernels.to_file, path_or_buf, 'bw', (name1, i))
         elif i < len(x.chunks[0]) - 1:
             dsk[name2, i] = (
-                kernels.to_file, path_or_buf, 'ba', (name1, i), (name1, i - 1))
+                kernels.to_file, path_or_buf, 'ba', (name1, i), (name2, i - 1))
         else:
             dsk[name3] = (
-                kernels.to_file, path_or_buf, 'ba', (name1, i), (name1, i - 1))
+                kernels.to_file, path_or_buf, 'ba', (name1, i), (name2, i - 1))
 
-    return Delayed(name3, sharedict.merge(dsk, x, index))
+    return Delayed(name3, sharedict.merge(
+        dsk, x.__dask_graph__(), index.__dask_graph__()))

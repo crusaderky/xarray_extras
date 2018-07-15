@@ -15,10 +15,12 @@ def to_csv_subprocess(queue, x, kwargs):
     compression = kwargs.pop('compression', None)
     out = x.to_csv(**kwargs)
     out = out.encode('utf8')
+
     if compression == 'gzip':
         out = gzip.compress(out)
     elif compression is not None:
         raise NotImplementedError("Only gzip compression is supported")
+
     queue.put(out)
 
 
