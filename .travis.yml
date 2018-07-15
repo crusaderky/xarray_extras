@@ -10,14 +10,12 @@ branches:
 matrix:
   fast_finish: true
   include:
-  - python: 3.5
-    env: CONDA_ENV=minimal
-  - python: 3.5
-    env: CONDA_ENV=py35
-  - python: 3.6
-    env: CONDA_ENV=py36
-  - python: 3.6
-    env: CONDA_ENV=docs
+  - env: CONDA_ENV=minimal
+  - env: CONDA_ENV=py35
+  - env: CONDA_ENV=py36
+  - env: CONDA_ENV=py37
+  - env: CONDA_ENV=bleeding_edge
+  - env: CONDA_ENV=docs
   allow_failures:
 
 before_install:

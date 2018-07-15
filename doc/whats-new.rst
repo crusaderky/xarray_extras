@@ -17,8 +17,9 @@ v0.2.0 (Unreleased)
 -------------------
 
 - New function :func:`xarray_extras.csv.to_csv`
-- Speed up in interpolate for k=2 and k=3
-- Rigorous tracking of minimum dependency versions
+- Speed up interpolation for k=2 and k=3
+- CI: Rigorous tracking of minimum dependency versions
+- CI: Explicit support for Python 3.7
 
 .. _whats-new.0.1.0:
 
