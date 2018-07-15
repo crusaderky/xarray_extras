@@ -1,0 +1,16 @@
+name: test_env
+channels:
+  - conda-forge
+dependencies:
+  - python=3.7
+  - dask
+  - flake8
+  - numba
+  - numpy
+  - pandas
+  - pytest
+  - scipy
+  - xarray
+  - pip:
+    - coveralls
+    - pytest-cov

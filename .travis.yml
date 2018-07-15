@@ -16,7 +16,11 @@ matrix:
     env: CONDA_ENV=py35
   - python: 3.6
     env: CONDA_ENV=py36
-  - python: 3.6
+  - python: 3.7
+    env: CONDA_ENV=py37
+  - python: 3.7
+    env: CONDA_ENV=bleeding_edge
+  - python: 3.7
     env: CONDA_ENV=docs
   allow_failures:
 

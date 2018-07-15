@@ -18,6 +18,7 @@ v0.2.0 (Unreleased)
 
 - Speed up in interpolate for k=2 and k=3
 - Rigorous tracking of minimum dependency versions
+- Explicit support for Python 3.7
 
 .. _whats-new.0.1.0:
 
