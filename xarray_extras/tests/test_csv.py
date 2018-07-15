@@ -95,6 +95,15 @@ def test_compression(compression, open_func):
     assert_to_csv(x, 1, compression=compression, open_func=open_func)
 
 
+def test_empty():
+    x = xarray.DataArray(
+        [[1, 2, 3, 4]],
+        dims=['r', 'c'],
+        coords={'c': [10, 20, 30, 40]})
+    x = x.isel(r=slice(0))
+    assert_to_csv(x, 1)
+
+
 def test_pickle():
     x = xarray.DataArray([1, 2])
     with tempfile.TemporaryDirectory() as tmp:
