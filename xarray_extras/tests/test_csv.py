@@ -20,6 +20,9 @@ def assert_to_csv(x, chunks, open_func=open, **kwargs):
             d2 = fh.read()
         with open_func(tmp + '/3.csv', 'rb') as fh:
             d3 = fh.read()
+        print(d1)
+        print(d2)
+        print(d3)
         assert d1 == d2
         assert d1 == d3
 

@@ -4,7 +4,7 @@ from multiprocessing import Process, Queue
 import pandas
 
 
-def to_csv(x, index, columns, compress, kwargs):
+def to_csv(x, index_name, index, columns, compress, kwargs):
     """Format x into CSV, encode it, and optionally compress it.
 
     Since :meth:`pandas.DataFrame.to_csv` does not release the GIL, the actual
@@ -12,6 +12,8 @@ def to_csv(x, index, columns, compress, kwargs):
 
     :param x:
         numpy.ndarray with 1 or 2 dimensions
+    :param index_name:
+        index name, or tuple of index names in case of MultiIndex
     :param index:
         row index
     :param columns:
@@ -21,6 +23,11 @@ def to_csv(x, index, columns, compress, kwargs):
     :param kwargs:
         arguments passed to pandas to_csv methods
     """
+    if isinstance(index_name, tuple):
+        index = pandas.MultiIndex.from_tuples(index.tolist(), names=index_name)
+    else:
+        index = pandas.Index(index, name=index_name)
+
     if x.ndim == 1:
         assert columns is None
         x = pandas.Series(x, index)

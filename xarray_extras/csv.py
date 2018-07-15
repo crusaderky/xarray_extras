@@ -1,5 +1,6 @@
 """CSV file type support
 """
+import pandas
 import xarray
 import dask.array as da
 from dask.base import tokenize
@@ -102,6 +103,10 @@ def to_csv(x, path_or_buf, **kwargs):
 
     # Convert row index to dask. Do not use DataArray(indices[0]).chunk(), as
     # it will cause the token to become unstable
+    if isinstance(index, pandas.MultiIndex):
+        index_name = tuple(index.names)
+    else:
+        index_name = index.name
     index = da.from_array(index, chunks=(x.chunks[0], ))
 
     # Manually define the dask graph
@@ -119,14 +124,14 @@ def to_csv(x, path_or_buf, **kwargs):
 
         if i == 0:
             # First chunk. Overwrite file if it already exists; print header
-            dsk[name1, i] = (kernels.to_csv, x_i, idx_i, columns, compress,
-                             kwargs)
+            dsk[name1, i] = (kernels.to_csv, x_i, index_name, idx_i, columns,
+                             compress, kwargs)
             dsk[name2, i] = (kernels.to_file, path_or_buf, 'bw', (name1, i))
         else:
             kwargs_i = kwargs.copy()
             kwargs_i['header'] = False
-            dsk[name1, i] = (kernels.to_csv, x_i, idx_i, columns, compress,
-                             kwargs_i)
+            dsk[name1, i] = (kernels.to_csv, x_i, index_name, idx_i, columns,
+                             compress, kwargs_i)
             dsk[name2, i] = (kernels.to_file, path_or_buf, 'ba', (name1, i),
                              (name2, i - 1))
 
