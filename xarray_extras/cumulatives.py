@@ -41,20 +41,6 @@ def cummean(x, dim, skipna=None):
     return x.cumsum(dim, skipna=skipna) / n
 
 
-def _cumulative(x, dim, kernel):
-    """Implementation of all cumulative functions
-
-    :param kernel:
-        numba kernel to apply to x
-    """
-    return xarray.apply_ufunc(
-        kernel, x,
-        input_core_dims=[[dim]],
-        output_core_dims=[[dim]],
-        dask='parallelized',
-        output_dtypes=[x.dtype])
-
-
 def compound_sum(x, c, xdim, cdim):
     """Compound sum on arbitrary points of x along dim.
 
