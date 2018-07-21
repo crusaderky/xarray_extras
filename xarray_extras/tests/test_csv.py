@@ -22,6 +22,7 @@ def assert_to_csv(x, chunks, open_func=open, **kwargs):
             d2 = fh.read()
         with open_func(tmp + '/3.csv', 'rb') as fh:
             d3 = fh.read()
+        print()
         print(d1)
         print(d2)
         print(d3)
@@ -73,7 +74,8 @@ def test_custom_header():
 def test_encoding(encoding):
     # Note: in Python 2.7, default encoding is ascii in pandas and utf-8 in
     # xarray_extras. Therefore we will not test the default.
-    x = xarray.DataArray(['brûlée'], dims=['x'], coords={'x': ['crème']})
+    x = xarray.DataArray([[1]], dims=['r', 'c'],
+                         coords={'r': ['crème'], 'c': ['brûlée']})
     assert_to_csv(x, 1, encoding=encoding)
 
 
