@@ -1,6 +1,12 @@
 """dask kernels for :mod:`xarray_extras.csv
 """
+from threading import Lock
 import pandas
+
+
+# Wrap pandas.DataFrame.to_csv in a lock to limit
+# performance degradation due to GIL contention
+to_csv_lock = Lock()
 
 
 def to_csv(x, index, columns, kwargs):
@@ -29,7 +35,8 @@ def to_csv(x, index, columns, kwargs):
         assert False  # proper ValueError already raised in wrapper
 
     encoding = kwargs.pop('encoding', 'utf-8')
-    out = x.to_csv(**kwargs)
+    with to_csv_lock:
+        out = x.to_csv(**kwargs)
     return out.encode(encoding)
 
 
