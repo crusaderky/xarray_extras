@@ -103,14 +103,6 @@ def to_csv(x, path_or_buf, **kwargs):
         index = indices[0]
         columns = None
 
-    # Convert row index to dask. Do not use DataArray(indices[0]).chunk(), as
-    # it will cause the token to become unstable
-    if isinstance(index, pandas.MultiIndex):
-        index_name = tuple(index.names)
-    else:
-        index_name = index.name
-    index = da.from_array(index, chunks=(x.chunks[0], ))
-
     # Manually define the dask graph
     tok = tokenize(x.data, index, columns, compression, path_or_buf, kwargs)
     name1 = 'to_csv_encode-' + tok
@@ -121,20 +113,22 @@ def to_csv(x, path_or_buf, **kwargs):
     dsk = {}
 
     assert x.chunks[0]
-    for i in range(len(x.chunks[0])):
+    offset = 0
+    for i, size in enumerate(x.chunks[0]):
+        # Slice index
+        index_i = index[offset:offset + size]
+        offset += size
+
         x_i = (x.data.name, i) + (0, ) * (x.ndim - 1)
-        idx_i = (index.name, i)
 
         # Step 1: convert to CSV and encode to binary blob
         if i == 0:
             # First chunk: print header
-            dsk[name1, i] = (kernels.to_csv, x_i, index_name, idx_i, columns,
-                             kwargs)
+            dsk[name1, i] = kernels.to_csv, x_i, index_i, columns, kwargs
         else:
             kwargs_i = kwargs.copy()
             kwargs_i['header'] = False
-            dsk[name1, i] = (kernels.to_csv, x_i, index_name, idx_i, None,
-                             kwargs_i)
+            dsk[name1, i] = kernels.to_csv, x_i, index_i, None, kwargs_i
 
         # Step 2 (optional): compress
         if compress:
@@ -155,5 +149,4 @@ def to_csv(x, path_or_buf, **kwargs):
     # Rename final key
     dsk[name4] = dsk.pop((name3, i))
 
-    return Delayed(name4, sharedict.merge(
-        dsk, x.__dask_graph__(), index.__dask_graph__()))
+    return Delayed(name4, sharedict.merge(dsk, x.__dask_graph__()))

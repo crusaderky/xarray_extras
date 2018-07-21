@@ -3,7 +3,7 @@
 import pandas
 
 
-def to_csv(x, index_name, index, columns, kwargs):
+def to_csv(x, index, columns, kwargs):
     """Format x into CSV and encode it to binary
 
     .. warning::
@@ -11,8 +11,6 @@ def to_csv(x, index_name, index, columns, kwargs):
 
     :param x:
         numpy.ndarray with 1 or 2 dimensions
-    :param index_name:
-        index name, or tuple of index names in case of MultiIndex
     :param index:
         row index
     :param columns:
@@ -22,11 +20,6 @@ def to_csv(x, index_name, index, columns, kwargs):
     :returns:
         bytes
     """
-    if isinstance(index_name, tuple):
-        index = pandas.MultiIndex.from_tuples(index.tolist(), names=index_name)
-    else:
-        index = pandas.Index(index, name=index_name)
-
     if x.ndim == 1:
         assert columns is None
         x = pandas.Series(x, index)
