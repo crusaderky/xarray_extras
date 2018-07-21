@@ -1,8 +1,6 @@
 """CSV file type support
 """
-import pandas
 import xarray
-import dask.array as da
 from dask.base import tokenize
 from dask.delayed import Delayed
 from dask import sharedict
@@ -70,7 +68,7 @@ def to_csv(x, path_or_buf, **kwargs):
         raise ValueError("path_or_buf must be a file path if x is dask-backed")
 
     if x.ndim not in (1, 2):
-        raise ValueError('cannot convert arrays with %s dimensions into '
+        raise ValueError('cannot convert arrays with %d dimensions into '
                          'pandas objects' % x.ndim)
 
     # Define compress function
