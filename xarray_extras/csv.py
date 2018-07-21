@@ -36,8 +36,10 @@ def to_csv(x, path_or_buf, **kwargs):
 
     **Limitations**
 
-    - When x has dask backend, path_or_buf must be a file path. Fancy URIs are
-      not (yet) supported.
+    - This function does not release the Global Interpreter Lock (GIL) while it
+      converts numpy data to text. This can cause performance degradation.
+    - When x has dask backend, path_or_buf must be a file path.
+    - Fancy URIs are not (yet) supported.
     - When x has dask backend, compression='zip' is not supported. All other
       compression methods (gzip, bz2, xz) are supported.
 
@@ -112,8 +114,9 @@ def to_csv(x, path_or_buf, **kwargs):
     # Manually define the dask graph
     tok = tokenize(x.data, index, columns, compression, path_or_buf, kwargs)
     name1 = 'to_csv_encode-' + tok
-    name2 = 'to_csv_write-' + tok
-    name3 = 'to_csv-' + tok
+    name2 = 'to_csv_compress-' + tok
+    name3 = 'to_csv_write-' + tok
+    name4 = 'to_csv-' + tok
 
     dsk = {}
 
@@ -122,21 +125,35 @@ def to_csv(x, path_or_buf, **kwargs):
         x_i = (x.data.name, i) + (0, ) * (x.ndim - 1)
         idx_i = (index.name, i)
 
+        # Step 1: convert to CSV and encode to binary blob
         if i == 0:
-            # First chunk. Overwrite file if it already exists; print header
+            # First chunk: print header
             dsk[name1, i] = (kernels.to_csv, x_i, index_name, idx_i, columns,
-                             compress, kwargs)
-            dsk[name2, i] = (kernels.to_file, path_or_buf, 'bw', (name1, i))
+                             kwargs)
         else:
             kwargs_i = kwargs.copy()
             kwargs_i['header'] = False
-            dsk[name1, i] = (kernels.to_csv, x_i, index_name, idx_i, columns,
-                             compress, kwargs_i)
-            dsk[name2, i] = (kernels.to_file, path_or_buf, 'ba', (name1, i),
-                             (name2, i - 1))
+            dsk[name1, i] = (kernels.to_csv, x_i, index_name, idx_i, None,
+                             kwargs_i)
+
+        # Step 2 (optional): compress
+        if compress:
+            prevname = name2
+            dsk[name2, i] = compress, (name1, i)
+        else:
+            prevname = name1
+
+        # Step 3: write to file
+        if i == 0:
+            # First chunk: overwrite file if it already exists
+            dsk[name3, i] = kernels.to_file, path_or_buf, 'bw', (prevname, i)
+        else:
+            # Next chunks: wait for previous chunk to complete and append
+            dsk[name3, i] = (kernels.to_file, path_or_buf, 'ba', (prevname, i),
+                             (name3, i - 1))
 
     # Rename final key
-    dsk[name3] = dsk.pop((name2, i))
+    dsk[name4] = dsk.pop((name3, i))
 
-    return Delayed(name3, sharedict.merge(
+    return Delayed(name4, sharedict.merge(
         dsk, x.__dask_graph__(), index.__dask_graph__()))
