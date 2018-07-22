@@ -16,7 +16,14 @@ What's New
 v0.2.1 (unreleased)
 -------------------
 
-
+- Added parameter nogil=True to :func:`xarray_extras.csv.to_csv`, which will
+  switch to a  C-accelerated implementation instead of pandas to_csv (albeit
+  with caveats). Fixed deadlock in to_csv as well as compatibility with dask
+  distributed. Pandas code (when using nogil=False) is not wrapped by a
+  subprocess anymore, which means it won't be able to use more than 1 CPU
+  (but compression can run in pipeline).
+  to_csv has lost the ability to write to a buffer - only file paths are
+  supported now.
 
 v0.2.0 (2018-07-15)
 -------------------

@@ -79,6 +79,7 @@ def to_csv(x, index, columns, first_chunk, nogil, kwargs):
         body_csv = header_csv + body_csv
 
     if encoding not in {'ascii', 'utf-8'}:
+        # Everything is encoded in UTF-8 until this moment. Recode if needed.
         body_csv = body_csv.decode('utf-8').encode(encoding)
         if encoding == 'utf-16' and not first_chunk:
             # utf-16 contains a bang at the beginning of the text. However,
