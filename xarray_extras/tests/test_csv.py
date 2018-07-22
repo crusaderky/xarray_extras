@@ -4,6 +4,7 @@ import lzma
 import pickle
 import tempfile
 
+import dask
 import numpy as np
 import pandas
 import pytest
@@ -14,21 +15,18 @@ from xarray_extras.csv import to_csv
 
 def assert_to_csv(x, chunks, nogil, dtype, open_func=open, float_format='%f', **kwargs):
     x = x.astype(dtype)
+    if chunks:
+        x = x.chunk(chunks)
+
     with tempfile.TemporaryDirectory() as tmp:
         x.to_pandas().to_csv(tmp + '/1.csv', float_format=float_format, **kwargs)
-        if chunks:
-            x = x.chunk(chunks)
-            to_csv(x, tmp + '/2.csv', nogil=nogil, float_format=float_format, **kwargs).compute()
-        else:
-            to_csv(x, tmp + '/2.csv', nogil=nogil, float_format=float_format, **kwargs)
+        f = to_csv(x, tmp + '/2.csv', nogil=nogil, float_format=float_format, **kwargs)
+        dask.compute(f)
 
         with open_func(tmp + '/1.csv', 'rb') as fh:
             d1 = fh.read()
         with open_func(tmp + '/2.csv', 'rb') as fh:
             d2 = fh.read()
-        print()
-        print(d1)
-        print(d2)
         assert d1 == d2
 
 
@@ -164,6 +162,29 @@ def test_pandas_only_complex(chunks, dtype):
     assert_to_csv(x, chunks, False, dtype)
 
 
+@pytest.mark.parametrize('nogil', [False, True])
+@pytest.mark.parametrize('chunks', [None, 1])
+def test_mode(chunks, nogil):
+    x = xarray.DataArray([1, 2])
+    y = xarray.DataArray([3, 4])
+    if chunks:
+        x = x.chunk(chunks)
+        y = y.chunk(chunks)
+
+    with tempfile.TemporaryDirectory() as tmp:
+        f = to_csv(x, tmp + '/1.csv', mode='a', nogil=nogil, index=False)
+        dask.compute(f)
+        f = to_csv(y, tmp + '/1.csv', mode='a', nogil=nogil, index=False)
+        dask.compute(f)
+        with open(tmp + '/1.csv') as fh:
+            assert '1\n2\n3\n4\n' == fh.read()
+
+        f = to_csv(y, tmp + '/1.csv', mode='w', nogil=nogil, index=False)
+        dask.compute(f)
+        with open(tmp + '/1.csv') as fh:
+            assert '3\n4\n' == fh.read()
+
+
 def test_none_fmt():
     """float_format=None differs between C and pandas; can't use assert_to_csv
     """
@@ -174,15 +195,10 @@ def test_none_fmt():
         to_csv(x, tmp + '/1.csv')
         to_csv(y, tmp + '/2.csv')
 
-        with open(tmp + '/1.csv', 'rb') as fh:
-            d1 = fh.read()
-        with open(tmp + '/2.csv', 'rb') as fh:
-            d2 = fh.read()
-        print()
-        print(d1)
-        print(d2)
-        assert d1 == b'0,1.0\n1,1.1\n2,1.0\n3,123.456789\n'
-        assert d2 == b'0,1.0\n1,1.1\n2,1.0\n3,123.456787\n'
+        with open(tmp + '/1.csv') as fh:
+            assert '0,1.0\n1,1.1\n2,1.0\n3,123.456789\n' == fh.read()
+        with open(tmp + '/2.csv') as fh:
+            assert '0,1.0\n1,1.1\n2,1.0\n3,123.456787\n' == fh.read()
 
 
 def test_pickle():

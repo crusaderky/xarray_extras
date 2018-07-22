@@ -44,7 +44,6 @@ def to_csv(x, path, *, nogil=True, **kwargs):
     - Fancy URIs are not (yet) supported.
     - compression='zip' is not supported. All other compression methods (gzip,
       bz2, xz) are supported.
-    - parameter 'mode' is ignored. TODO
     - When running with nogil=True, the following parameters are ignored:
       columns, quoting, quotechar, doublequote, escapechar, chunksize, decimal
 
@@ -103,12 +102,16 @@ def to_csv(x, path, *, nogil=True, **kwargs):
         index = indices[0]
         columns = None
 
+    mode = kwargs.pop('mode', 'w')
+    if mode not in 'wa':
+        raise ValueError('mode: expected w or a; got "%s"' % mode)
+
     # Fast exit for numpy backend
     if not x.chunks:
         bdata = kernels.to_csv(x.values, index, columns, True, nogil, kwargs)
         if compress:
             bdata = compress(bdata)
-        with open(path, 'wb') as fh:
+        with open(path, mode + 'b') as fh:
             fh.write(bdata)
         return None
 
@@ -154,10 +157,10 @@ def to_csv(x, path, *, nogil=True, **kwargs):
         # Step 3: write to file
         if i == 0:
             # First chunk: overwrite file if it already exists
-            dsk[name3, i] = kernels.to_file, path, 'bw', (prevname, i)
+            dsk[name3, i] = kernels.to_file, path, mode + 'b', (prevname, i)
         else:
             # Next chunks: wait for previous chunk to complete and append
-            dsk[name3, i] = (kernels.to_file, path, 'ba', (prevname, i),
+            dsk[name3, i] = (kernels.to_file, path, 'ab', (prevname, i),
                              (name3, i - 1))
 
     # Rename final key
