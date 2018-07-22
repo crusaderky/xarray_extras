@@ -60,7 +60,7 @@ def to_csv(x, index, columns, first_chunk, nogil, kwargs):
         index_csv = '\n' * x.shape[0]
     else:
         index_csv = '\n'.join(
-            f'{r}{sep}' if r else '' for r in index_csv) + '\n'
+            r + sep if r else '' for r in index_csv) + '\n'
 
     # Invoke C code to format the values. This releases the GIL.
     if x.dtype.kind == 'i':
