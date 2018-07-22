@@ -25,6 +25,7 @@ install:
   - "conda env create --file ./ci/requirements-%CONDA_ENV%.yml"
   - "activate test_env"
   - "conda list"
+  - "python setup.py build_ext --inplace"
   - "python setup.py install"
 
 build: false

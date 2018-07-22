@@ -1,8 +1,6 @@
 """CSV file type support
 """
-import pandas
 import xarray
-import dask.array as da
 from dask.base import tokenize
 from dask.delayed import Delayed
 from dask import sharedict
@@ -12,7 +10,7 @@ from .kernels import csv as kernels
 __all__ = ('to_csv', )
 
 
-def to_csv(x, path_or_buf, **kwargs):
+def to_csv(x, path, *, nogil=True, **kwargs):
     """Print DataArray to CSV.
 
     When x has numpy backend, this function is equivalent to::
@@ -28,18 +26,26 @@ def to_csv(x, path_or_buf, **kwargs):
 
     :param x:
         xarray.DataArray with one or two dimensions
-    :param path_or_buf:
-        File path or file-like object
+    :param str path:
+        Output file path
+    :param bool nogil:
+        If True, use accelerated C implementation. Several kwargs won't be
+        processed correctly (see limitations below). If False, use pandas
+        to_csv method (slow, and does not release the GIL).
+        nogil=True exclusively supports float and integer values dtypes (but
+        the coords can be anything). In case of incompatible dtype, nogil
+        is automatically switched to False.
     :param kwargs:
         Passed verbatim to :meth:`pandas.DataFrame.to_csv` or
         :meth:`pandas.Series.to_csv`
 
     **Limitations**
 
-    - When x has dask backend, path_or_buf must be a file path. Fancy URIs are
-      not (yet) supported.
-    - When x has dask backend, compression='zip' is not supported. All other
-      compression methods (gzip, bz2, xz) are supported.
+    - Fancy URIs are not (yet) supported.
+    - compression='zip' is not supported. All other compression methods (gzip,
+      bz2, xz) are supported.
+    - When running with nogil=True, the following parameters are ignored:
+      columns, quoting, quotechar, doublequote, escapechar, chunksize, decimal
 
     **Distributed**
 
@@ -58,18 +64,16 @@ def to_csv(x, path_or_buf, **kwargs):
     if not isinstance(x, xarray.DataArray):
         raise ValueError("first argument must be a DataArray")
 
-    # Fast exit for numpy backend
-    if not x.chunks:
-        x.to_pandas().to_csv(path_or_buf, ** kwargs)
-        return None
-
     # Health checks
-    if not isinstance(path_or_buf, str):
+    if not isinstance(path, str):
         raise ValueError("path_or_buf must be a file path if x is dask-backed")
 
     if x.ndim not in (1, 2):
-        raise ValueError('cannot convert arrays with %s dimensions into '
+        raise ValueError('cannot convert arrays with %d dimensions into '
                          'pandas objects' % x.ndim)
+
+    if nogil and x.dtype.kind not in 'if':
+        nogil = False
 
     # Define compress function
     compression = kwargs.pop('compression', None)
@@ -90,9 +94,6 @@ def to_csv(x, path_or_buf, **kwargs):
     else:
         raise ValueError("Unrecognized compression: %s" % compression)
 
-    # Merge chunks on all dimensions beyond the first
-    x = x.chunk((x.chunks[0],) + tuple((s, ) for s in x.shape[1:]))
-
     # Extract row and columns indices
     indices = [x.get_index(dim) for dim in x.dims]
     if x.ndim == 2:
@@ -101,42 +102,68 @@ def to_csv(x, path_or_buf, **kwargs):
         index = indices[0]
         columns = None
 
-    # Convert row index to dask. Do not use DataArray(indices[0]).chunk(), as
-    # it will cause the token to become unstable
-    if isinstance(index, pandas.MultiIndex):
-        index_name = tuple(index.names)
-    else:
-        index_name = index.name
-    index = da.from_array(index, chunks=(x.chunks[0], ))
+    mode = kwargs.pop('mode', 'w')
+    if mode not in 'wa':
+        raise ValueError('mode: expected w or a; got "%s"' % mode)
+
+    # Fast exit for numpy backend
+    if not x.chunks:
+        bdata = kernels.to_csv(x.values, index, columns, True, nogil, kwargs)
+        if compress:
+            bdata = compress(bdata)
+        with open(path, mode + 'b') as fh:
+            fh.write(bdata)
+        return None
+
+    # Merge chunks on all dimensions beyond the first
+    x = x.chunk((x.chunks[0],) + tuple((s, ) for s in x.shape[1:]))
 
     # Manually define the dask graph
-    tok = tokenize(x.data, index, columns, compression, path_or_buf, kwargs)
+    tok = tokenize(x.data, index, columns, compression, path, kwargs)
     name1 = 'to_csv_encode-' + tok
-    name2 = 'to_csv_write-' + tok
-    name3 = 'to_csv-' + tok
+    name2 = 'to_csv_compress-' + tok
+    name3 = 'to_csv_write-' + tok
+    name4 = 'to_csv-' + tok
 
     dsk = {}
 
     assert x.chunks[0]
-    for i in range(len(x.chunks[0])):
-        x_i = (x.data.name, i) + (0, ) * (x.ndim - 1)
-        idx_i = (index.name, i)
+    offset = 0
+    for i, size in enumerate(x.chunks[0]):
+        # Slice index
+        index_i = index[offset:offset + size]
+        offset += size
 
+        x_i = (x.data.name, i) + (0, ) * (x.ndim - 1)
+
+        # Step 1: convert to CSV and encode to binary blob
         if i == 0:
-            # First chunk. Overwrite file if it already exists; print header
-            dsk[name1, i] = (kernels.to_csv, x_i, index_name, idx_i, columns,
-                             compress, kwargs)
-            dsk[name2, i] = (kernels.to_file, path_or_buf, 'bw', (name1, i))
+            # First chunk: print header
+            dsk[name1, i] = (kernels.to_csv, x_i, index_i, columns,
+                             True, nogil, kwargs)
         else:
             kwargs_i = kwargs.copy()
             kwargs_i['header'] = False
-            dsk[name1, i] = (kernels.to_csv, x_i, index_name, idx_i, columns,
-                             compress, kwargs_i)
-            dsk[name2, i] = (kernels.to_file, path_or_buf, 'ba', (name1, i),
-                             (name2, i - 1))
+            dsk[name1, i] = (kernels.to_csv, x_i, index_i, None,
+                             False, nogil, kwargs_i)
+
+        # Step 2 (optional): compress
+        if compress:
+            prevname = name2
+            dsk[name2, i] = compress, (name1, i)
+        else:
+            prevname = name1
+
+        # Step 3: write to file
+        if i == 0:
+            # First chunk: overwrite file if it already exists
+            dsk[name3, i] = kernels.to_file, path, mode + 'b', (prevname, i)
+        else:
+            # Next chunks: wait for previous chunk to complete and append
+            dsk[name3, i] = (kernels.to_file, path, 'ab', (prevname, i),
+                             (name3, i - 1))
 
     # Rename final key
-    dsk[name3] = dsk.pop((name2, i))
+    dsk[name4] = dsk.pop((name3, i))
 
-    return Delayed(name3, sharedict.merge(
-        dsk, x.__dask_graph__(), index.__dask_graph__()))
+    return Delayed(name4, sharedict.merge(dsk, x.__dask_graph__()))

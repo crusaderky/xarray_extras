@@ -5,6 +5,7 @@ dependencies:
   - python=3.5
   - dask
   - flake8
+  - gcc_linux-64
   - numba
   - numpy
   - pandas

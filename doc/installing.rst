@@ -11,6 +11,7 @@ Required dependencies
 - `xarray <http://xarray.pydata.org/>`__
 - `dask <http://dask.pydata.org>`__
 - `numba <http://numba.pydata.org>`__
+- C compiler (only if building from sources)
 
 Testing
 -------

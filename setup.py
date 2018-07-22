@@ -3,7 +3,8 @@ import os
 import re
 import warnings
 
-from setuptools import find_packages, setup
+from setuptools import find_packages, setup, Extension
+
 
 MAJOR = 0
 MINOR = 2
@@ -127,6 +128,8 @@ setup(name=DISTNAME,
       author_email=AUTHOR_EMAIL,
       classifiers=CLASSIFIERS,
       description=DESCRIPTION,
+      ext_modules=[Extension('xarray_extras.kernels.np_to_csv',
+                             ['xarray_extras/kernels/np_to_csv.c'])],
       long_description=LONG_DESCRIPTION,
       install_requires=INSTALL_REQUIRES,
       tests_require=TESTS_REQUIRE,
