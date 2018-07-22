@@ -6,6 +6,34 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
+#include <Python.h>
+
+
+static PyMethodDef module_methods[] = {
+    {NULL, NULL, 0, NULL}
+};
+
+
+PyMODINIT_FUNC PyInit_np_to_csv(void)
+{
+    PyObject *module;
+    static struct PyModuleDef moduledef = {
+        PyModuleDef_HEAD_INIT,
+        "np_to_csv",
+        "High speed implementation for to_csv()",
+        -1,
+        module_methods,
+        NULL,
+        NULL,
+        NULL,
+        NULL
+    };
+    module = PyModule_Create(&moduledef);
+    if (!module) return NULL;
+
+    return module;
+}
+
 
 /* Convert 2D array of doubles to CSV
  *
