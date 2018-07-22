@@ -2,12 +2,10 @@
 This is a helper module of :mod:`xarray_extras.kernels.csv`.
 """
 import ctypes
-import os.path
 import numpy as np
+from . import np_to_csv
+np_to_csv = np.ctypeslib.load_library('np_to_csv', np_to_csv.__file__)
 
-
-np_to_csv = np.ctypeslib.load_library(
-    'np_to_csv', os.path.dirname(__file__))
 
 np_to_csv.snprintcsvd.argtypes = [
     ctypes.c_char_p,  # char * buf
