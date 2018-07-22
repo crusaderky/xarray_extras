@@ -24,6 +24,7 @@ v0.2.1 (unreleased)
   (but compression can run in pipeline).
   to_csv has lost the ability to write to a buffer - only file paths are
   supported now.
+- appveyor integration
 
 v0.2.0 (2018-07-15)
 -------------------
