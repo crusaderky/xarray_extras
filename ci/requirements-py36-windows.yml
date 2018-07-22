@@ -1,0 +1,16 @@
+name: test_env
+channels:
+  - anaconda
+dependencies:
+  - python=3.6
+  - dask
+  - flake8
+  - numba
+  - numpy
+  - pandas
+  - pytest
+  - scipy
+  - xarray
+  - pip:
+    - coveralls
+    - pytest-cov
