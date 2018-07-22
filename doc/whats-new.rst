@@ -11,9 +11,9 @@ What's New
     import xarray
     np.random.seed(123456)
 
-.. _whats-new.0.2.0:
+.. _whats-new.0.2.1:
 
-v0.2.1 (unreleased)
+v0.2.1 (2018-07-22)
 -------------------
 
 - Added parameter nogil=True to :func:`xarray_extras.csv.to_csv`, which will
@@ -24,7 +24,9 @@ v0.2.1 (unreleased)
   (but compression can run in pipeline).
   to_csv has lost the ability to write to a buffer - only file paths are
   supported now.
-- appveyor integration
+- AppVeyor integration
+
+.. _whats-new.0.2.0:
 
 v0.2.0 (2018-07-15)
 -------------------
