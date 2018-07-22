@@ -13,14 +13,17 @@ import xarray
 from xarray_extras.csv import to_csv
 
 
-def assert_to_csv(x, chunks, nogil, dtype, open_func=open, float_format='%f', **kwargs):
+def assert_to_csv(x, chunks, nogil, dtype, open_func=open, float_format='%f',
+                  **kwargs):
     x = x.astype(dtype)
     if chunks:
         x = x.chunk(chunks)
 
     with tempfile.TemporaryDirectory() as tmp:
-        x.to_pandas().to_csv(tmp + '/1.csv', float_format=float_format, **kwargs)
-        f = to_csv(x, tmp + '/2.csv', nogil=nogil, float_format=float_format, **kwargs)
+        x.to_pandas().to_csv(tmp + '/1.csv', float_format=float_format,
+                             **kwargs)
+        f = to_csv(x, tmp + '/2.csv', nogil=nogil, float_format=float_format,
+                   **kwargs)
         dask.compute(f)
 
         with open_func(tmp + '/1.csv', 'rb') as fh:
@@ -158,7 +161,7 @@ def test_pandas_only(chunks, dtype, encoding):
 @pytest.mark.parametrize('dtype', [np.complex64, np.complex128])
 @pytest.mark.parametrize('chunks', [None, 1])
 def test_pandas_only_complex(chunks, dtype):
-    x = xarray.DataArray([1+2j])
+    x = xarray.DataArray([1 + 2j])
     assert_to_csv(x, chunks, False, dtype)
 
 

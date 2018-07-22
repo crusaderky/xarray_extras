@@ -7,9 +7,6 @@ from .np_to_csv_py import snprintcsvd, snprintcsvi
 def to_csv(x, index, columns, first_chunk, nogil, kwargs):
     """Format x into CSV and encode it to binary
 
-    .. warning::
-       This function does not release the GIL!
-
     :param x:
         numpy.ndarray with 1 or 2 dimensions
     :param index:
