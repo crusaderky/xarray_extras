@@ -105,7 +105,7 @@ def to_csv(x, path, *, nogil=True, **kwargs):
 
     # Fast exit for numpy backend
     if not x.chunks:
-        bdata = kernels.to_csv(x.values, index, columns, nogil, kwargs)
+        bdata = kernels.to_csv(x.values, index, columns, True, nogil, kwargs)
         if compress:
             bdata = compress(bdata)
         with open(path, 'wb') as fh:
@@ -137,12 +137,12 @@ def to_csv(x, path, *, nogil=True, **kwargs):
         if i == 0:
             # First chunk: print header
             dsk[name1, i] = (kernels.to_csv, x_i, index_i, columns,
-                             nogil, kwargs)
+                             True, nogil, kwargs)
         else:
             kwargs_i = kwargs.copy()
             kwargs_i['header'] = False
             dsk[name1, i] = (kernels.to_csv, x_i, index_i, None,
-                             nogil, kwargs_i)
+                             False, nogil, kwargs_i)
 
         # Step 2 (optional): compress
         if compress:

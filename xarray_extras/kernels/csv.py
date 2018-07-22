@@ -4,7 +4,7 @@ import pandas
 from .np_to_csv_py import snprintcsvd, snprintcsvi
 
 
-def to_csv(x, index, columns, nogil, kwargs):
+def to_csv(x, index, columns, first_chunk, nogil, kwargs):
     """Format x into CSV and encode it to binary
 
     .. warning::
@@ -16,6 +16,8 @@ def to_csv(x, index, columns, nogil, kwargs):
         row index
     :param columns:
         column index. None for Series or for DataFrame chunks beyond the first.
+    :param bool first_chunk:
+        True if this is the first chunk; False otherwise
     :param bool nogil:
         If True, use accelerated C implementation. Several kwargs won't be
         processed correctly. If False, use pandas to_csv method (slow, and does
@@ -36,7 +38,13 @@ def to_csv(x, index, columns, nogil, kwargs):
     encoding = kwargs.pop('encoding', 'utf-8')
     if not nogil or not x.size:
         out = x_pd.to_csv(**kwargs)
-        return out.encode(encoding)
+        bout = out.encode(encoding)
+        if encoding == 'utf-16' and not first_chunk:
+            # utf-16 contains a bang at the beginning of the text. However,
+            # when concatenating multiple chunks we don't want to replicate it.
+            assert bout[:2] == b'\xff\xfe'
+            bout = bout[2:]
+        return bout
 
     sep = kwargs.get('sep', ',')
     fmt = kwargs.get('float_format', None)
@@ -72,6 +80,12 @@ def to_csv(x, index, columns, nogil, kwargs):
 
     if encoding not in {'ascii', 'utf-8'}:
         body_csv = body_csv.decode('utf-8').encode(encoding)
+        if encoding == 'utf-16' and not first_chunk:
+            # utf-16 contains a bang at the beginning of the text. However,
+            # when concatenating multiple chunks we don't want to replicate it.
+            assert body_csv[:2] == b'\xff\xfe'
+            body_csv = body_csv[2:]
+
     return body_csv
 
 

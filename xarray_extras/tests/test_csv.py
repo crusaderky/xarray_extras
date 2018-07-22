@@ -94,8 +94,8 @@ def test_custom_header(chunks, nogil, dtype):
 def test_encoding(chunks, nogil, dtype, encoding):
     # Note: in Python 2.7, default encoding is ascii in pandas and utf-8 in
     # xarray_extras. Therefore we will not test the default.
-    x = xarray.DataArray([[1]], dims=['r', 'c'],
-                         coords={'r': ['crème'], 'c': ['brûlée']})
+    x = xarray.DataArray([[1], [2]], dims=['r', 'c'],
+                         coords={'r': ['crème', 'foo'], 'c': ['brûlée']})
     assert_to_csv(x, chunks, nogil, dtype, encoding=encoding)
 
 
