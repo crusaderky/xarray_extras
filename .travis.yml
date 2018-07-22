@@ -14,6 +14,7 @@ matrix:
   - env: CONDA_ENV=py35
   - env: CONDA_ENV=py36
   - env: CONDA_ENV=py37
+  - env: CONDA_ENV=conda-forge
   - env: CONDA_ENV=docs
   allow_failures:
 
