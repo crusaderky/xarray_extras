@@ -1,4 +1,4 @@
-"""dask kernels for :mod:`xarray_extras.csv
+"""dask kernels for :mod:`xarray_extras.csv`
 """
 import pandas
 from .np_to_csv_py import snprintcsvd, snprintcsvi
@@ -39,7 +39,7 @@ def to_csv(x, index, columns, nogil, kwargs):
         return out.encode(encoding)
 
     sep = kwargs.get('sep', ',')
-    fmt = kwargs.get('float_format', '%f')
+    fmt = kwargs.get('float_format', None)
     na_rep = kwargs.get('na_rep', '')
 
     # Use pandas to format index
@@ -49,7 +49,6 @@ def to_csv(x, index, columns, nogil, kwargs):
         x_df = x_pd
     kwargs_index = kwargs.copy()
     kwargs_index['header'] = False
-    kwargs_index['line_terminator'] = '\n'
     index_csv = x_df.iloc[:, :0].to_csv(**kwargs_index)
     index_csv = index_csv.strip().split('\n')
     if len(index_csv) != x.shape[0]:

@@ -18,6 +18,7 @@ np_to_csv.snprintcsvd.argtypes = [
     ctypes.c_int32,   # int w
     ctypes.c_char_p,  # const char * index
     ctypes.c_char_p,  # const char * fmt
+    ctypes.c_bool,    # bool trim_zeros
     ctypes.c_char_p,  # const char * na_rep
 ]
 np_to_csv.snprintcsvd.restype = ctypes.c_int32
@@ -36,7 +37,7 @@ np_to_csv.snprintcsvi.argtypes = [
 np_to_csv.snprintcsvi.restype = ctypes.c_int32
 
 
-def snprintcsvd(a, index, sep=',', fmt='%f', na_rep=''):
+def snprintcsvd(a, index, sep=',', fmt=None, na_rep=''):
     """Convert array to CSV.
 
     :param a:
@@ -47,6 +48,7 @@ def snprintcsvd(a, index, sep=',', fmt='%f', na_rep=''):
         cell separator
     :param str fmt:
         printf formatting string for a single float number
+        Set to None to replicate pandas to_csv default behaviour
     :param str na_rep:
         string representation of NaN
     :return:
@@ -65,8 +67,13 @@ def snprintcsvd(a, index, sep=',', fmt='%f', na_rep=''):
 
     # Test fmt while in Python - much better to get
     # an Exception here than a segfault in C!
-    fmt % 1.23  # noqa
-    bfmt = fmt.encode('ascii') + bsep
+    if fmt is not None:
+        fmt % 1.23  # noqa
+        bfmt = fmt.encode('ascii') + bsep
+        trim_zeros = False
+    else:
+        bfmt = b'%f' + bsep
+        trim_zeros = True
     bna_rep = na_rep.encode('ascii') + bsep
     # We're relying on the fact that ascii is a strict subset of UTF-8
     bindex = index.encode('utf-8')
@@ -79,8 +86,8 @@ def snprintcsvd(a, index, sep=',', fmt='%f', na_rep=''):
     while True:
         bufsize = cellsize * a.size
         buf = ctypes.create_string_buffer(bufsize)
-        nchar = np_to_csv.snprintcsvd(
-            buf, bufsize, a, a.shape[0], a.shape[1], bindex, bfmt, bna_rep)
+        nchar = np_to_csv.snprintcsvd(buf, bufsize, a, a.shape[0], a.shape[1],
+                                      bindex, bfmt, trim_zeros, bna_rep)
         if nchar < bufsize:
             return buf[:nchar]
         cellsize *= 2

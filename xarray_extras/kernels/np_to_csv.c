@@ -3,6 +3,7 @@
  */
 #include <inttypes.h>
 #include <math.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -16,12 +17,14 @@
  * index : newline-separated list of prefix strings, one per row
  * fmt : printf formatting, including the cell separator at the end.
  *       cell separator must be exactly 1 character.
+ * trim_zeros : if true, trim trailing zeros after the . beyond the first
+ *              e.g. 1.000 -> 1.0
  * na_rep : string representation for NaN, including the cell separator at the end
  *
  * The line terminator is always \n, regardless of OS.
  */
 int snprintcsvd(char * buf, int bufsize, const double * array, int h, int w,
-                const char * index, const char * fmt, const char * na_rep)
+                const char * index, const char * fmt, bool trim_zeros, const char * na_rep)
 {
     int char_count = 0;
     int i, j;
@@ -45,6 +48,14 @@ int snprintcsvd(char * buf, int bufsize, const double * array, int h, int w,
             }
             else {
                 char_count += snprintf(buf + char_count, bufsize - char_count, fmt, n);
+                if (trim_zeros) {
+                    while (char_count > 2 &&
+                           buf[char_count - 2] == '0' &&
+                           buf[char_count - 3] != '.') {
+                        buf[char_count - 2] = buf[char_count - 1];
+                        char_count--;
+                    }
+                }
             }
         }
         // Replace latest column separator with line terminator
