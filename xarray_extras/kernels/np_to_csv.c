@@ -8,12 +8,13 @@
 #include <string.h>
 #include <Python.h>
 
-
 #ifdef _WIN32
 #    define LIBRARY_API __declspec(dllexport)
 #else
 #    define LIBRARY_API
 #endif
+
+#define CHECK_OVERFLOW if (char_count >= bufsize) return bufsize
 
 
 static PyMethodDef module_methods[] = {
@@ -67,23 +68,28 @@ int snprintcsvd(char * buf, int bufsize, const double * array, int h, int w,
 
     // Move along a single column, printing the value of each row
     for (i = 0; i < h; i++) {
+        // Print row header
         while (1) {
-            char c = *index;
-            index++;
-            if (c == '\n' || char_count == bufsize) {
+            CHECK_OVERFLOW;
+            char c = *(index++);
+            if (c == 0 || c == '\n') {
                 break;
             }
             buf[char_count++] = c;
         }
-        for (j = 0; j < w; j++) {
-            double n = *array;
-            array++;
+        CHECK_OVERFLOW;
 
+        // Print row values
+        for (j = 0; j < w; j++) {
+            double n = *(array++);
             if (isnan(n)) {
                 char_count += snprintf(buf + char_count, bufsize - char_count, "%s", na_rep);
+                CHECK_OVERFLOW;
             }
             else {
                 char_count += snprintf(buf + char_count, bufsize - char_count, fmt, n);
+                CHECK_OVERFLOW;
+
                 if (trim_zeros) {
                     while (char_count > 2 &&
                            buf[char_count - 2] == '0' &&
@@ -130,17 +136,21 @@ int snprintcsvi(char * buf, int bufsize, const int64_t * array, int h, int w,
 
     // Move along a single column, printing the value of each row
     for (i = 0; i < h; i++) {
+        // Print row header
         while (1) {
-            char c = *index;
-            index++;
-            if (c == '\n' || char_count == bufsize) {
+            CHECK_OVERFLOW;
+            char c = *(index++);
+            if (c == 0 || c == '\n') {
                 break;
             }
             buf[char_count++] = c;
         }
+        CHECK_OVERFLOW;
+
+        // Print row values
         for (j = 0; j < w; j++) {
-            char_count += snprintf(buf + char_count, bufsize - char_count, fmt, *array);
-            array++;
+            char_count += snprintf(buf + char_count, bufsize - char_count, fmt, *(array++));
+            CHECK_OVERFLOW;
         }
         // Replace latest column separator with line terminator
         buf[char_count - 1] = '\n';
