@@ -10,12 +10,12 @@ branches:
 matrix:
   fast_finish: true
   include:
-  #- env: CONDA_ENV=minimal
-  #- env: CONDA_ENV=py35
-  #- env: CONDA_ENV=py36
-  #- env: CONDA_ENV=py37
+  - env: CONDA_ENV=minimal
+  - env: CONDA_ENV=py35
+  - env: CONDA_ENV=py36
+  - env: CONDA_ENV=py37
   - env: CONDA_ENV=conda-forge
-  #- env: CONDA_ENV=docs
+  - env: CONDA_ENV=docs
   allow_failures:
 
 before_install:
