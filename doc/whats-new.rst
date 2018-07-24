@@ -14,7 +14,7 @@ What's New
 
 .. _whats-new.0.2.2:
 
-v0.2.2 (unreleased)
+v0.2.2 (2018-07-24)
 -------------------
 
 - Fixed segmentation faults in :func:`~xarray_extras.csv.to_csv`
