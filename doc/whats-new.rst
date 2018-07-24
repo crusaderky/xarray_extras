@@ -17,6 +17,8 @@ What's New
 v0.2.2 (unreleased)
 -------------------
 
+- Fixed segmentation faults in :func:`~xarray_extras.csv.to_csv`
+- Added conda-forge travis build
 - Blacklisted dask-0.18.2 because of regression in argtopk(split_every=2)
 
 
@@ -25,7 +27,7 @@ v0.2.2 (unreleased)
 v0.2.1 (2018-07-22)
 -------------------
 
-- Added parameter nogil=True to :func:`xarray_extras.csv.to_csv`, which will
+- Added parameter nogil=True to :func:`~xarray_extras.csv.to_csv`, which will
   switch to a  C-accelerated implementation instead of pandas to_csv (albeit
   with caveats). Fixed deadlock in to_csv as well as compatibility with dask
   distributed. Pandas code (when using nogil=False) is not wrapped by a

@@ -82,7 +82,7 @@ def snprintcsvd(a, index, sep=',', fmt=None, na_rep=''):
     # FIXME: is there a better way?
     cellsize = 40
     while True:
-        bufsize = cellsize * a.size
+        bufsize = cellsize * a.size + len(bindex)
         buf = ctypes.create_string_buffer(bufsize)
         nchar = np_to_csv.snprintcsvd(buf, bufsize, a, a.shape[0], a.shape[1],
                                       bindex, bfmt, trim_zeros, bna_rep)
@@ -117,7 +117,7 @@ def snprintcsvi(a, index, sep=','):
     bindex = index.encode('utf-8')
 
     cellsize = 22  # len('%d' % -2**64) + 1
-    bufsize = cellsize * a.size
+    bufsize = cellsize * a.size + len(bindex)
     buf = ctypes.create_string_buffer(bufsize)
     nchar = np_to_csv.snprintcsvi(
         buf, bufsize, a, a.shape[0], a.shape[1], bindex, bsep)

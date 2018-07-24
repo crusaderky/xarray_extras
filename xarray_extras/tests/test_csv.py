@@ -150,6 +150,37 @@ def test_empty(chunks, nogil, dtype):
     assert_to_csv(x, chunks, nogil, dtype)
 
 
+@pytest.mark.parametrize('x', [0, -2**63])
+@pytest.mark.parametrize('index', ['a', 'a' * 1000])
+@pytest.mark.parametrize('nogil', [False, True])
+@pytest.mark.parametrize('chunks', [None, 1])
+def test_buffer_overflow_int(chunks, nogil, index, x):
+    a = xarray.DataArray([x], dims=['x'], coords={'x': [index]})
+    assert_to_csv(a, chunks, nogil, np.int64)
+
+
+@pytest.mark.parametrize('x', [0, np.nan, 1.000000000000001,
+                               1.7901234406790122e+308])
+@pytest.mark.parametrize('index,coord',
+                         [(False, ''), (True, 'a'), (True, 'a' * 1000)])
+@pytest.mark.parametrize('na_rep', ['', 'na' * 500])
+@pytest.mark.parametrize('float_format',
+                         ['%.16f', '%.1000f', 'a' * 1000 + '%.0f'])
+@pytest.mark.parametrize('nogil', [False, True])
+@pytest.mark.parametrize('chunks', [None, 1])
+def test_buffer_overflow_float(chunks, nogil, float_format, na_rep, index,
+                               coord, x):
+
+    if nogil and not index and np.isnan(x) and na_rep == '':
+        # Expected: b'""\n'
+        # Actual: b'\n'
+        pytest.xfail("pandas prints useless "" for empty lines")
+
+    a = xarray.DataArray([x], dims=['x'], coords={'x': [coord]})
+    assert_to_csv(a, chunks, nogil, np.float64, float_format=float_format,
+                  na_rep=na_rep, index=index)
+
+
 @pytest.mark.parametrize('encoding', ['utf-8', 'utf-16'])
 @pytest.mark.parametrize('dtype', [str, object])
 @pytest.mark.parametrize('chunks', [None, 1])
