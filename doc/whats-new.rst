@@ -19,6 +19,7 @@ v0.2.2 (unreleased)
 
 - Fixed segmentation faults in :func:`~xarray_extras.csv.to_csv`
 - Added conda-forge travis build
+- Blacklisted dask-0.18.2 because of regression in argtopk(split_every=2)
 
 
 .. _whats-new.0.2.1:

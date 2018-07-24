@@ -5,7 +5,7 @@ dependencies:
   # python=3.7.0=hfd72cd7_0 is broken; see
   # https://github.com/ContinuumIO/anaconda-issues/issues/9799
   - python=3.7.0=hc3d631a_0
-  - dask
+  - dask!=0.18.2
   - flake8
   - gcc_linux-64
   - numba
