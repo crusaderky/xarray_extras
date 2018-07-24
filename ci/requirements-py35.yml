@@ -3,7 +3,7 @@ channels:
   - anaconda
 dependencies:
   - python=3.5
-  - dask
+  - dask!=0.18.2
   - flake8
   - gcc_linux-64
   - numba
