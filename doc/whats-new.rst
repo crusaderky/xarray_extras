@@ -11,10 +11,14 @@ What's New
     import xarray
     np.random.seed(123456)
 
-.. _whats-new.0.3.0:
 
-v0.3.0 (unreleased)
+.. _whats-new.0.2.2:
+
+v0.2.2 (unreleased)
 -------------------
+
+- Blacklisted dask-0.18.2 because of regression in argtopk(split_every=2)
+
 
 .. _whats-new.0.2.1:
 
@@ -31,6 +35,7 @@ v0.2.1 (2018-07-22)
   supported now.
 - AppVeyor integration
 
+
 .. _whats-new.0.2.0:
 
 v0.2.0 (2018-07-15)
@@ -40,6 +45,7 @@ v0.2.0 (2018-07-15)
 - Speed up interpolation for k=2 and k=3
 - CI: Rigorous tracking of minimum dependency versions
 - CI: Explicit support for Python 3.7
+
 
 .. _whats-new.0.1.0:
 
