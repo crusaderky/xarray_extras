@@ -99,8 +99,9 @@ def test_identical(x):
 
 
 def test_simple():
-    check(1, 0, '1 != 0 (abs: -1.0e+00, rel: -1.0e+00)'),
-    check('asd', 'lol', 'asd != lol'),
+    check(1, 0, '1 != 0 (abs: -1.0e+00, rel: -1.0e+00)')
+    check('asd', 'lol', 'asd != lol')
+    check(b'asd', b'lol', "b'asd' != b'lol'")
     check(True, False, 'True != False')
 
 

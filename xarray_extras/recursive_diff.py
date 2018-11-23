@@ -231,6 +231,15 @@ def _recursive_diff(lhs, rhs, *, rel_tol, abs_tol, brief_dims, path,
                 brief_dims=brief_dims, path=path + [key],
                 suppress_type_diffs=suppress_type_diffs, join=join)
 
+    elif are_instances(lhs, rhs, bool):
+        if lhs != rhs:
+            yield diff('%s != %s' % (lhs, rhs))
+    elif are_instances(lhs, rhs, str):
+        if lhs != rhs:
+            yield diff('%s != %s' % (lhs_repr, rhs_repr))
+    elif are_instances(lhs, rhs, bytes):
+        if lhs != rhs:
+            yield diff('%s != %s' % (lhs_repr, rhs_repr))
     elif are_instances(lhs, rhs, (int, float, complex)):
         if math.isnan(lhs) and math.isnan(rhs):
             pass
@@ -380,7 +389,7 @@ def _recursive_diff(lhs, rhs, *, rel_tol, abs_tol, brief_dims, path,
                 path=path, suppress_type_diffs=True, join=join)
 
     else:
-        # bool, str, unknown objects
+        # unknown objects
         try:
             if lhs != rhs:
                 yield diff('%s != %s' % (lhs_repr, rhs_repr))
