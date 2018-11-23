@@ -16,6 +16,7 @@ What's New
 
 v0.3.0 (unreleased)
 -------------------
+- Changed license to Apache 2.0
 
 
 .. _whats-new.0.2.2:
