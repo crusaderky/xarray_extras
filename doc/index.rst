@@ -28,10 +28,15 @@ Features
     dask-optimized n-dimensional spline interpolation
 :doc:`api/numba_extras`
     Additions to `numba <http://numba.pydata.org/>`_
+:doc:`api/recursive_diff`
+    Recursively compare nested Python objects, with numpy/pandas/xarray
+    support and tolerance for numerical comparisons
 :doc:`api/sort`
     Advanced sort/take functions
 :doc:`api/stack`
     Tools for stacking/unstacking dimensions
+:doc:`api/testing`
+    Tools for unit tests
 
 Index
 -----
@@ -50,8 +55,10 @@ API Reference
    api/cumulatives
    api/interpolate
    api/numba_extras
+   api/recursive_diff
    api/sort
    api/stack
+   api/testing
 
 License
 -------
