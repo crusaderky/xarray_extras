@@ -20,6 +20,8 @@ v0.3.0 (unreleased)
 - Changed license to Apache 2.0
 - Increased minimum dask version to 0.19
 - New function :func:`~xarray_extras.stack.proper_unstack`
+- New functions :func:`~xarray_extras.recursive_diff.recursive_diff`
+  and :func:`xarray_extras.testing.recursive_eq`
 
 
 .. _whats-new.0.2.2:
