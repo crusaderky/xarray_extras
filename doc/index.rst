@@ -30,6 +30,8 @@ Features
     Additions to `numba <http://numba.pydata.org/>`_
 :doc:`api/sort`
     Advanced sort/take functions
+:doc:`api/stack`
+    Tools for stacking/unstacking dimensions
 
 Index
 -----
@@ -49,6 +51,7 @@ API Reference
    api/interpolate
    api/numba_extras
    api/sort
+   api/stack
 
 License
 -------
