@@ -28,7 +28,7 @@ def test_topk_argtopk(use_dask, split_every, transpose,
 
     expect = DataArray(expect, dims=['y', 'x'], coords={'y': ['y1', 'y2']})
     actual = func(a, k, 'x', split_every=split_every)
-    assert_equal(expect, actual.compute())
+    assert_equal(expect, actual)
     if use_dask:
         assert actual.chunks
 
@@ -71,7 +71,7 @@ def test_take_along_dim(a_use_dask, ind_use_dask):
         ind = ind.chunk(1)
 
     actual = take_along_dim(a, ind, 'x')
-    assert_equal(expect, actual.compute())
+    assert_equal(expect, actual)
     if a_use_dask or ind_use_dask:
         assert actual.chunks
 
@@ -79,7 +79,7 @@ def test_take_along_dim(a_use_dask, ind_use_dask):
 @pytest.mark.parametrize('ind_use_dask', [False, True])
 @pytest.mark.parametrize('a_use_dask', [False, True])
 def test_take_along_dim2(a_use_dask, ind_use_dask):
-    """ind.ndim < a.ndim after broadcast
+    """ind.ndim > a.ndim after broadcast
     """
     a = DataArray([1, 2, 3], dims=['x'])
     ind = DataArray([[1, 0],
@@ -96,6 +96,6 @@ def test_take_along_dim2(a_use_dask, ind_use_dask):
         ind = ind.chunk(1)
 
     actual = take_along_dim(a, ind, 'x')
-    assert_equal(expect, actual.compute())
+    assert_equal(expect, actual)
     if a_use_dask or ind_use_dask:
         assert actual.chunks
