@@ -2,10 +2,14 @@
 numpy arrays or dask arrays.
 """
 import dask.array as da
+from dask.array.slicing import slice_with_int_dask_array_on_axis
 import numpy as np
 from xarray.core.duck_array_ops import broadcast_to
-from ..backport import dask as backport_dask
-from ..backport import numpy as backport_numpy
+
+try:
+    from numpy import take_along_axis as np_take_along_axis
+except ImportError:
+    from ..backport.numpy import take_along_axis as np_take_along_axis
 
 
 def topk(a, k, split_every=None):
@@ -43,8 +47,8 @@ def argtopk(a, k, split_every=None):
     else:
         idx = idx[..., :-k]
 
-    a = backport_numpy.take_along_axis(a, idx, axis=-1)
-    idx = backport_numpy.take_along_axis(idx, a.argsort(), axis=-1)
+    a = np_take_along_axis(a, idx, axis=-1)
+    idx = np_take_along_axis(idx, a.argsort(), axis=-1)
     if k > 0:
         # Sort from greatest to smallest
         return idx[..., ::-1]
@@ -55,8 +59,9 @@ def take_along_axis(a, ind):
     """Easily use the outputs of argsort on ND arrays to pick the results.
     """
     if isinstance(a, np.ndarray) and isinstance(ind, np.ndarray):
+        a = a.reshape((1,) * (ind.ndim - a.ndim) + a.shape)
         ind = ind.reshape((1, ) * (a.ndim - ind.ndim) + ind.shape)
-        res = backport_numpy.take_along_axis(a, ind, axis=-1)
+        res = np_take_along_axis(a, ind, axis=-1)
         return res
 
     # This is going to be an ugly and slow mess, as dask does not support
@@ -92,7 +97,7 @@ def take_along_axis(a, ind):
             a_i = da.from_array(a_i, chunks=a_i.shape)
 
         if isinstance(ind_i, da.Array):
-            res_i = backport_dask.slice_with_int_dask_array_on_axis(
+            res_i = slice_with_int_dask_array_on_axis(
                 a_i, ind_i, axis=a_i.ndim - 1)
         else:
             res_i = a_i[..., ind_i]
