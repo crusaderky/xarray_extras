@@ -1,4 +1,4 @@
-"""xarray extensions to cumsum and cumprod
+"""Advanced cumulative sum/productory/mean functions
 """
 import dask.array as da
 import numpy as np
