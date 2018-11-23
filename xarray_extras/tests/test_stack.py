@@ -20,10 +20,11 @@ def test_proper_unstack():
     s = pandas.Series(list(range(8)), index)
     xa = xarray.DataArray(s)
     a = proper_unstack(xa, 'dim_0')
-    b = xarray.DataArray(numpy.array([[0, 1, 2, 3], [4, 5, 6, 7]]),
-                         dims=['x', 'count'],
-                         coords={'x' : ['x1', 'x0'],
-                                 'count': ['first', 'second', 'third', 'fourth']})
+    b = xarray.DataArray(
+        [[0, 1, 2, 3], [4, 5, 6, 7]],
+        dims=['x', 'count'],
+        coords={'x': ['x1', 'x0'],
+                'count': ['first', 'second', 'third', 'fourth']})
     xarray.testing.assert_equal(a, b)
     with pytest.raises(AssertionError):
         xarray.testing.assert_equal(a, xa.unstack('dim_0'))
@@ -46,9 +47,9 @@ def test_proper_unstack_int_coords():
     s = pandas.Series(list(range(8)), index)
     xa = xarray.DataArray(s)
     a = proper_unstack(xa, 'dim_0')
-    b = xarray.DataArray(numpy.array([[0, 1, 2, 3], [4, 5, 6, 7]]),
+    b = xarray.DataArray([[0, 1, 2, 3], [4, 5, 6, 7]],
                          dims=['x', 'count'],
-                         coords={'x' : [1, 0],
+                         coords={'x': [1, 0],
                                  'count': [1, 2, 3, 4]})
     xarray.testing.assert_equal(a, b)
     with pytest.raises(AssertionError):
@@ -74,7 +75,7 @@ def test_proper_unstack_mixed_coords():
     a = proper_unstack(xa, 'dim_0')
     b = xarray.DataArray([[0, 1, 2, 3], [4, 5, 6, 7]],
                          dims=['x', 'count'],
-                         coords={'x' : [1, 'x0'],
+                         coords={'x': [1, 'x0'],
                                  'count': [1, 2.2, '3', 'fourth']})
     xarray.testing.assert_equal(a, b)
     for c in a.coords:
