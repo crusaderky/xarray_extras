@@ -51,6 +51,7 @@ API Reference
    api/interpolate
    api/numba_extras
    api/sort
+   api/stack
 
 License
 -------
