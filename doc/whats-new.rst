@@ -16,8 +16,8 @@ What's New
 
 v0.3.0 (unreleased)
 -------------------
-- Changed license to Apache 2.0
 
+- Changed license to Apache 2.0
 - Increased minimum dask version to 0.19
 
 
