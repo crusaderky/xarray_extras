@@ -50,4 +50,3 @@ def proper_unstack(array, dim):
         array.coords[dim] = array.coords[dim].values.tolist()
 
     return array
-
