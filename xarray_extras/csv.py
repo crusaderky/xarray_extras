@@ -1,4 +1,6 @@
-"""CSV file type support
+"""Multi-threaded CSV writer, much faster than
+:meth:`pandas.DataFrame.to_csv`, with full support for :mod:`dask` and
+:mod:`distributed`
 """
 import xarray
 from dask.base import tokenize
@@ -13,7 +15,8 @@ __all__ = ('to_csv', )
 def to_csv(x, path, *, nogil=True, **kwargs):
     """Print DataArray to CSV.
 
-    When x has numpy backend, this function is equivalent to::
+    When x has numpy backend, this function is functionally equivalent to (but
+    much) faster than)::
 
         x.to_pandas().to_csv(path_or_buf, **kwargs)
 
