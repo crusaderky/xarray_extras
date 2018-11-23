@@ -1,6 +1,6 @@
-"""Multi-threaded CSV writer, much faster than
-:meth:`pandas.DataFrame.to_csv`, with full support for :mod:`dask` and
-:mod:`distributed`
+"""Multi-threaded CSV writer, much faster than :meth:`pandas.DataFrame.to_csv`,
+with full support for `dask <http://dask.org/>`_ and `dask distributed
+<http://distributed.dask.org/>`_.
 """
 import xarray
 from dask.base import tokenize
