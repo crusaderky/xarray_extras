@@ -239,7 +239,7 @@ def _recursive_diff(lhs, rhs, *, rel_tol, abs_tol, brief_dims, path,
                 rel_delta = rhs / lhs - 1
             except ZeroDivisionError:
                 rel_delta = math.nan
-            yield diff('%s != %s (abs: %.1ef), rel: %.1ef' %
+            yield diff('%s != %s (abs: %.1e, rel: %.1e)' %
                        (lhs, rhs, rhs - lhs, rel_delta))
 
     elif are_instances(lhs, rhs, xarray.DataArray):

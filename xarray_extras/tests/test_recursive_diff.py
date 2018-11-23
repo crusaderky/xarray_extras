@@ -72,7 +72,7 @@ def check(lhs, rhs, *expect, rel_tol=1e-09, abs_tol=0.0,
         lhs, rhs,
         rel_tol=rel_tol, abs_tol=abs_tol,
         brief_dims=brief_dims))
-    assert expect == actual
+    assert actual == expect
 
 
 @pytest.mark.parametrize('x', [
@@ -113,8 +113,8 @@ def test_object_type_differs():
 
 
 def test_collections():
-    check([1, 2], [1, 2, 3], {'RHS has 1 more elements than LHS: [3]'}),
-    check({1, 2}, {1, 2, (3, 4)}, {"(3, 4) is in RHS only"}),
+    check([1, 2], [1, 2, 3], 'RHS has 1 more elements than LHS: [3]')
+    check({1, 2}, {1, 2, (3, 4)}, "(3, 4) is in RHS only")
     check({'x': 10, 'y': 20}, {'x': 10, 'y': 30},
           '[y]: 20 != 30 (abs: 1.0e+01, rel: 5.0e-01)')
     check({2: 20}, {1: 10},
@@ -168,7 +168,7 @@ def test_float():
 
     # tolerance settings are retained when descending into containers
     check([{'x': (1.0, 2.0)}], [{'x': (1.1, 2.01)}],
-          '[0][x][0]: 1.0 != 1.1 (abs: 1e-01, rel: 1e-01',
+          '[0][x][0]: 1.0 != 1.1 (abs: 1.0e-01, rel: 1.0e-01)',
           rel_tol=.05, abs_tol=0)
 
     # tolerance > 1 in a comparison among int's
@@ -183,7 +183,7 @@ def test_int_vs_float():
     """
     check(123, 123.0)
     check(123, 123.0000000000001)  # difference is below rel_tol=1e-9
-    check(1, 1.01, '1.0 != 1.01 (abs: 1e-01, rel: 1e-01', abs_tol=.001)
+    check(1, 1.01, '1.0 != 1.01 (abs: 1.0e-02, rel: 1.0e-02)', abs_tol=.001)
     check(1, 1.01, abs_tol=.1)
 
 
