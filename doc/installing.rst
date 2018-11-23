@@ -13,6 +13,13 @@ Required dependencies
 - `numba <http://numba.pydata.org>`__
 - C compiler (only if building from sources)
 
+Deployment
+----------
+
+- With pip: :command:`pip install xarray-extras`
+- With `anaconda <https://www.anaconda.com/>`_:
+  :command:`conda install -c conda-forge xarray-extras`
+
 Testing
 -------
 

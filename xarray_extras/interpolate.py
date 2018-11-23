@@ -1,4 +1,4 @@
-"""xarray interpolation functions
+"""xarray spline interpolation functions
 """
 import xarray
 import numpy as np
