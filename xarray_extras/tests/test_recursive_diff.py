@@ -426,12 +426,11 @@ def test_xarray():
 
     # xarray.DataArray
     # Note: this sample has a non-index coordinate
-    da1 = ds1['d2']
+    # In Linux, int maps to int64 while in Windows it maps to int32
+    da1 = ds1['d2'].astype(np.int64)
     da1.name = 'foo'
     da1.attrs['attr1'] = 1.0
     da1.attrs['attr2'] = 1.0
-    # In Linux, int maps to int64 while in Windows it maps to int32
-    da1 = da1.astype(np.int64)
 
     # Test dimension order does not matter
     check(da1, da1.T)
