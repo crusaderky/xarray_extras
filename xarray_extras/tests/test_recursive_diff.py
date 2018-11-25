@@ -191,7 +191,7 @@ def test_int_vs_float():
 def test_numpy():
     # test tolerance and comparison of float vs. int
     check(np.array([1.0, 2.0, 3.01, 4.0001, 5.0]),
-          np.array([1, 4, 3, 4]),
+          np.array([1, 4, 3, 4], dtype=np.int64),
           '[data][1]: 2.0 != 4.0 (abs: 2.0e+00, rel: 1.0e+00)',
           '[data][2]: 3.01 != 3.0 (abs: -1.0e-02, rel: -3.3e-03)',
           '[dim_0]: LHS has 1 more elements than RHS',
@@ -206,7 +206,7 @@ def test_numpy():
           abs_tol=10)
 
     # array of numbers vs. dates; mismatched size
-    check(np.array([1, 2]),
+    check(np.array([1, 2], dtype=np.int64),
           pd.to_datetime(['2000-01-01', '2000-01-02', '2000-01-03']).values,
           '[data][0]: 1 != 2000-01-01 00:00:00',
           '[data][1]: 2 != 2000-01-02 00:00:00',
@@ -214,7 +214,7 @@ def test_numpy():
           'object type differs: ndarray<int64> != ndarray<datetime64>')
 
     # array of numbers vs. strings; mismatched size
-    check(np.array([1, 2, 3]),
+    check(np.array([1, 2, 3], dtype=np.int64),
           np.array(['foo', 'bar']),
           '[data][0]: 1 != foo',
           '[data][1]: 2 != bar',
@@ -228,13 +228,13 @@ def test_numpy():
           'Dimension dim_1 is in RHS only')
 
     # numpy vs. list
-    check(np.array([[1, 2, 3], [4, 5, 6]]),
+    check(np.array([[1, 2, 3], [4, 5, 6]], dtype=np.int64),
           [[1, 4, 3], [4, 5, 6]],
           "object type differs: ndarray<int64> != list",
           "[data][0, 1]: 2 != 4 (abs: 2.0e+00, rel: 1.0e+00)")
 
     # numpy vs. other object
-    check(np.array([0, 0]), 0,
+    check(np.array([0, 0], dtype=np.int64), 0,
           "Dimension dim_0 is in LHS only",
           "object type differs: ndarray<int64> != int")
 
@@ -293,10 +293,10 @@ def test_numpy_dates():
 
 
 def test_numpy_scalar():
-    check(np.array(1), np.array(2.5),
+    check(np.array(1, dtype=np.int64), np.array(2.5),
           '[data]: 1.0 != 2.5 (abs: 1.5e+00, rel: 1.5e+00)',
           'object type differs: ndarray<int64> != ndarray<float64>')
-    check(np.array(1), 2,
+    check(np.array(1, dtype=np.int64), 2,
           '[data]: 1 != 2 (abs: 1.0e+00, rel: 1.0e+00)',
           'object type differs: ndarray<int64> != int')
     check(np.array('foo'), np.array('bar'),
@@ -430,6 +430,8 @@ def test_xarray():
     da1.name = 'foo'
     da1.attrs['attr1'] = 1.0
     da1.attrs['attr2'] = 1.0
+    # In Linux, int maps to int64 while in Windows it maps to int32
+    da1 = da1.astype(np.int64)
 
     # Test dimension order does not matter
     check(da1, da1.T)
@@ -608,8 +610,8 @@ def test_nested1():
 def test_nested2():
     lhs = {
         'foo': [1, 2, ('asd', 5.2), 4],
-        'bar': np.array([1, 2, 3, 4]),
-        'baz': np.array([1, 2, 3]),
+        'bar': np.array([1, 2, 3, 4], dtype=np.int64),
+        'baz': np.array([1, 2, 3], dtype=np.int64),
         'key_only_lhs': None,
     }
     rhs = {
