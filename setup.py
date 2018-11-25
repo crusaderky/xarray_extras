@@ -37,7 +37,7 @@ INSTALL_REQUIRES = [
     'dask >= 0.19',
     'numba >= 0.34',
     'numpy >= 1.13',
-    'pandas >= 0.20.2',
+    'pandas >= 0.21',
     'scipy >= 1.0',
     'xarray >= 0.10',
 ]
