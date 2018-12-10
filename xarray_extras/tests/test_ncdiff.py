@@ -4,10 +4,6 @@ import xarray
 from xarray_extras.bin.ncdiff import main
 
 
-DIR1 = os.path.abspath(os.path.join(os.path.dirname(__file__), 'data', 'mtf1'))
-DIR2 = os.path.abspath(os.path.join(os.path.dirname(__file__), 'data', 'mtf2'))
-
-
 a = xarray.Dataset(
     data_vars={
         'd1': ('x', [1, 2]),
