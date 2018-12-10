@@ -495,6 +495,22 @@ def cast(obj, brief_dims):
     return obj
 
 
+@cast.register(numpy.integer)
+def _(obj, brief_dims):
+    """Single dispatch specialised variant of :func:`cast` for all numpy scalar
+    integers (not to be confused with numpy arrays of integers)
+    """
+    return int(obj)
+
+
+@cast.register(numpy.floating)
+def _(obj, brief_dims):
+    """Single dispatch specialised variant of :func:`cast` for all numpy scalar
+    floats (not to be confused with numpy arrays of floats)
+    """
+    return float(obj)
+
+
 @cast.register(numpy.ndarray)
 def _(obj, brief_dims):
     """Single dispatch specialised variant of :func:`cast` for
@@ -749,6 +765,11 @@ def _dtype_str(obj):
     except AttributeError:
         # Base types don't have __name__
         dtype = str(type(obj))
+
+    if isinstance(obj, numpy.integer):
+        dtype = 'int'
+    elif isinstance(obj, numpy.floating):
+        dtype = 'float'
 
     if isinstance(obj, (numpy.ndarray, pandas.Series, xarray.DataArray)):
         np_dtype = obj.dtype

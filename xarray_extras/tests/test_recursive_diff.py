@@ -77,6 +77,8 @@ def check(lhs, rhs, *expect, rel_tol=1e-09, abs_tol=0.0,
 
 @pytest.mark.parametrize('x', [
     123, 'blah', 'a\nb', math.nan, np.nan, True, False, [1, 2], (1, 2),
+    np.int8(1), np.uint8(1), np.int64(1), np.uint64(1),
+    np.float32(1), np.float64(1),
     {1: 2, 3: 4}, {1, 2}, frozenset([1, 2]),
     np.arange(10),
     np.arange(10, dtype=np.float64),
@@ -186,6 +188,21 @@ def test_int_vs_float():
     check(123, 123.0000000000001)  # difference is below rel_tol=1e-9
     check(1, 1.01, '1.0 != 1.01 (abs: 1.0e-02, rel: 1.0e-02)', abs_tol=.001)
     check(1, 1.01, abs_tol=.1)
+
+
+def test_numpy_types():
+    """scalar numpy data types (not to be confused with numpy arrays)
+    are silently cast to pure numpy types and do not cause an
+    'object type differs' error. They're compared with tolerance.
+    """
+    check(123, np.int32(123))
+    check(np.int64(123), np.int32(123))
+    check(123, np.float64(123))
+    check(np.float32(123), np.float64(123))
+    check(np.float64(1), np.float64(1.01),
+          '1.0 != 1.01 (abs: 1.0e-02, rel: 1.0e-02)', abs_tol=.001)
+    check(np.float32(1), np.float32(1.01), abs_tol=.1)
+    check(np.float64(1), np.float64(1.01), abs_tol=.1)
 
 
 def test_numpy():
@@ -410,19 +427,27 @@ def test_xarray():
             'y': ('y', ['y1', 'y2']),
             'nonindex': ('x', ['ni1', 'ni2', 'ni3']),
         },
-        attrs={'some': 'attr'})
+        attrs={'some': 'attr', 'some2': 1})
 
     ds2 = ds1.copy(deep=True)
     del ds2['d1']
     ds2['d2'][0, 0] = 10
     ds2['nonindex'][1] = 'ni4'
+    ds2.attrs['some2'] = 2
     ds2.attrs['other'] = 'someval'
+
+    check(ds1, ds2,
+          '[attrs]: Pair other:someval is in RHS only',
+          '[attrs][some2]: 1 != 2 (abs: 1.0e+00, rel: 1.0e+00)',
+          '[coords][nonindex][x=x2]: ni2 != ni4',
+          "[data_vars]: Pair d1:<xarray.DataArray 'd1' (__stacked__: 3)> ... is in LHS only",  # noqa: E501
+          '[data_vars][d2][x=x1, y=y1]: 4 != 10 (abs: 6.0e+00, rel: 1.5e+00)')
 
     check(ds1, ds2,
           '[attrs]: Pair other:someval is in RHS only',
           '[coords][nonindex][x=x2]: ni2 != ni4',
           "[data_vars]: Pair d1:<xarray.DataArray 'd1' (__stacked__: 3)> ... is in LHS only",  # noqa: E501
-          '[data_vars][d2][x=x1, y=y1]: 4 != 10 (abs: 6.0e+00, rel: 1.5e+00)')
+          abs_tol=7)
 
     # xarray.DataArray
     # Note: this sample has a non-index coordinate
