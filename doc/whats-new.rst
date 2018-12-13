@@ -14,7 +14,7 @@ What's New
 
 .. _whats-new.0.3.0:
 
-v0.3.0 (unreleased)
+v0.3.0 (2018-12-13)
 -------------------
 
 - Changed license to Apache 2.0
@@ -27,6 +27,7 @@ v0.3.0 (unreleased)
 - Increased minimum xarray version to 0.10.1
 - Increased minimum pytest version to 3.6
 - Blacklisted Python 3.7 conda-forge builds in CI tests
+
 
 .. _whats-new.0.2.2:
 
