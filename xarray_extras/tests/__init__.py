@@ -1,6 +1,6 @@
 import importlib
-import unittest
 from distutils.version import LooseVersion
+import pytest
 
 
 def _import_or_skip(modname, minversion=None):
@@ -32,9 +32,7 @@ def _import_or_skip(modname, minversion=None):
             and LooseVersion(mod.__version__) < LooseVersion(minversion)):
         has = False
 
-    # Do not use pytest.mark.skipif with less than pytest >= 3.6,
-    # which fixes pytest#568.
-    func = unittest.skipUnless(has, reason=reason)
+    func = pytest.mark.skipif(not has, reason=reason)
     return has, func
 
 

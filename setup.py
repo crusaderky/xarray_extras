@@ -39,9 +39,9 @@ INSTALL_REQUIRES = [
     'numpy >= 1.13',
     'pandas >= 0.21',
     'scipy >= 1.0',
-    'xarray >= 0.10',
+    'xarray >= 0.10.1',
 ]
-TESTS_REQUIRE = ['pytest >= 3.1']
+TESTS_REQUIRE = ['pytest >= 3.6']
 
 DESCRIPTION = "Advanced / experimental algorithms for xarray"
 LONG_DESCRIPTION = """
