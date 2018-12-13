@@ -12,6 +12,12 @@ What's New
     np.random.seed(123456)
 
 
+.. _whats-new.0.3.1:
+
+v0.3.1 (Unreleased)
+-------------------
+
+
 .. _whats-new.0.3.0:
 
 v0.3.0 (2018-12-13)
