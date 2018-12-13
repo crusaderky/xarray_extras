@@ -129,7 +129,7 @@ setup(name=DISTNAME,
       classifiers=CLASSIFIERS,
       description=DESCRIPTION,
       entry_points={'console_scripts': [
-        'ncdiff = xarray_extras.bin.ncdiff:main',
+          'ncdiff = xarray_extras.bin.ncdiff:main',
       ]},
       ext_modules=[Extension('xarray_extras.kernels.np_to_csv',
                              ['xarray_extras/kernels/np_to_csv.c'])],
