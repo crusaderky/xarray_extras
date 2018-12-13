@@ -119,7 +119,7 @@ def test_singlefile(tmpdir, capsys, argv, out):
      'Found 1 differences\n'),
 ])
 def test_recursive(tmpdir, capsys, argv, out):
-    os.chdir(tmpdir)
+    os.chdir(str(tmpdir))
 
     a_lhs = a
     b_lhs = a_lhs.copy(deep=True)
@@ -149,7 +149,7 @@ def test_engine(tmpdir, capsys):
     """Test the --engine parameter. At the moment of writing, h5netcdf is the
     only one that supports LZF compression.
     """
-    os.chdir(tmpdir)
+    os.chdir(str(tmpdir))
     b = a.copy(deep=True)
     b.d1[0] += 10
     a.to_netcdf('a.nc', engine='h5netcdf',
