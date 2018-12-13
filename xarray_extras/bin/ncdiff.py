@@ -1,32 +1,7 @@
 #!/usr/bin/env python
 """Compare either two NetCDF files or all NetCDF files in two directories.
 
-Chunking and RAM design
-=======================
-This tool does not support chunked files, or loading only part of
-large datasets into memory at once. Instead, chunked datasets are
-loaded as individual files. One variable at a time is then loaded
-into memory completely, compared, and then discarded.
-
-This has the big advantage of simplicity, but a few disadvantages:
-
-- No option to compare datasets with mismatched prefixes
-  (e.g. :file:`foo.*.nc` vs. :file:`bar.*.nc`).
-- No option to compare chunked datasets that differ only in chunking
-- Slower, as there is no option to skip loading over and over again
-  variables that don't sit on the concat_dim.
-  See `<https://github.com/pydata/xarray/issues/2039>`_.
-- Huge RAM usage in case of monolithic variables
-
-Further limitations
-===================
-- Won't compare NetCDF settings, e.g. store version, compression,
-  chunking, etc.
-- Doesn't support indices with duplicate elements
-
-Usage
-=====
-:command:`ncdiff --help`
+See :doc:`bin/ncdiff`
 """
 import argparse
 import glob

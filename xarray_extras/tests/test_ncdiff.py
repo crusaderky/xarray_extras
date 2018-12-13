@@ -2,6 +2,7 @@ import os
 import pytest
 import xarray
 from xarray_extras.bin.ncdiff import main
+from . import requires_h5netcdf
 
 
 a = xarray.Dataset(
@@ -101,6 +102,65 @@ def test_singlefile(tmpdir, capsys, argv, out):
     assert_stdout(capsys, out)
 
 
-# TODO: --engine
-# TODO: --recursive
-# TODO: --match
+@pytest.mark.parametrize('argv,out', [
+    (['-r', 'lhs', 'lhs'], 'Found 0 differences\n'),
+    (['-r', 'lhs', 'rhs', '-m', 'notexist'], 'Found 0 differences\n'),
+    (['-r', 'lhs', 'rhs'],
+     '[b.nc][data_vars][d1][x=30]: 1 != -9 (abs: -1.0e+01, rel: -1.0e+01)\n'
+     '[subdir/a.nc][data_vars][d1][x=10]: 1 != -9 (abs: -1.0e+01, rel: -1.0e+01)\n'  # noqa
+     'Found 2 differences\n'),
+    (['-r', 'lhs', 'rhs', '-m', '*.nc'],
+     '[b.nc][data_vars][d1][x=30]: 1 != -9 (abs: -1.0e+01, rel: -1.0e+01)\n'
+     'Found 1 differences\n'),
+    (['-r', 'lhs', 'rhs', '-m', '**/a.nc'],
+     '[subdir/a.nc][data_vars][d1][x=10]: 1 != -9 (abs: -1.0e+01, rel: -1.0e+01)\n'  # noqa
+     'Found 1 differences\n'),
+])
+def test_recursive(tmpdir, capsys, argv, out):
+    os.chdir(tmpdir)
+
+    a_lhs = a
+    b_lhs = a_lhs.copy(deep=True)
+    b_lhs.coords['x'] = [30, 40]
+    os.makedirs('%s/lhs/subdir' % tmpdir)
+    a_lhs.to_netcdf('%s/lhs/subdir/a.nc' % tmpdir)
+    b_lhs.to_netcdf('%s/lhs/b.nc' % tmpdir)
+
+    a_rhs = a.copy(deep=True)
+    a_rhs.d1[0] -= 10
+    b_rhs = a_rhs.copy(deep=True)
+    b_rhs.coords['x'] = [30, 40]
+    os.makedirs('rhs/subdir')
+    a_rhs.to_netcdf('rhs/subdir/a.nc')
+    b_rhs.to_netcdf('rhs/b.nc')
+
+    exit_code = main(argv)
+    if out == 'Found 0 differences\n':
+        assert exit_code == 0
+    else:
+        assert exit_code == 1
+    assert_stdout(capsys, out)
+
+
+@requires_h5netcdf
+def test_engine(tmpdir, capsys):
+    """Test the --engine parameter. At the moment of writing, h5netcdf is the
+    only one that supports LZF compression.
+    """
+    os.chdir(tmpdir)
+    b = a.copy(deep=True)
+    b.d1[0] += 10
+    a.to_netcdf('a.nc', engine='h5netcdf',
+                encoding={'d1': {'compression': 'lzf'}})
+    b.to_netcdf('b.nc', engine='h5netcdf')
+
+    with pytest.raises(TypeError, message='a.nc is not a valid NetCDF 3 file'):
+        main(['a.nc', 'b.nc'])
+
+    # Differences in compression are not picked up
+    exit_code = main(['--engine', 'h5netcdf', 'a.nc', 'b.nc'])
+    assert exit_code == 1
+    assert_stdout(
+        capsys,
+        '[data_vars][d1][x=10]: 1 != 11 (abs: 1.0e+01, rel: 1.0e+01)\n'
+        'Found 1 differences\n')

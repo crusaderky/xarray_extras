@@ -38,6 +38,13 @@ Features
 :doc:`api/testing`
     Tools for unit tests
 
+Command-line tools
+------------------
+
+:doc:`bin/ncdiff.rst`
+    Compare two NetCDF files or recursively find all NetCDF files within two
+    paths and compare them
+
 Index
 -----
 
@@ -45,12 +52,6 @@ Index
 
    installing
    whats-new
-
-API Reference
--------------
-
-.. toctree::
-
    api/csv
    api/cumulatives
    api/interpolate
@@ -59,6 +60,16 @@ API Reference
    api/sort
    api/stack
    api/testing
+
+Credits
+-------
+- :doc:`recursive_diff`, :func:`~xarray_extras.testing.recursive_eq`,
+  :func:`~xarray_extras.stack.proper_unstack` and
+  :ref:`ncdiff` were originally developed by Legal & General and released
+  to the open source community in 2018.
+- All boilerplate is from
+  `python_project_template <https://github.com/crusaderky/python_project_template>`_,
+  which in turn is from `xarray <http://xarray.pydata.org/>`_.
 
 License
 -------

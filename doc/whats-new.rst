@@ -23,7 +23,7 @@ v0.3.0 (unreleased)
 - New function :func:`~xarray_extras.stack.proper_unstack`
 - New functions :func:`~xarray_extras.recursive_diff.recursive_diff`
   and :func:`xarray_extras.testing.recursive_eq`
-
+- New command-line tool :doc:`bin/ncdiff`
 
 .. _whats-new.0.2.2:
 
