@@ -60,13 +60,15 @@ Index
    api/sort
    api/stack
    api/testing
+   bin/ncdiff
+
 
 Credits
 -------
-- :doc:`recursive_diff`, :func:`~xarray_extras.testing.recursive_eq`,
-  :func:`~xarray_extras.stack.proper_unstack` and
-  :ref:`ncdiff` were originally developed by Legal & General and released
-  to the open source community in 2018.
+- :doc:`api/recursive_diff`, :func:`~xarray_extras.testing.recursive_eq`,
+  :func:`~xarray_extras.stack.proper_unstack` and :doc:`bin/ncdiff` were
+  originally developed by Legal & General and released to the open source
+  community in 2018.
 - All boilerplate is from
   `python_project_template <https://github.com/crusaderky/python_project_template>`_,
   which in turn is from `xarray <http://xarray.pydata.org/>`_.
