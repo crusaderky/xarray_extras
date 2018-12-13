@@ -39,9 +39,9 @@ INSTALL_REQUIRES = [
     'numpy >= 1.13',
     'pandas >= 0.21',
     'scipy >= 1.0',
-    'xarray >= 0.10',
+    'xarray >= 0.10.1',
 ]
-TESTS_REQUIRE = ['pytest >= 3.1']
+TESTS_REQUIRE = ['pytest >= 3.6']
 
 DESCRIPTION = "Advanced / experimental algorithms for xarray"
 LONG_DESCRIPTION = """
@@ -128,6 +128,9 @@ setup(name=DISTNAME,
       author_email=AUTHOR_EMAIL,
       classifiers=CLASSIFIERS,
       description=DESCRIPTION,
+      entry_points={'console_scripts': [
+          'ncdiff = xarray_extras.bin.ncdiff:main',
+      ]},
       ext_modules=[Extension('xarray_extras.kernels.np_to_csv',
                              ['xarray_extras/kernels/np_to_csv.c'])],
       long_description=LONG_DESCRIPTION,

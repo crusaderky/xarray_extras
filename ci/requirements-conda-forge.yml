@@ -2,10 +2,9 @@ name: test_env
 channels:
   - conda-forge
 dependencies:
-  # python=3.7.0=hfd72cd7_0 is broken; see
-  # https://github.com/ContinuumIO/anaconda-issues/issues/9799
-  - python=3.7.0=hc3d631a_0
-  - dask!=0.18.2
+  # python=3.7.1=h5001a0f_0 is broken
+  - python=3.7.1=h0371630_3
+  - dask
   - flake8
   - gcc_linux-64
   - numba
@@ -14,6 +13,8 @@ dependencies:
   - pytest
   - scipy
   - xarray
+  # Only needed by test_ncdiff
+  - h5netcdf
   - pip:
     - coveralls
     - pytest-cov

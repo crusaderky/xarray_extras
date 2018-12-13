@@ -23,7 +23,10 @@ v0.3.0 (unreleased)
 - New function :func:`~xarray_extras.stack.proper_unstack`
 - New functions :func:`~xarray_extras.recursive_diff.recursive_diff`
   and :func:`xarray_extras.testing.recursive_eq`
-
+- New command-line tool :doc:`bin/ncdiff`
+- Increased minimum xarray version to 0.10.1
+- Increased minimum pytest version to 3.6
+- Blacklisted Python 3.7 conda-forge builds in CI tests
 
 .. _whats-new.0.2.2:
 

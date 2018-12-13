@@ -125,9 +125,9 @@ def _recursive_diff(lhs, rhs, *, rel_tol, abs_tol, brief_dims, path,
     if join == 'inner' and are_instances(lhs, rhs, pandas.Index):
         join = 'outer'
 
-    if (are_instances(lhs, rhs, xarray.DataArray) and
-            '__strip_dataarray__' in lhs.attrs and
-            '__strip_dataarray__' in rhs.attrs):
+    if (are_instances(lhs, rhs, xarray.DataArray)
+            and '__strip_dataarray__' in lhs.attrs
+            and '__strip_dataarray__' in rhs.attrs):
         # Don't repeat dtype comparisons
         suppress_type_diffs = True
 
@@ -191,9 +191,9 @@ def _recursive_diff(lhs, rhs, *, rel_tol, abs_tol, brief_dims, path,
         # Pretty-print differences in size. This is used not only by
         # pandas.Series and pandas.DataFrame, but also by numpy arrays
         # and xarrays without coords
-        if (lhs._start == rhs._start == 0 and
-                lhs._step == rhs._step == 1 and
-                lhs.name == rhs.name):
+        if (lhs._start == rhs._start == 0
+                and lhs._step == rhs._step == 1
+                and lhs.name == rhs.name):
             delta = rhs._stop - lhs._stop
             if delta < 0:
                 yield diff("LHS has %d more elements than RHS" % -delta)
@@ -317,8 +317,8 @@ def _recursive_diff(lhs, rhs, *, rel_tol, abs_tol, brief_dims, path,
                 # since 1970-01-01 (NaT is a special harcoded value).
                 # We must first normalise the subtype, so that you can
                 # transparently compare e.g. <M8[ns] vs. <M8[D]
-                diffs = (lhs.astype('<M8[ns]').astype(int) !=
-                         rhs.astype('<M8[ns]').astype(int))
+                diffs = (lhs.astype('<M8[ns]').astype(int)
+                         != rhs.astype('<M8[ns]').astype(int))
 
             else:
                 # At least one between lhs and rhs is non-numeric,
@@ -493,6 +493,22 @@ def cast(obj, brief_dims):
     # This is a single dispatch function, defining the default for any
     # classes not explicitly registered below.
     return obj
+
+
+@cast.register(numpy.integer)
+def _(obj, brief_dims):
+    """Single dispatch specialised variant of :func:`cast` for all numpy scalar
+    integers (not to be confused with numpy arrays of integers)
+    """
+    return int(obj)
+
+
+@cast.register(numpy.floating)
+def _(obj, brief_dims):
+    """Single dispatch specialised variant of :func:`cast` for all numpy scalar
+    floats (not to be confused with numpy arrays of floats)
+    """
+    return float(obj)
 
 
 @cast.register(numpy.ndarray)
@@ -749,6 +765,11 @@ def _dtype_str(obj):
     except AttributeError:
         # Base types don't have __name__
         dtype = str(type(obj))
+
+    if isinstance(obj, numpy.integer):
+        dtype = 'int'
+    elif isinstance(obj, numpy.floating):
+        dtype = 'float'
 
     if isinstance(obj, (numpy.ndarray, pandas.Series, xarray.DataArray)):
         np_dtype = obj.dtype
