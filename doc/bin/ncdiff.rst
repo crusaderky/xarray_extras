@@ -3,8 +3,8 @@ ncdiff
 Compare either two NetCDF files or all NetCDF files in two directories.
 
 Usage
-=====
-.. code:: none
+-----
+::
 
     usage: ncdiff.py [-h]
                      [--engine {netcdf4,scipy,pydap,h5netcdf,pynio,cfgrib,pseudonetcdf}]

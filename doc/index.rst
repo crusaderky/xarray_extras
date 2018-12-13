@@ -41,7 +41,7 @@ Features
 Command-line tools
 ------------------
 
-:doc:`bin/ncdiff.rst`
+:doc:`bin/ncdiff`
     Compare two NetCDF files or recursively find all NetCDF files within two
     paths and compare them
 
