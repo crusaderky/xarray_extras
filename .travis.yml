@@ -29,17 +29,13 @@ before_install:
   - conda info -a
 
 install:
-  - if [[ "$CONDA_ENV" == "docs" ]]; then
-      conda env create -n test_env --file doc/environment.yml;
-    else
-      conda env create -n test_env --file ci/requirements-$CONDA_ENV.yml;
-    fi
+  - conda env create -n test_env --file ci/requirements-$CONDA_ENV.yml;
   - source activate test_env
   - conda list
   - pip install --no-deps -e .
 
 script:
-  - python -OO -c "import xarray_extras"
+  - python -c "import xarray_extras"
   - if [[ "$CONDA_ENV" == "docs" ]]; then
       sphinx-build -n -j auto -b html -d _build/doctrees doc _build/html;
     elif [[ "$CONDA_ENV" == "flake8" ]]; then
