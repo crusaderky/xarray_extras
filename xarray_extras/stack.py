@@ -47,6 +47,7 @@ def proper_unstack(array, dim):
     # Convert numpy arrays of Python objects to numpy arrays of C floats, ints,
     # strings, etc.
     for dim in mindex.names:
-        array.coords[dim] = array.coords[dim].values.tolist()
+        if array.coords[dim].dtype == object:
+            array.coords[dim] = array.coords[dim].values.tolist()
 
     return array
