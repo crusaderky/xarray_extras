@@ -18,6 +18,7 @@ v0.3.1 (Unreleased)
 -------------------
 - Fixed bug in :func:`~xarray_extras.stack.proper_unstack` where unstacking
   coords with dtype=datetime64 would convert them to integer
+- Mandatory flake8 in CI
 
 
 .. _whats-new.0.3.0:
