@@ -4,17 +4,14 @@ channels:
 dependencies:
   # python=3.7.1=h5001a0f_0 is broken
   - python=3.7.1=h0371630_3
+  - coveralls
   - dask
-  - flake8
   - gcc_linux-64
+  - h5netcdf  # Only needed by test_ncdiff
   - numba
   - numpy
   - pandas
   - pytest
+  - pytest-cov
   - scipy
   - xarray
-  # Only needed by test_ncdiff
-  - h5netcdf
-  - pip:
-    - coveralls
-    - pytest-cov

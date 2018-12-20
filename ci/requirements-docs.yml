@@ -1,14 +1,16 @@
-name: test_env
+name: xarray_extras-docs
 channels:
   - anaconda
 dependencies:
   - python=3.6
-  - coveralls
   - dask
+  - ipython
+  - matplotlib
   - numba
   - numpy
+  - numpydoc
   - pandas
-  - pytest
-  - pytest-cov
   - scipy
+  - sphinx
+  - sphinx_rtd_theme
   - xarray
