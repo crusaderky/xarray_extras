@@ -28,22 +28,11 @@ Features
     dask-optimized n-dimensional spline interpolation
 :doc:`api/numba_extras`
     Additions to `numba <http://numba.pydata.org/>`_
-:doc:`api/recursive_diff`
-    Recursively compare nested Python objects, with numpy/pandas/xarray
-    support and tolerance for numerical comparisons
 :doc:`api/sort`
     Advanced sort/take functions
 :doc:`api/stack`
     Tools for stacking/unstacking dimensions
-:doc:`api/testing`
-    Tools for unit tests
 
-Command-line tools
-------------------
-
-:doc:`bin/ncdiff`
-    Compare two NetCDF files or recursively find all NetCDF files within two
-    paths and compare them
 
 Index
 -----
@@ -56,19 +45,14 @@ Index
    api/cumulatives
    api/interpolate
    api/numba_extras
-   api/recursive_diff
    api/sort
    api/stack
-   api/testing
-   bin/ncdiff
 
 
 Credits
 -------
-- :doc:`api/recursive_diff`, :func:`~xarray_extras.testing.recursive_eq`,
-  :func:`~xarray_extras.stack.proper_unstack` and :doc:`bin/ncdiff` were
-  originally developed by Legal & General and released to the open source
-  community in 2018.
+- :func:`~xarray_extras.stack.proper_unstack` was originally developed by
+  Legal & General and released to the open source community in 2018.
 - All boilerplate is from
   `python_project_template <https://github.com/crusaderky/python_project_template>`_,
   which in turn is from `xarray <http://xarray.pydata.org/>`_.

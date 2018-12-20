@@ -12,10 +12,12 @@ What's New
     np.random.seed(123456)
 
 
-.. _whats-new.0.3.1:
+.. _whats-new.0.4.0:
 
-v0.3.1 (Unreleased)
+v0.4.0 (Unreleased)
 -------------------
+- Moved ``recursive_diff``, ``recursive_eq`` and ``ncdiff``
+  to their own package `recursive_diff <http://recursive_diff.readthedocs.io>`_
 - Fixed bug in :func:`~xarray_extras.stack.proper_unstack` where unstacking
   coords with dtype=datetime64 would convert them to integer
 - Mandatory flake8 in CI
@@ -27,14 +29,11 @@ v0.3.0 (2018-12-13)
 -------------------
 
 - Changed license to Apache 2.0
-- Increased minimum dask version to 0.19
-- Increased minimum pandas version to 0.21
+- Increased minimum versions: dask >= 0.19, pandas >= 0.21,
+  xarray >= 0.10.1, pytest >= 3.6
 - New function :func:`~xarray_extras.stack.proper_unstack`
-- New functions :func:`~xarray_extras.recursive_diff.recursive_diff`
-  and :func:`xarray_extras.testing.recursive_eq`
-- New command-line tool :doc:`bin/ncdiff`
-- Increased minimum xarray version to 0.10.1
-- Increased minimum pytest version to 3.6
+- New functions ``recursive_diff`` and ``ecursive_eq``
+- New command-line tool ``ncdiff``
 - Blacklisted Python 3.7 conda-forge builds in CI tests
 
 
