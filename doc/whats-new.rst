@@ -16,6 +16,8 @@ What's New
 
 v0.3.1 (Unreleased)
 -------------------
+- Fixed bug in :func:`~xarray_extras.stack.proper_unstack` where unstacking
+  coords with dtype=datetime64 would convert them to integer
 
 
 .. _whats-new.0.3.0:
