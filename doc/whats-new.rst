@@ -3,19 +3,13 @@
 What's New
 ==========
 
-.. ipython:: python
-   :suppress:
 
-    import numpy as np
-    import pandas as pd
-    import xarray
-    np.random.seed(123456)
+.. _whats-new.0.4.1:
 
-
-.. _whats-new.0.5.0:
-
-v0.5.0 (Unreleased)
+v0.4.1 (Unreleased)
 -------------------
+
+- Fixed build regression in `readthedocs <https://readthedocs.com>`_
 
 
 .. _whats-new.0.4.0:
