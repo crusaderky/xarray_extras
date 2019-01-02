@@ -46,9 +46,6 @@ extensions = [
     'sphinx.ext.intersphinx',
     'sphinx.ext.extlinks',
     'sphinx.ext.mathjax',
-    'numpydoc',
-    'IPython.sphinxext.ipython_directive',
-    'IPython.sphinxext.ipython_console_highlighting',
 ]
 
 extlinks = {'issue': ('https://github.com/crusaderky/xarray_extras/issues/%s', 'GH'),
@@ -56,9 +53,6 @@ extlinks = {'issue': ('https://github.com/crusaderky/xarray_extras/issues/%s', '
             }
 
 autosummary_generate = True
-
-numpydoc_class_members_toctree = True
-numpydoc_show_class_members = False
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -160,14 +154,6 @@ html_theme_options = {
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
-
-# Sometimes the savefig directory doesn't exist and needs to be created
-# https://github.com/ipython/ipython/issues/8733
-# becomes obsolete when we can pin ipython>=5.2; see doc/environment.yml
-ipython_savefig_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                   '_build','html','_static')
-if not os.path.exists(ipython_savefig_dir):
-    os.makedirs(ipython_savefig_dir)
 
 # Add any extra paths that contain custom files (such as robots.txt or
 # .htaccess) here, relative to this directory. These files are copied
