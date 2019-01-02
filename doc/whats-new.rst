@@ -6,7 +6,7 @@ What's New
 
 .. _whats-new.0.4.1:
 
-v0.4.1 (Unreleased)
+v0.4.1 (2019-02-02)
 -------------------
 
 - Fixed build regression in `readthedocs <https://readthedocs.com>`_
