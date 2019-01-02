@@ -1,10 +1,12 @@
 name: xarray_extras-docs
 channels:
-  - anaconda
+  # conda-forge and readthedocs are hosted by the same cloud provider, so
+  # using conda-forge instead of anaconda speeds the download up and prevents
+  # random timeouts
+  - conda-forge
 dependencies:
   - python=3.6
   - dask
-  - nomkl  # Reduce download size
   - numba
   - scipy
   - sphinx
