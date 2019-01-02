@@ -14,7 +14,7 @@ What's New
 
 .. _whats-new.0.4.0:
 
-v0.4.0 (Unreleased)
+v0.4.0 (2019-02-02)
 -------------------
 - Moved ``recursive_diff``, ``recursive_eq`` and ``ncdiff``
   to their own package `recursive_diff <http://recursive_diff.readthedocs.io>`_
