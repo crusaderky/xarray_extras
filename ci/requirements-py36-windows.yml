@@ -6,8 +6,6 @@ dependencies:
   - coveralls
   - dask
   - numba
-  - numpy
-  - pandas
   - pytest
   - pytest-cov
   - scipy

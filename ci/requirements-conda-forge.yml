@@ -7,7 +7,6 @@ dependencies:
   - coveralls
   - dask
   - gcc_linux-64
-  - h5netcdf  # Only needed by test_ncdiff
   - numba
   - numpy
   - pandas

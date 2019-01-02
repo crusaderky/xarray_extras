@@ -7,9 +7,7 @@ dependencies:
   - ipython
   - matplotlib
   - numba
-  - numpy
   - numpydoc
-  - pandas
   - scipy
   - sphinx
   - sphinx_rtd_theme
