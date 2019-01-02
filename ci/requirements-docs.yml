@@ -4,6 +4,7 @@ channels:
 dependencies:
   - python=3.6
   - dask
+  - nomkl  # Reduce download size
   - numba
   - scipy
   - sphinx
