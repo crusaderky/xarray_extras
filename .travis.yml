@@ -45,5 +45,3 @@ script:
     else
       py.test xarray_extras --cov=xarray_extras --cov-config ci/.coveragerc --cov-report term-missing --verbose $EXTRA_FLAGS;
     fi
-after_success:
-  - coveralls
