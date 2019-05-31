@@ -6,15 +6,14 @@ What's New
 
 .. _whats-new.0.5.0:
 
-v0.5.0 (Unreleased)
+v0.4.2 (Unreleased)
 -------------------
-
+- CI unit tests for Windows now run on Python 3.7
 
 .. _whats-new.0.4.1:
 
 v0.4.1 (2019-02-02)
 -------------------
-
 - Fixed build regression in `readthedocs <https://readthedocs.com>`_
 
 
