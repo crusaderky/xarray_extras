@@ -187,17 +187,23 @@ def splev(x_new, tck, extrapolate=True):
             raise NotImplementedError(
                 "Unsupported: multiple chunks on interpolation dim")
 
-        from dask.array import atop
+        try:
+            from dask.array import blockwise
+        except ImportError:
+            # dask < 1.1
+            from dask.array import atop as blockwise
+
         # omitting t and c
         x_new_axes = 'abdefghijklm'[:x_new.ndim]
         c_axes = 'nopqrsuvwxyz'[:c.ndim - 1]
-        y_new = atop(kernels.splev,
-                     x_new_axes + c_axes,
-                     x_new.data, x_new_axes,
-                     t.data, 't',
-                     c.data, 'c' + c_axes,
-                     k=k, extrapolate=extrapolate,
-                     concatenate=True, dtype=float)
+
+        y_new = blockwise(kernels.splev,
+                          x_new_axes + c_axes,
+                          x_new.data, x_new_axes,
+                          t.data, 't',
+                          c.data, 'c' + c_axes,
+                          k=k, extrapolate=extrapolate,
+                          concatenate=True, dtype=float)
     else:
         y_new = kernels.splev(x_new.values, t.values, c.values, k,
                               extrapolate=extrapolate)

@@ -1,8 +1,9 @@
 """dask kernels for :mod:`xarray_extras.csv`
 """
-import sys
+import os
 import pandas
 from .np_to_csv_py import snprintcsvd, snprintcsvi
+from ..backport.pandas import to_csv as pd_to_csv
 
 
 def to_csv(x, index, columns, first_chunk, nogil, kwargs):
@@ -34,10 +35,12 @@ def to_csv(x, index, columns, first_chunk, nogil, kwargs):
         assert False  # proper ValueError already raised in wrapper
 
     encoding = kwargs.pop('encoding', 'utf-8')
+    header = kwargs.pop('header', True)
+    line_terminator = kwargs.pop('line_terminator', os.linesep)
+
     if not nogil or not x.size:
-        out = x_pd.to_csv(**kwargs)
-        if sys.platform == 'win32':
-            out = out.replace('\n', '\r\n')
+        out = pd_to_csv(x_pd, header=header, line_terminator=line_terminator,
+                        **kwargs)
         bout = out.encode(encoding)
         if encoding == 'utf-16' and not first_chunk:
             # utf-16 contains a bang at the beginning of the text. However,
@@ -55,9 +58,9 @@ def to_csv(x, index, columns, first_chunk, nogil, kwargs):
         x_df = x_pd.to_frame()
     else:
         x_df = x_pd
-    kwargs_index = kwargs.copy()
-    kwargs_index['header'] = False
-    index_csv = x_df.iloc[:, :0].to_csv(**kwargs_index)
+
+    index_csv = pd_to_csv(x_df.iloc[:, :0], header=False, line_terminator='\n',
+                          **kwargs)
     index_csv = index_csv.strip().split('\n')
     if len(index_csv) != x.shape[0]:
         index_csv = '\n' * x.shape[0]
@@ -71,24 +74,27 @@ def to_csv(x, index, columns, first_chunk, nogil, kwargs):
     elif x.dtype.kind == 'f':
         body_csv = snprintcsvd(x, index_csv, sep, fmt, na_rep)
     else:
-        raise ValueError("only int and float are supported")
+        raise NotImplementedError("only int and float are supported when "
+                                  "nogil=True")
 
-    if x.ndim == 2 and kwargs.get('header') is not False:
-        # Use pandas to format columns
-        header_csv = x_df.iloc[:0, :].to_csv(**kwargs).encode('utf-8')
+    if header is not False:
+        header_csv = pd_to_csv(x_df.iloc[:0, :], header=header,
+                               line_terminator='\n', **kwargs).encode('utf-8')
         body_csv = header_csv + body_csv
 
-    if encoding not in {'ascii', 'utf-8'} or sys.platform == 'win32':
+    if encoding not in {'ascii', 'utf-8'}:
         # Everything is encoded in UTF-8 until this moment. Recode if needed.
         body_csv = body_csv.decode('utf-8')
-        if sys.platform == 'win32':
-            body_csv = body_csv.replace('\n', '\r\n')
+        if line_terminator != '\n':
+            body_csv = body_csv.replace('\n', line_terminator)
         body_csv = body_csv.encode(encoding)
         if encoding == 'utf-16' and not first_chunk:
             # utf-16 contains a bang at the beginning of the text. However,
             # when concatenating multiple chunks we don't want to replicate it.
             assert body_csv[:2] == b'\xff\xfe'
             body_csv = body_csv[2:]
+    elif line_terminator != '\n':
+        body_csv = body_csv.replace(b'\n', line_terminator.encode('utf-8'))
 
     return body_csv
 

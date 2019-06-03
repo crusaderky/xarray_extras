@@ -8,9 +8,9 @@ environment:
 
   matrix:
     - PYTHON: "C:\\Python36-conda64"
-      PYTHON_VERSION: "3.6"
+      PYTHON_VERSION: "3.7"
       PYTHON_ARCH: "64"
-      CONDA_ENV: "py36-windows"
+      CONDA_ENV: "windows"
 
 install:
   # Install miniconda Python

@@ -2,17 +2,18 @@
 with full support for `dask <http://dask.org/>`_ and `dask distributed
 <http://distributed.dask.org/>`_.
 """
+from typing import Callable, Optional
 import xarray
+import dask
 from dask.base import tokenize
 from dask.delayed import Delayed
-from dask import sharedict
 from .kernels import csv as kernels
 
 
 __all__ = ('to_csv', )
 
 
-def to_csv(x, path, *, nogil=True, **kwargs):
+def to_csv(x: xarray.DataArray, path: str, *, nogil: bool = True, **kwargs):
     """Print DataArray to CSV.
 
     When x has numpy backend, this function is functionally equivalent to (but
@@ -69,7 +70,7 @@ def to_csv(x, path, *, nogil=True, **kwargs):
 
     # Health checks
     if not isinstance(path, str):
-        raise ValueError("path_or_buf must be a file path if x is dask-backed")
+        raise ValueError("path_or_buf must be a file path")
 
     if x.ndim not in (1, 2):
         raise ValueError('cannot convert arrays with %d dimensions into '
@@ -77,25 +78,6 @@ def to_csv(x, path, *, nogil=True, **kwargs):
 
     if nogil and x.dtype.kind not in 'if':
         nogil = False
-
-    # Define compress function
-    compression = kwargs.pop('compression', None)
-    if compression is None:
-        compress = None
-    elif compression == 'gzip':
-        import gzip
-        compress = gzip.compress
-    elif compression == 'bz2':
-        import bz2
-        compress = bz2.compress
-    elif compression == 'xz':
-        import lzma
-        compress = lzma.compress
-    elif compression == 'zip':
-        raise NotImplementedError("zip compression is not supported when"
-                                  "data has dask backend")
-    else:
-        raise ValueError("Unrecognized compression: %s" % compression)
 
     # Extract row and columns indices
     indices = [x.get_index(dim) for dim in x.dims]
@@ -105,6 +87,8 @@ def to_csv(x, path, *, nogil=True, **kwargs):
         index = indices[0]
         columns = None
 
+    compression = kwargs.pop('compression', 'infer')
+    compress = _compress_func(path, compression)
     mode = kwargs.pop('mode', 'w')
     if mode not in 'wa':
         raise ValueError('mode: expected w or a; got "%s"' % mode)
@@ -169,4 +153,43 @@ def to_csv(x, path, *, nogil=True, **kwargs):
     # Rename final key
     dsk[name4] = dsk.pop((name3, i))
 
-    return Delayed(name4, sharedict.merge(dsk, x.__dask_graph__()))
+    return Delayed(name4, _graph_from_collections(name4, dsk, (x, )))
+
+
+def _graph_from_collections(name: str, layer: dict, dependencies):
+    """Create a new :class:`~dask.highlevelgraph.HighLevelGraph` (dask >= 1.1)
+    or a new :class:`~dask.sharedict.ShareDict` (dask <= 1.0)
+    """
+    if dask.__version__ >= '1.1':
+        from dask.highlevelgraph import HighLevelGraph
+        return HighLevelGraph.from_collections(name, layer, dependencies)
+    else:
+        from dask import sharedict
+        return sharedict.merge(
+            layer, *(d.__dask_graph__() for d in dependencies))
+
+
+def _compress_func(path: str, compression: Optional[str]
+                   ) -> Optional[Callable[[bytes], bytes]]:
+    if compression == 'infer':
+        compression = path.split('.')[-1].lower()
+        if compression == 'gz':
+            compression = 'gzip'
+        elif compression == 'csv':
+            compression = None
+
+    if compression is None:
+        return None
+    elif compression == 'gzip':
+        import gzip
+        return gzip.compress
+    elif compression == 'bz2':
+        import bz2
+        return bz2.compress
+    elif compression == 'xz':
+        import lzma
+        return lzma.compress
+    elif compression == 'zip':
+        raise NotImplementedError("zip compression is not supported")
+    else:
+        raise ValueError("Unrecognized compression: %s" % compression)

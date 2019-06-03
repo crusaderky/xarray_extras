@@ -2,9 +2,7 @@ name: test_env
 channels:
   - conda-forge
 dependencies:
-  # python=3.7.1=h5001a0f_0 is broken
-  - python=3.7.1=h0371630_3
-  - coveralls
+  - python=3.7
   - dask
   - gcc_linux-64
   - numba

@@ -2,9 +2,8 @@ name: test_env
 channels:
   - anaconda
 dependencies:
-  - python=3.6
+  - python=3.7
   - dask
-  - gcc_linux-64
   - numba
   - pytest
   - pytest-cov

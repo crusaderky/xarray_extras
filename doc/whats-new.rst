@@ -4,17 +4,29 @@ What's New
 ==========
 
 
-.. _whats-new.0.5.0:
+.. _whats-new.0.4.2:
 
-v0.5.0 (Unreleased)
+v0.4.2 (Unreleased)
 -------------------
+- CI unit tests for Windows now run on Python 3.7
+- Compatibility with dask >= 1.1
+- Suppress deprecation warnings with pandas >= 0.24
+- :func:`~xarray_extras.csv.to_csv` changes:
+
+  - When invoked on a 1-dimensional DataArray,
+    the default value for the ``index`` parameter has been changed from False to
+    True, coherently to the default for pandas.Series.to_csv from pandas 0.24.
+    This applies also to users who have pandas < 0.24 installed.
+  - support for ``line_terminator`` parameter (all pandas versions);
+  - fix incorrect line terminator in Windows with pandas >= 0.24
+  - support for ``compression='infer'`` (all pandas versions)
+  - support for ``compression`` parameter with pandas < 0.23
 
 
 .. _whats-new.0.4.1:
 
 v0.4.1 (2019-02-02)
 -------------------
-
 - Fixed build regression in `readthedocs <https://readthedocs.com>`_
 
 

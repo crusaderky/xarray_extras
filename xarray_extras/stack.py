@@ -26,18 +26,24 @@ def proper_unstack(array, dim):
     mindex = array.coords[dim].to_pandas().index
 
     levels = []
-    labels = []
-    for levels_i, labels_i in zip(mindex.levels, mindex.labels):
+    codes = []
+    try:
+        mindex_codes = mindex.codes
+    except AttributeError:
+        # pandas < 0.24
+        mindex_codes = mindex.labels
+
+    for levels_i, codes_i in zip(mindex.levels, mindex_codes):
         level_map = OrderedDict()
 
-        for label in labels_i:
-            if label not in level_map:
-                level_map[label] = len(level_map)
+        for code in codes_i:
+            if code not in level_map:
+                level_map[code] = len(level_map)
 
         levels.append([levels_i[k] for k in level_map.keys()])
-        labels.append([level_map[k] for k in labels_i])
+        codes.append([level_map[k] for k in codes_i])
 
-    mindex = pandas.MultiIndex(levels, labels, names=mindex.names)
+    mindex = pandas.MultiIndex(levels, codes, names=mindex.names)
     array = array.copy()
     array.coords[dim] = mindex
 

@@ -6,54 +6,57 @@ import tempfile
 
 import dask
 import numpy as np
-import pandas
 import pytest
 import xarray
 
 from xarray_extras.csv import to_csv
+from xarray_extras.backport.pandas import to_csv as pd_to_csv
 
 
 def assert_to_csv(x, chunks, nogil, dtype, open_func=open, float_format='%f',
-                  **kwargs):
+                  ext='csv', **kwargs):
     x = x.astype(dtype)
     if chunks:
         x = x.chunk(chunks)
-
     with tempfile.TemporaryDirectory() as tmp:
-        x.to_pandas().to_csv(tmp + '/1.csv', float_format=float_format,
-                             **kwargs)
-        f = to_csv(x, tmp + '/2.csv', nogil=nogil, float_format=float_format,
-                   **kwargs)
+        pd_to_csv(x.to_pandas(), tmp + '/1.' + ext,
+                  float_format=float_format, **kwargs)
+        f = to_csv(x, tmp + '/2.' + ext, nogil=nogil,
+                   float_format=float_format, **kwargs)
         dask.compute(f)
 
-        with open_func(tmp + '/1.csv', 'rb') as fh:
+        with open_func(tmp + '/1.' + ext, 'rb') as fh:
             d1 = fh.read()
-        with open_func(tmp + '/2.csv', 'rb') as fh:
+        with open_func(tmp + '/2.' + ext, 'rb') as fh:
             d2 = fh.read()
-        assert d1 == d2
+        assert d2 == d1
 
 
 @pytest.mark.parametrize('dtype', [np.int64, np.float64])
 @pytest.mark.parametrize('nogil', [False, True])
 @pytest.mark.parametrize('chunks', [None, 1])
-def test_series(chunks, nogil, dtype):
+@pytest.mark.parametrize('header', [False, True])
+@pytest.mark.parametrize('line_terminator', ['\n', '\r\n'])
+def test_series(chunks, nogil, dtype, header, line_terminator):
     x = xarray.DataArray(
         [1, 2, 3, 4],
         dims=['x'],
         coords={'x': [10, 20, 30, 40]})
-    assert_to_csv(x, chunks, nogil, dtype)
+    assert_to_csv(x, chunks, nogil, dtype, header=header,
+                  line_terminator=line_terminator)
 
 
 @pytest.mark.parametrize('dtype', [np.int64, np.float64])
 @pytest.mark.parametrize('nogil', [False, True])
 @pytest.mark.parametrize('chunks', [None, 1])
-def test_dataframe(chunks, nogil, dtype):
+@pytest.mark.parametrize('line_terminator', ['\n', '\r\n'])
+def test_dataframe(chunks, nogil, dtype, line_terminator):
     x = xarray.DataArray(
         [[1, 2, 3, 4],
          [5, 6, 7, 8]],
         dims=['r', 'c'],
         coords={'r': ['a', 'b'], 'c': [10, 20, 30, 40]})
-    assert_to_csv(x, chunks, nogil, dtype)
+    assert_to_csv(x, chunks, nogil, dtype, line_terminator=line_terminator)
 
 
 @pytest.mark.parametrize('dtype', [np.int64, np.float64])
@@ -92,12 +95,14 @@ def test_custom_header(chunks, nogil, dtype):
 @pytest.mark.parametrize('dtype', [np.int64, np.float64])
 @pytest.mark.parametrize('nogil', [False, True])
 @pytest.mark.parametrize('chunks', [None, 1])
-def test_encoding(chunks, nogil, dtype, encoding):
+@pytest.mark.parametrize('line_terminator', ['\n', '\r\n'])
+def test_encoding(chunks, nogil, dtype, encoding, line_terminator):
     # Note: in Python 2.7, default encoding is ascii in pandas and utf-8 in
     # xarray_extras. Therefore we will not test the default.
     x = xarray.DataArray([[1], [2]], dims=['r', 'c'],
                          coords={'r': ['crème', 'foo'], 'c': ['brûlée']})
-    assert_to_csv(x, chunks, nogil, dtype, encoding=encoding)
+    assert_to_csv(x, chunks, nogil, dtype, encoding=encoding,
+                  line_terminator=line_terminator)
 
 
 @pytest.mark.parametrize('sep', [',', '|'])
@@ -119,6 +124,7 @@ def test_na_rep(chunks, nogil, na_rep):
 
 
 @pytest.mark.parametrize('compression,open_func', [
+    (None, open),
     ('gzip', gzip.open),
     ('bz2', bz2.open),
     ('xz', lzma.open),
@@ -127,15 +133,23 @@ def test_na_rep(chunks, nogil, na_rep):
 @pytest.mark.parametrize('nogil', [False, True])
 @pytest.mark.parametrize('chunks', [None, 1])
 def test_compression(chunks, nogil, dtype, compression, open_func):
-    # Notes:
-    # - compressed outputs won't be binary identical; only once uncompressed
-    # - we are forcing the dask-based algorithm to compress two chunks
-    if pandas.__version__ < '0.23':
-        pytest.xfail("compression param requires pandas >=0.23")
-
     x = xarray.DataArray([1, 2])
     assert_to_csv(x, chunks, nogil, dtype, compression=compression,
                   open_func=open_func)
+
+
+@pytest.mark.parametrize('ext,open_func', [
+    ('csv', open),
+    ('csv.gz', gzip.open),
+    ('csv.bz2', bz2.open),
+    ('csv.xz', lzma.open),
+])
+@pytest.mark.parametrize('nogil', [False, True])
+@pytest.mark.parametrize('chunks', [None, 1])
+def test_compression_infer(ext, open_func, nogil, chunks):
+    x = xarray.DataArray([1, 2])
+    assert_to_csv(x, chunks=chunks, nogil=nogil, dtype=np.float64,
+                  ext=ext, open_func=open_func)
 
 
 @pytest.mark.parametrize('dtype', [np.int64, np.float64])
@@ -184,16 +198,18 @@ def test_buffer_overflow_float(chunks, nogil, float_format, na_rep, index,
 @pytest.mark.parametrize('encoding', ['utf-8', 'utf-16'])
 @pytest.mark.parametrize('dtype', [str, object])
 @pytest.mark.parametrize('chunks', [None, 1])
-def test_pandas_only(chunks, dtype, encoding):
+@pytest.mark.parametrize('line_terminator', ['\n', '\r\n'])
+def test_pandas_only(chunks, dtype, encoding, line_terminator):
     x = xarray.DataArray(['foo', 'Crème brûlée'])
-    assert_to_csv(x, chunks, False, dtype, encoding=encoding)
+    assert_to_csv(x, chunks=chunks, nogil=False, dtype=dtype,
+                  encoding=encoding, line_terminator=line_terminator)
 
 
 @pytest.mark.parametrize('dtype', [np.complex64, np.complex128])
 @pytest.mark.parametrize('chunks', [None, 1])
 def test_pandas_only_complex(chunks, dtype):
     x = xarray.DataArray([1 + 2j])
-    assert_to_csv(x, chunks, False, dtype)
+    assert_to_csv(x, chunks=chunks, nogil=False, dtype=dtype)
 
 
 @pytest.mark.parametrize('nogil', [False, True])
@@ -206,17 +222,20 @@ def test_mode(chunks, nogil):
         y = y.chunk(chunks)
 
     with tempfile.TemporaryDirectory() as tmp:
-        f = to_csv(x, tmp + '/1.csv', mode='a', nogil=nogil, index=False)
+        f = to_csv(x, tmp + '/1.csv', mode='a', nogil=nogil,
+                   header=False, index=False)
         dask.compute(f)
-        f = to_csv(y, tmp + '/1.csv', mode='a', nogil=nogil, index=False)
+        f = to_csv(y, tmp + '/1.csv', mode='a', nogil=nogil,
+                   header=False, index=False)
         dask.compute(f)
         with open(tmp + '/1.csv') as fh:
-            assert '1\n2\n3\n4\n' == fh.read()
+            assert fh.read() == '1\n2\n3\n4\n'
 
-        f = to_csv(y, tmp + '/1.csv', mode='w', nogil=nogil, index=False)
+        f = to_csv(y, tmp + '/1.csv', mode='w', nogil=nogil,
+                   header=False, index=False)
         dask.compute(f)
         with open(tmp + '/1.csv') as fh:
-            assert '3\n4\n' == fh.read()
+            assert fh.read() == '3\n4\n'
 
 
 def test_none_fmt():
@@ -226,19 +245,19 @@ def test_none_fmt():
     y = x.astype(np.float32)
 
     with tempfile.TemporaryDirectory() as tmp:
-        to_csv(x, tmp + '/1.csv')
-        to_csv(y, tmp + '/2.csv')
+        to_csv(x, tmp + '/1.csv', header=False)
+        to_csv(y, tmp + '/2.csv', header=False)
 
         with open(tmp + '/1.csv') as fh:
-            assert '0,1.0\n1,1.1\n2,1.0\n3,123.456789\n' == fh.read()
+            assert fh.read() == '0,1.0\n1,1.1\n2,1.0\n3,123.456789\n'
         with open(tmp + '/2.csv') as fh:
-            assert '0,1.0\n1,1.1\n2,1.0\n3,123.456787\n' == fh.read()
+            assert fh.read() == '0,1.0\n1,1.1\n2,1.0\n3,123.456787\n'
 
 
 def test_pickle():
     x = xarray.DataArray([1, 2])
     with tempfile.TemporaryDirectory() as tmp:
-        x.to_pandas().to_csv(tmp + '/1.csv')
+        pd_to_csv(x.to_pandas(), tmp + '/1.csv')
         d = to_csv(x.chunk(1), tmp + '/2.csv')
         d = pickle.loads(pickle.dumps(d))
         d.compute()
@@ -247,6 +266,4 @@ def test_pickle():
             d1 = fh.read()
         with open(tmp + '/2.csv', 'rb') as fh:
             d2 = fh.read()
-        print(d1)
-        print(d2)
         assert d1 == d2
