@@ -4,11 +4,13 @@ What's New
 ==========
 
 
-.. _whats-new.0.5.0:
+.. _whats-new.0.4.2:
 
 v0.4.2 (Unreleased)
 -------------------
+- Compatibility with dask >= 1.1
 - CI unit tests for Windows now run on Python 3.7
+
 
 .. _whats-new.0.4.1:
 
