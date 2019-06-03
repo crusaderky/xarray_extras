@@ -2,7 +2,7 @@
 with full support for `dask <http://dask.org/>`_ and `dask distributed
 <http://distributed.dask.org/>`_.
 """
-from typing import Callable, Optional
+from typing import Callable, Dict, Optional, Union
 import xarray
 import dask
 from dask.base import tokenize
@@ -112,7 +112,7 @@ def to_csv(x: xarray.DataArray, path: str, *, nogil: bool = True, **kwargs):
     name3 = 'to_csv_write-' + tok
     name4 = 'to_csv-' + tok
 
-    dsk = {}
+    dsk = {}  # type: Dict[Union[str, tuple], tuple]
 
     assert x.chunks[0]
     offset = 0

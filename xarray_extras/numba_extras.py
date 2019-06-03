@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 """Extensions to numba
 """
+from typing import Any, Callable
 import numba
 
 
-def guvectorize(signature, layout, **kwds):
+def guvectorize(signature: str, layout: str, **kwds
+                ) -> Callable[[Callable], Any]:
     """Convenience wrapper around :func:`numba.guvectorize`.
     Generate signature for all possible data types and set a few healthy
     defaults.

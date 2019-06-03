@@ -1,5 +1,6 @@
 """xarray spline interpolation functions
 """
+from typing import Hashable, Union
 import xarray
 import numpy as np
 from xarray.core.pycompat import dask_array_type
@@ -9,7 +10,7 @@ from .kernels import interpolate as kernels
 __all__ = ('splrep', 'splev')
 
 
-def splrep(a, dim, k=3):
+def splrep(a: xarray.DataArray, dim: Hashable, k: int = 3) -> xarray.Dataset:
     """Calculate the univariate B-spline for an N-dimensional array
 
     :param xarray.DataArray a:
@@ -99,7 +100,8 @@ def splrep(a, dim, k=3):
         })
 
 
-def splev(x_new, tck, extrapolate=True):
+def splev(x_new: xarray.DataArray, tck: xarray.Dataset,
+          extrapolate: Union[bool, str] = True) -> xarray.DataArray:
     """Evaluate the B-spline generated with :func:`splrep`.
 
     :param x_new:
@@ -191,7 +193,7 @@ def splev(x_new, tck, extrapolate=True):
             from dask.array import blockwise
         except ImportError:
             # dask < 1.1
-            from dask.array import atop as blockwise
+            from dask.array import atop as blockwise  # type: ignore
 
         # omitting t and c
         x_new_axes = 'abdefghijklm'[:x_new.ndim]

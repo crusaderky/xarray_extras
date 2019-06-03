@@ -1,6 +1,7 @@
 """Helper functions for :mod:`xarray_extras.sort`, which accept either
 numpy arrays or dask arrays.
 """
+from typing import Optional, Union, TypeVar
 import dask.array as da
 from dask.array.slicing import slice_with_int_dask_array_on_axis
 import numpy as np
@@ -12,7 +13,10 @@ except ImportError:
     from ..backport.numpy import take_along_axis as np_take_along_axis
 
 
-def topk(a, k, split_every=None):
+T = TypeVar('T', np.ndarray, da.Array)
+
+
+def topk(a: T, k: int, split_every: Optional[int] = None) -> T:
     """If a is a :class:`dask.array.Array`, invoke a.topk; else reimplement
     the functionality in plain numpy.
     """
@@ -34,7 +38,7 @@ def topk(a, k, split_every=None):
     return a
 
 
-def argtopk(a, k, split_every=None):
+def argtopk(a: T, k: int, split_every: Optional[int] = None) -> T:
     """If a is a :class:`dask.array.Array`, invoke a.argtopk; else reimplement
     the functionality in plain numpy.
     """
@@ -55,7 +59,9 @@ def argtopk(a, k, split_every=None):
     return idx
 
 
-def take_along_axis(a, ind):
+def take_along_axis(a: Union[np.ndarray, da.Array],
+                    ind: Union[np.ndarray, da.Array]
+                    ) -> Union[np.ndarray, da.Array]:
     """Easily use the outputs of argsort on ND arrays to pick the results.
     """
     if isinstance(a, np.ndarray) and isinstance(ind, np.ndarray):
