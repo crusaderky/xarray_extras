@@ -17,9 +17,10 @@ v0.4.2 (Unreleased)
     the default value for the ``index`` parameter has been changed from False to
     True, coherently to the default for pandas.Series.to_csv from pandas 0.24.
     This applies also to users who have pandas < 0.24 installed.
-  - support for ``line_terminator`` parameter (all pandas versions)
+  - support for ``line_terminator`` parameter (all pandas versions);
+  - fix incorrect line terminator in Windows with pandas >= 0.24
+  - support for ``compression='infer'`` (all pandas versions)
   - support for ``compression`` parameter with pandas < 0.23
-  - support for ``compression='infer'``
 
 
 .. _whats-new.0.4.1:

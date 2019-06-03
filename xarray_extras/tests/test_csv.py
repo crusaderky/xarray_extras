@@ -149,7 +149,7 @@ def test_compression(chunks, nogil, dtype, compression, open_func):
 def test_compression_infer(ext, open_func, nogil, chunks):
     x = xarray.DataArray([1, 2])
     assert_to_csv(x, chunks=chunks, nogil=nogil, dtype=np.float64,
-                  compression='infer', ext=ext, open_func=open_func)
+                  ext=ext, open_func=open_func)
 
 
 @pytest.mark.parametrize('dtype', [np.int64, np.float64])

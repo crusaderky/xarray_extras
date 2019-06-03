@@ -5,7 +5,7 @@ import pandas
 
 def to_csv(x: Union[pandas.Series, pandas.DataFrame],
            path_or_buf=None, header=True, encoding='utf-8',
-           line_terminator=os.linesep, compression=None, **kwargs):
+           line_terminator=os.linesep, compression='infer', **kwargs):
     """Compatibility layer for :meth:`pandas.Series.to_csv` and
     :meth:`pandas.DataFrame.to_csv`
 

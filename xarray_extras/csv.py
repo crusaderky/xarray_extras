@@ -87,7 +87,7 @@ def to_csv(x: xarray.DataArray, path: str, *, nogil: bool = True, **kwargs):
         index = indices[0]
         columns = None
 
-    compression = kwargs.pop('compression', None)
+    compression = kwargs.pop('compression', 'infer')
     compress = _compress_func(path, compression)
     mode = kwargs.pop('mode', 'w')
     if mode not in 'wa':
