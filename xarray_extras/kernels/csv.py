@@ -34,8 +34,10 @@ def to_csv(x, index, columns, first_chunk, nogil, kwargs):
         assert False  # proper ValueError already raised in wrapper
 
     encoding = kwargs.pop('encoding', 'utf-8')
+    header = kwargs.pop('header', True)
+
     if not nogil or not x.size:
-        out = x_pd.to_csv(**kwargs)
+        out = x_pd.to_csv(header=header, **kwargs)
         if sys.platform == 'win32':
             out = out.replace('\n', '\r\n')
         bout = out.encode(encoding)
@@ -55,9 +57,7 @@ def to_csv(x, index, columns, first_chunk, nogil, kwargs):
         x_df = x_pd.to_frame()
     else:
         x_df = x_pd
-    kwargs_index = kwargs.copy()
-    kwargs_index['header'] = False
-    index_csv = x_df.iloc[:, :0].to_csv(**kwargs_index)
+    index_csv = x_df.iloc[:, :0].to_csv(header=False, **kwargs)
     index_csv = index_csv.strip().split('\n')
     if len(index_csv) != x.shape[0]:
         index_csv = '\n' * x.shape[0]
@@ -71,11 +71,12 @@ def to_csv(x, index, columns, first_chunk, nogil, kwargs):
     elif x.dtype.kind == 'f':
         body_csv = snprintcsvd(x, index_csv, sep, fmt, na_rep)
     else:
-        raise ValueError("only int and float are supported")
+        raise NotImplementedError("only int and float are supported when "
+                                  "nogil=True")
 
-    if x.ndim == 2 and kwargs.get('header') is not False:
-        # Use pandas to format columns
-        header_csv = x_df.iloc[:0, :].to_csv(**kwargs).encode('utf-8')
+    if header is not False:
+        header_csv = x_df.iloc[:0, :].to_csv(
+            header=header, **kwargs).encode('utf-8')
         body_csv = header_csv + body_csv
 
     if encoding not in {'ascii', 'utf-8'} or sys.platform == 'win32':

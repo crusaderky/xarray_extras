@@ -9,6 +9,11 @@ What's New
 v0.4.2 (Unreleased)
 -------------------
 - Compatibility with dask >= 1.1
+- Suppress warnings on pandas >= 0.24
+- When invoking :func:`~xarray_extras.csv.to_csv` on a 1-dimensional DataArray,
+  the default value for the ``index`` parameter has been changed from False to
+  True, coherently to the default for pandas.Series.to_csv from pandas 0.24.
+  This applies also to users who have pandas < 0.24 installed.
 - CI unit tests for Windows now run on Python 3.7
 
 

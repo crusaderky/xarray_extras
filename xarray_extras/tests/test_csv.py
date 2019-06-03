@@ -18,30 +18,31 @@ def assert_to_csv(x, chunks, nogil, dtype, open_func=open, float_format='%f',
     x = x.astype(dtype)
     if chunks:
         x = x.chunk(chunks)
-
+    header = kwargs.pop('header', True)
     with tempfile.TemporaryDirectory() as tmp:
         x.to_pandas().to_csv(tmp + '/1.csv', float_format=float_format,
-                             **kwargs)
+                             header=header, **kwargs)
         f = to_csv(x, tmp + '/2.csv', nogil=nogil, float_format=float_format,
-                   **kwargs)
+                   header=header, **kwargs)
         dask.compute(f)
 
         with open_func(tmp + '/1.csv', 'rb') as fh:
             d1 = fh.read()
         with open_func(tmp + '/2.csv', 'rb') as fh:
             d2 = fh.read()
-        assert d1 == d2
+        assert d2 == d1
 
 
 @pytest.mark.parametrize('dtype', [np.int64, np.float64])
 @pytest.mark.parametrize('nogil', [False, True])
 @pytest.mark.parametrize('chunks', [None, 1])
-def test_series(chunks, nogil, dtype):
+@pytest.mark.parametrize('header', [False, True])
+def test_series(chunks, nogil, dtype, header):
     x = xarray.DataArray(
         [1, 2, 3, 4],
         dims=['x'],
         coords={'x': [10, 20, 30, 40]})
-    assert_to_csv(x, chunks, nogil, dtype)
+    assert_to_csv(x, chunks, nogil, dtype, header=header)
 
 
 @pytest.mark.parametrize('dtype', [np.int64, np.float64])
@@ -206,17 +207,20 @@ def test_mode(chunks, nogil):
         y = y.chunk(chunks)
 
     with tempfile.TemporaryDirectory() as tmp:
-        f = to_csv(x, tmp + '/1.csv', mode='a', nogil=nogil, index=False)
+        f = to_csv(x, tmp + '/1.csv', mode='a', nogil=nogil,
+                   header=False, index=False)
         dask.compute(f)
-        f = to_csv(y, tmp + '/1.csv', mode='a', nogil=nogil, index=False)
+        f = to_csv(y, tmp + '/1.csv', mode='a', nogil=nogil,
+                   header=False, index=False)
         dask.compute(f)
         with open(tmp + '/1.csv') as fh:
-            assert '1\n2\n3\n4\n' == fh.read()
+            assert fh.read() == '1\n2\n3\n4\n'
 
-        f = to_csv(y, tmp + '/1.csv', mode='w', nogil=nogil, index=False)
+        f = to_csv(y, tmp + '/1.csv', mode='w', nogil=nogil,
+                   header=False, index=False)
         dask.compute(f)
         with open(tmp + '/1.csv') as fh:
-            assert '3\n4\n' == fh.read()
+            assert fh.read() == '3\n4\n'
 
 
 def test_none_fmt():
@@ -226,19 +230,19 @@ def test_none_fmt():
     y = x.astype(np.float32)
 
     with tempfile.TemporaryDirectory() as tmp:
-        to_csv(x, tmp + '/1.csv')
-        to_csv(y, tmp + '/2.csv')
+        to_csv(x, tmp + '/1.csv', header=False)
+        to_csv(y, tmp + '/2.csv', header=False)
 
         with open(tmp + '/1.csv') as fh:
-            assert '0,1.0\n1,1.1\n2,1.0\n3,123.456789\n' == fh.read()
+            assert fh.read() == '0,1.0\n1,1.1\n2,1.0\n3,123.456789\n'
         with open(tmp + '/2.csv') as fh:
-            assert '0,1.0\n1,1.1\n2,1.0\n3,123.456787\n' == fh.read()
+            assert fh.read() == '0,1.0\n1,1.1\n2,1.0\n3,123.456787\n'
 
 
 def test_pickle():
     x = xarray.DataArray([1, 2])
     with tempfile.TemporaryDirectory() as tmp:
-        x.to_pandas().to_csv(tmp + '/1.csv')
+        x.to_pandas().to_csv(tmp + '/1.csv', header=True)
         d = to_csv(x.chunk(1), tmp + '/2.csv')
         d = pickle.loads(pickle.dumps(d))
         d.compute()
@@ -247,6 +251,4 @@ def test_pickle():
             d1 = fh.read()
         with open(tmp + '/2.csv', 'rb') as fh:
             d2 = fh.read()
-        print(d1)
-        print(d2)
         assert d1 == d2
