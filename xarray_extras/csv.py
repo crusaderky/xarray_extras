@@ -3,9 +3,9 @@ with full support for `dask <http://dask.org/>`_ and `dask distributed
 <http://distributed.dask.org/>`_.
 """
 import xarray
+import dask
 from dask.base import tokenize
 from dask.delayed import Delayed
-from dask import sharedict
 from .kernels import csv as kernels
 
 
@@ -169,4 +169,17 @@ def to_csv(x, path, *, nogil=True, **kwargs):
     # Rename final key
     dsk[name4] = dsk.pop((name3, i))
 
-    return Delayed(name4, sharedict.merge(dsk, x.__dask_graph__()))
+    return Delayed(name4, _graph_from_collections(name4, dsk, (x, )))
+
+
+def _graph_from_collections(name, layer, dependencies):
+    """Create a new :class:`~dask.highlevelgraph.HighLevelGraph` (dask >= 1.1)
+    or a new :class:`~dask.sharedict.ShareDict` (dask <= 1.0)
+    """
+    if dask.__version__ >= '1.1':
+        from dask.highlevelgraph import HighLevelGraph
+        return HighLevelGraph.from_collections(name, layer, dependencies)
+    else:
+        from dask import sharedict
+        return sharedict.merge(
+            layer, *(d.__dask_graph__() for d in dependencies))
