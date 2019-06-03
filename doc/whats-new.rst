@@ -6,7 +6,7 @@ What's New
 
 .. _whats-new.0.4.2:
 
-v0.4.2 (Unreleased)
+v0.4.2 (2019-06-03)
 -------------------
 - Type annotations
 - Mandatory mypy validation in CI
