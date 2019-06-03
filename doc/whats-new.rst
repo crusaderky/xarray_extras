@@ -8,6 +8,8 @@ What's New
 
 v0.4.2 (Unreleased)
 -------------------
+- Type annotations
+- Mandatory mypy validation in CI
 - CI unit tests for Windows now run on Python 3.7
 - Compatibility with dask >= 1.1
 - Suppress deprecation warnings with pandas >= 0.24

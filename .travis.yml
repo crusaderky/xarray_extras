@@ -10,7 +10,6 @@ branches:
 matrix:
   fast_finish: true
   include:
-  - env: CONDA_ENV=flake8
   - env: CONDA_ENV=minimal
   - env: CONDA_ENV=py35
   - env: CONDA_ENV=py36
@@ -35,13 +34,15 @@ install:
   - pip install --no-deps -e .
 
 script:
-  - if [[ "$CONDA_ENV" != "flake8" ]]; then
-      python -c "import xarray_extras";
+  - python -c "import xarray_extras";
+  - if [[ "$CONVA_ENV" == "py37" ]]; then
+      flake8;
+    fi
+  - if [[ "$CONVA_ENV" == "py37" ]]; then
+      mypy .;
     fi
   - if [[ "$CONDA_ENV" == "docs" ]]; then
       sphinx-build -n -j auto -b html -d _build/doctrees doc _build/html;
-    elif [[ "$CONDA_ENV" == "flake8" ]]; then
-      flake8;
     else
       py.test xarray_extras --cov=xarray_extras --cov-config ci/.coveragerc --cov-report term-missing --verbose $EXTRA_FLAGS;
     fi
