@@ -8,14 +8,18 @@ What's New
 
 v0.4.2 (Unreleased)
 -------------------
-- Compatibility with dask >= 1.1
-- Suppress warnings on pandas >= 0.24
-- When invoking :func:`~xarray_extras.csv.to_csv` on a 1-dimensional DataArray,
-  the default value for the ``index`` parameter has been changed from False to
-  True, coherently to the default for pandas.Series.to_csv from pandas 0.24.
-  This applies also to users who have pandas < 0.24 installed.
-- Support for ``line_terminator`` parameter in to_csv, aligned to pandas >= 0.24
 - CI unit tests for Windows now run on Python 3.7
+- Compatibility with dask >= 1.1
+- Suppress deprecation warnings with pandas >= 0.24
+- :func:`~xarray_extras.csv.to_csv` changes:
+
+  - When invoked on a 1-dimensional DataArray,
+    the default value for the ``index`` parameter has been changed from False to
+    True, coherently to the default for pandas.Series.to_csv from pandas 0.24.
+    This applies also to users who have pandas < 0.24 installed.
+  - support for ``line_terminator`` parameter (all pandas versions)
+  - support for ``compression`` parameter with pandas < 0.23
+  - support for ``compression='infer'``
 
 
 .. _whats-new.0.4.1:

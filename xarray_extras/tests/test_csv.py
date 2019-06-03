@@ -6,7 +6,6 @@ import tempfile
 
 import dask
 import numpy as np
-import pandas
 import pytest
 import xarray
 
@@ -15,20 +14,20 @@ from xarray_extras.backport.pandas import to_csv as pd_to_csv
 
 
 def assert_to_csv(x, chunks, nogil, dtype, open_func=open, float_format='%f',
-                  **kwargs):
+                  ext='csv', **kwargs):
     x = x.astype(dtype)
     if chunks:
         x = x.chunk(chunks)
     with tempfile.TemporaryDirectory() as tmp:
-        pd_to_csv(x.to_pandas(), tmp + '/1.csv', float_format=float_format,
-                  **kwargs)
-        f = to_csv(x, tmp + '/2.csv', nogil=nogil, float_format=float_format,
-                   **kwargs)
+        pd_to_csv(x.to_pandas(), tmp + '/1.' + ext,
+                  float_format=float_format, **kwargs)
+        f = to_csv(x, tmp + '/2.' + ext, nogil=nogil,
+                   float_format=float_format, **kwargs)
         dask.compute(f)
 
-        with open_func(tmp + '/1.csv', 'rb') as fh:
+        with open_func(tmp + '/1.' + ext, 'rb') as fh:
             d1 = fh.read()
-        with open_func(tmp + '/2.csv', 'rb') as fh:
+        with open_func(tmp + '/2.' + ext, 'rb') as fh:
             d2 = fh.read()
         assert d2 == d1
 
@@ -125,6 +124,7 @@ def test_na_rep(chunks, nogil, na_rep):
 
 
 @pytest.mark.parametrize('compression,open_func', [
+    (None, open),
     ('gzip', gzip.open),
     ('bz2', bz2.open),
     ('xz', lzma.open),
@@ -133,15 +133,23 @@ def test_na_rep(chunks, nogil, na_rep):
 @pytest.mark.parametrize('nogil', [False, True])
 @pytest.mark.parametrize('chunks', [None, 1])
 def test_compression(chunks, nogil, dtype, compression, open_func):
-    # Notes:
-    # - compressed outputs won't be binary identical; only once uncompressed
-    # - we are forcing the dask-based algorithm to compress two chunks
-    if pandas.__version__ < '0.23':
-        pytest.xfail("compression param requires pandas >=0.23")
-
     x = xarray.DataArray([1, 2])
     assert_to_csv(x, chunks, nogil, dtype, compression=compression,
                   open_func=open_func)
+
+
+@pytest.mark.parametrize('ext,open_func', [
+    ('csv', open),
+    ('csv.gz', gzip.open),
+    ('csv.bz2', bz2.open),
+    ('csv.xz', lzma.open),
+])
+@pytest.mark.parametrize('nogil', [False, True])
+@pytest.mark.parametrize('chunks', [None, 1])
+def test_compression_infer(ext, open_func, nogil, chunks):
+    x = xarray.DataArray([1, 2])
+    assert_to_csv(x, chunks=chunks, nogil=nogil, dtype=np.float64,
+                  compression='infer', ext=ext, open_func=open_func)
 
 
 @pytest.mark.parametrize('dtype', [np.int64, np.float64])
