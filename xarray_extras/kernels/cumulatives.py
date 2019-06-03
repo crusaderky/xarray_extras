@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 """Numba kernels for :mod:`cumulatives`
 """
+import numpy as np
 from ..numba_extras import guvectorize
 
 
 @guvectorize("{T}[:], intp[:], {T}[:]", "(i),(j)->()")
-def compound_sum(x, c, y):
+def compound_sum(x: np.ndarray, c: np.ndarray, y: np.ndarray) -> None:
     """y = x[c[0]] + x[c[1]] + ... x[c[n]]
     until c[i] != -1
     """
@@ -18,7 +19,7 @@ def compound_sum(x, c, y):
 
 
 @guvectorize("{T}[:], intp[:], {T}[:]", "(i),(j)->()")
-def compound_prod(x, c, y):
+def compound_prod(x: np.ndarray, c: np.ndarray, y: np.ndarray) -> None:
     """y = x[c[0]] * x[c[1]] * ... x[c[n]]
     until c[i] != -1
     """
@@ -31,7 +32,7 @@ def compound_prod(x, c, y):
 
 
 @guvectorize("{T}[:], intp[:], {T}[:]", "(i),(j)->()")
-def compound_mean(x, c, y):
+def compound_mean(x: np.ndarray, c: np.ndarray, y: np.ndarray) -> None:
     """y = mean(x[c[0]], x[c[1]], ... x[c[n]])
     until c[i] != -1
     """

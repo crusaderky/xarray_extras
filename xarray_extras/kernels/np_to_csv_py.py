@@ -2,8 +2,9 @@
 This is a helper module of :mod:`xarray_extras.kernels.csv`.
 """
 import ctypes
+from typing import Optional
 import numpy as np
-from . import np_to_csv
+from . import np_to_csv  # type: ignore
 np_to_csv = np.ctypeslib.load_library('np_to_csv', np_to_csv.__file__)
 
 
@@ -35,7 +36,8 @@ np_to_csv.snprintcsvi.argtypes = [
 np_to_csv.snprintcsvi.restype = ctypes.c_int32
 
 
-def snprintcsvd(a, index, sep=',', fmt=None, na_rep=''):
+def snprintcsvd(a: np.ndarray, index: str, sep: str = ',',
+                fmt: Optional[str] = None, na_rep: str = '') -> bytes:
     """Convert array to CSV.
 
     :param a:
@@ -87,11 +89,11 @@ def snprintcsvd(a, index, sep=',', fmt=None, na_rep=''):
         nchar = np_to_csv.snprintcsvd(buf, bufsize, a, a.shape[0], a.shape[1],
                                       bindex, bfmt, trim_zeros, bna_rep)
         if nchar < bufsize:
-            return buf[:nchar]
+            return bytes(buf[:nchar])  # type: ignore
         cellsize *= 2
 
 
-def snprintcsvi(a, index, sep=','):
+def snprintcsvi(a: np.ndarray, index: str, sep: str = ',') -> bytes:
     """Convert array to CSV.
 
     :param a:
@@ -122,4 +124,4 @@ def snprintcsvi(a, index, sep=','):
     nchar = np_to_csv.snprintcsvi(
         buf, bufsize, a, a.shape[0], a.shape[1], bindex, bsep)
     assert nchar < bufsize
-    return buf[:nchar]
+    return bytes(buf[:nchar])  # type: ignore

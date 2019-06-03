@@ -10,3 +10,6 @@ dependencies:
   - pytest-cov
   - scipy
   - xarray
+  # code linters (running only in the latest version of Python)
+  - flake8
+  - mypy

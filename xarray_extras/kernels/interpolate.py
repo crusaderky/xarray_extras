@@ -2,13 +2,14 @@
 
 .. codeauthor:: Guido Imperiale
 """
+from typing import Iterable, Optional, Tuple, Union
 import numpy as np
 from scipy.interpolate import BSpline, make_interp_spline
-from scipy.interpolate._bsplines import _as_float_array, _not_a_knot, \
-    _augknt
+from scipy.interpolate._bsplines import (
+    _as_float_array, _not_a_knot, _augknt)
 
 
-def _memoryview_safe(x):
+def _memoryview_safe(x: np.ndarray) -> np.ndarray:
     """Make array safe to run in a Cython memoryview-based kernel. These
     kernels typically break down with the error ``ValueError: buffer source
     array is read-only`` when running in dask distributed.
@@ -20,7 +21,12 @@ def _memoryview_safe(x):
     return x
 
 
-def make_interp_knots(x, k=3, bc_type=None, check_finite=True):
+Boundary = Iterable[Tuple[int, float]]
+BCType = Union[Tuple[Boundary, Boundary], str, None]
+
+
+def make_interp_knots(x: np.ndarray, k: int = 3, bc_type: BCType = None,
+                      check_finite: bool = True) -> np.ndarray:
     """Compute the knots of the B-spline.
 
     .. note::
@@ -52,10 +58,7 @@ def make_interp_knots(x, k=3, bc_type=None, check_finite=True):
     -------
     numpy array with size = x.size + k + 1, representing the B-spline knots.
     """
-    if bc_type is None:
-        bc_type = (None, None)
-
-    if k < 2 and bc_type != (None, None):
+    if k < 2 and bc_type is not None:
         raise ValueError("Too much info for k<2: bc_type can only be None.")
 
     x = np.array(x)
@@ -66,7 +69,7 @@ def make_interp_knots(x, k=3, bc_type=None, check_finite=True):
         t = np.r_[x, x[-1]]
     elif k == 1:
         t = np.r_[x[0], x, x[-1]]
-    elif bc_type == (None, None):
+    elif bc_type is None:
         if k == 2:
             # OK, it's a bit ad hoc: Greville sites + omit
             # 2nd and 2nd-to-last points, a la not-a-knot
@@ -82,8 +85,10 @@ def make_interp_knots(x, k=3, bc_type=None, check_finite=True):
     return _as_float_array(t, check_finite)
 
 
-def make_interp_coeffs(x, y, k=3, t=None, bc_type=None, axis=0,
-                       check_finite=True):
+def make_interp_coeffs(x: np.ndarray, y: np.ndarray, k: int = 3,
+                       t: Optional[np.ndarray] = None, bc_type: BCType = None,
+                       axis: int = 0, check_finite: bool = True
+                       ) -> np.ndarray:
     """Compute the knots of the B-spline.
 
     .. note::
@@ -112,7 +117,8 @@ def make_interp_coeffs(x, y, k=3, t=None, bc_type=None, axis=0,
         x, y, k, t, bc_type=bc_type, axis=axis, check_finite=check_finite).c
 
 
-def splev(x_new, t, c, k=3, extrapolate=True):
+def splev(x_new: np.ndarray, t: np.ndarray, c: np.ndarray, k: int = 3,
+          extrapolate: Union[bool, str] = True) -> np.ndarray:
     """Generate a BSpline object on the fly from knots and coefficients and
     evaluate it on x_new.
 

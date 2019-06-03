@@ -1,10 +1,15 @@
 """Utilities for stacking/unstacking dimensions
 """
 from collections import OrderedDict
+from typing import Hashable, MutableMapping, TypeVar
 import pandas
+import xarray
 
 
-def proper_unstack(array, dim):
+T = TypeVar('T', xarray.DataArray, xarray.Dataset)
+
+
+def proper_unstack(array: T, dim: Hashable) -> T:
     """Work around an issue in xarray that causes the data to be sorted
     alphabetically by label on unstack():
 
@@ -20,7 +25,7 @@ def proper_unstack(array, dim):
     :param str dim:
         Name of existing dimension to unstack
     :returns:
-        xarray.DataArray / xarray.Dataset with unstacked dimension
+        xarray.DataArray or xarray.Dataset with unstacked dimension
     """
     # Regenerate Pandas multi-index to be ordered by first appearance
     mindex = array.coords[dim].to_pandas().index
@@ -34,7 +39,7 @@ def proper_unstack(array, dim):
         mindex_codes = mindex.labels
 
     for levels_i, codes_i in zip(mindex.levels, mindex_codes):
-        level_map = OrderedDict()
+        level_map = OrderedDict()  # type: MutableMapping[Hashable, int]
 
         for code in codes_i:
             if code not in level_map:

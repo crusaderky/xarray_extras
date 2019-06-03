@@ -6,8 +6,6 @@ dependencies:
   - dask
   - gcc_linux-64
   - numba
-  - numpy
-  - pandas
   - pytest
   - pytest-cov
   - scipy
