@@ -14,6 +14,7 @@ v0.4.2 (Unreleased)
   the default value for the ``index`` parameter has been changed from False to
   True, coherently to the default for pandas.Series.to_csv from pandas 0.24.
   This applies also to users who have pandas < 0.24 installed.
+- Support for ``line_terminator`` parameter in to_csv, aligned to pandas >= 0.24
 - CI unit tests for Windows now run on Python 3.7
 
 

@@ -69,7 +69,7 @@ def to_csv(x, path, *, nogil=True, **kwargs):
 
     # Health checks
     if not isinstance(path, str):
-        raise ValueError("path_or_buf must be a file path if x is dask-backed")
+        raise ValueError("path_or_buf must be a file path")
 
     if x.ndim not in (1, 2):
         raise ValueError('cannot convert arrays with %d dimensions into '

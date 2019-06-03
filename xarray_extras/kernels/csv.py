@@ -1,8 +1,9 @@
 """dask kernels for :mod:`xarray_extras.csv`
 """
-import sys
+import os
 import pandas
 from .np_to_csv_py import snprintcsvd, snprintcsvi
+from ..backport.pandas import to_csv as pd_to_csv
 
 
 def to_csv(x, index, columns, first_chunk, nogil, kwargs):
@@ -35,11 +36,11 @@ def to_csv(x, index, columns, first_chunk, nogil, kwargs):
 
     encoding = kwargs.pop('encoding', 'utf-8')
     header = kwargs.pop('header', True)
+    line_terminator = kwargs.pop('line_terminator', os.linesep)
 
     if not nogil or not x.size:
-        out = x_pd.to_csv(header=header, **kwargs)
-        if sys.platform == 'win32':
-            out = out.replace('\n', '\r\n')
+        out = pd_to_csv(x_pd, header=header, line_terminator=line_terminator,
+                        **kwargs)
         bout = out.encode(encoding)
         if encoding == 'utf-16' and not first_chunk:
             # utf-16 contains a bang at the beginning of the text. However,
@@ -57,7 +58,9 @@ def to_csv(x, index, columns, first_chunk, nogil, kwargs):
         x_df = x_pd.to_frame()
     else:
         x_df = x_pd
-    index_csv = x_df.iloc[:, :0].to_csv(header=False, **kwargs)
+
+    index_csv = pd_to_csv(x_df.iloc[:, :0], header=False, line_terminator='\n',
+                          **kwargs)
     index_csv = index_csv.strip().split('\n')
     if len(index_csv) != x.shape[0]:
         index_csv = '\n' * x.shape[0]
@@ -75,21 +78,23 @@ def to_csv(x, index, columns, first_chunk, nogil, kwargs):
                                   "nogil=True")
 
     if header is not False:
-        header_csv = x_df.iloc[:0, :].to_csv(
-            header=header, **kwargs).encode('utf-8')
+        header_csv = pd_to_csv(x_df.iloc[:0, :], header=header,
+                               line_terminator='\n', **kwargs).encode('utf-8')
         body_csv = header_csv + body_csv
 
-    if encoding not in {'ascii', 'utf-8'} or sys.platform == 'win32':
+    if encoding not in {'ascii', 'utf-8'}:
         # Everything is encoded in UTF-8 until this moment. Recode if needed.
         body_csv = body_csv.decode('utf-8')
-        if sys.platform == 'win32':
-            body_csv = body_csv.replace('\n', '\r\n')
+        if line_terminator != '\n':
+            body_csv = body_csv.replace('\n', line_terminator)
         body_csv = body_csv.encode(encoding)
         if encoding == 'utf-16' and not first_chunk:
             # utf-16 contains a bang at the beginning of the text. However,
             # when concatenating multiple chunks we don't want to replicate it.
             assert body_csv[:2] == b'\xff\xfe'
             body_csv = body_csv[2:]
+    elif line_terminator != '\n':
+        body_csv = body_csv.replace(b'\n', line_terminator.encode('utf-8'))
 
     return body_csv
 
