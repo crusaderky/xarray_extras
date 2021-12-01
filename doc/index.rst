@@ -38,6 +38,7 @@ Index
 -----
 
 .. toctree::
+   :maxdepth: 1
 
    installing
    develop
