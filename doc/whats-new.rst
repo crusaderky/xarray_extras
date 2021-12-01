@@ -3,6 +3,10 @@
 What's New
 ==========
 
+.. _whats-new.0.6.0:
+
+v0.6.0 (Unreleased)
+-------------------
 
 .. _whats-new.0.5.0:
 
