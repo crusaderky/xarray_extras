@@ -25,7 +25,6 @@ v0.5.0 (Unreleased)
 - Added support for Python 3.8 and 3.9
 - Removed ``xarray_extras.backports`` module
 - Migrated to github workflows for CI
-- Added code linters: pyupgrade, isort, black
 - Run all code linters through pre-commit
 - Use setuptools-scm for versioning
 - Moved the whole contents of setup.py to setup.cfg

@@ -58,7 +58,7 @@ Test using ``py.test``:
 Code Formatting
 ---------------
 
-xarray_extras uses several code linters (flake8, black, isort, pyupgrade, mypy),
+xarray_extras uses several code linters (flake8, mypy),
 which are enforced by CI. Developers should run them locally before they submit a PR,
 through the single command
 
