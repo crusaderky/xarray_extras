@@ -14,8 +14,8 @@ Install
 2. Install anaconda or miniconda (OS-dependent)
 3. .. code-block:: bash
 
-     conda env create -n xarray_extras-3.10 --file ci/requirements.yml python=3.10
-     conda activate xarray_extras-3.10
+     conda env create -n xarray_extras --file ci/requirements.yml
+     conda activate xarray_extras
 
 4. Install C compilation stack:
 
@@ -52,6 +52,7 @@ Test using ``py.test``:
 
 .. code-block:: bash
 
+   python setup.py build_ext --inplace
    py.test xarray_extras
 
 Code Formatting

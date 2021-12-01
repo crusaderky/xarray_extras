@@ -1,8 +1,9 @@
+import pkg_resources
+
 try:
-    from .version import version as __version__  # noqa: F401
-except ImportError:  # pragma: no cover
-    raise ImportError('xarray_extras not properly installed. If you are '
-                      'running from the source directory, please instead '
-                      'create a new virtual environment (using conda or '
-                      'virtualenv) and then install it in-place by running: '
-                      'pip install -e .')
+    __version__ = pkg_resources.get_distribution("xarray_extras").version
+except Exception:  # pragma: nocover
+    # Local copy, not installed with setuptools
+    __version__ = "999"
+
+__all__ = ("__version__", )

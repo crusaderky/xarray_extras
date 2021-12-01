@@ -3,9 +3,10 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - gcc_linux-64
   - dask
   - numba
+  - numpy
+  - pandas
   - pytest
   - scipy
   - xarray
