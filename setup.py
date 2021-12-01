@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from setuptools import setup, Extension
+from setuptools import Extension, setup
 
 setup(
     # Use hardcoded version when .git has been removed and this is not a package created
@@ -8,7 +8,7 @@ setup(
     # Compile CPython extensions
     ext_modules=[
         Extension(
-            'xarray_extras.kernels.np_to_csv', ['xarray_extras/kernels/np_to_csv.c']
+            "xarray_extras.kernels.np_to_csv", ["xarray_extras/kernels/np_to_csv.c"]
         )
     ],
 )

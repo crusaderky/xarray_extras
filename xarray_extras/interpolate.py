@@ -1,13 +1,14 @@
 """xarray spline interpolation functions
 """
 from typing import Hashable, Union
-import xarray
+
 import numpy as np
+import xarray
 from xarray.core.pycompat import dask_array_type
+
 from .kernels import interpolate as kernels
 
-
-__all__ = ('splrep', 'splev')
+__all__ = ("splrep", "splev")
 
 
 def splrep(a: xarray.DataArray, dim: Hashable, k: int = 3) -> xarray.Dataset:
@@ -64,10 +65,10 @@ def splrep(a: xarray.DataArray, dim: Hashable, k: int = 3) -> xarray.Dataset:
     a = a.transpose(dim, *[d for d in a.dims if d != dim])
     x = a.coords[dim].values
 
-    if x.dtype.kind == 'M':
+    if x.dtype.kind == "M":
         # Same treatment will be applied to x_new.
         # Allow x_new.dtype==M8[D] and x.dtype==M8[ns], or vice versa
-        x = x.astype('M8[ns]').astype(float)
+        x = x.astype("M8[ns]").astype(float)
 
     t = kernels.make_interp_knots(x, k, check_finite=False)
     if k < 2:
@@ -77,31 +78,40 @@ def splrep(a: xarray.DataArray, dim: Hashable, k: int = 3) -> xarray.Dataset:
 
     if isinstance(a.data, dask_array_type):
         from dask.array import map_blocks
+
         if len(a.data.chunks[0]) > 1:
             raise NotImplementedError(
-                "Unsupported: multiple chunks on interpolation dim")
+                "Unsupported: multiple chunks on interpolation dim"
+            )
 
         c = map_blocks(
             kernels.make_interp_coeffs,
-            x, a.data, k=k, t=t_c_param, check_finite=False, dtype=float)
+            x,
+            a.data,
+            k=k,
+            t=t_c_param,
+            check_finite=False,
+            dtype=float,
+        )
     else:
-        c = kernels.make_interp_coeffs(x, a.data, k=k, t=t_c_param,
-                                       check_finite=False)
+        c = kernels.make_interp_coeffs(x, a.data, k=k, t=t_c_param, check_finite=False)
 
     return xarray.Dataset(
         data_vars={
-            't': ('__t__', t),
-            'c': (a.dims, c),
+            "t": ("__t__", t),
+            "c": (a.dims, c),
         },
         coords=a.coords,
         attrs={
-            'spline_dim': dim,
-            'k': k,
-        })
+            "spline_dim": dim,
+            "k": k,
+        },
+    )
 
 
-def splev(x_new: xarray.DataArray, tck: xarray.Dataset,
-          extrapolate: Union[bool, str] = True) -> xarray.DataArray:
+def splev(
+    x_new: xarray.DataArray, tck: xarray.Dataset, extrapolate: Union[bool, str] = True
+) -> xarray.DataArray:
     """Evaluate the B-spline generated with :func:`splrep`.
 
     :param x_new:
@@ -148,10 +158,10 @@ def splev(x_new: xarray.DataArray, tck: xarray.Dataset,
         elif x_new.ndim == 1:
             dims = [tck.spline_dim]
         else:
-            raise ValueError("N-dimensional x_new is only supported if "
-                             "x_new is a DataArray")
-        x_new = xarray.DataArray(x_new, dims=dims,
-                                 coords={tck.spline_dim: x_new})
+            raise ValueError(
+                "N-dimensional x_new is only supported if " "x_new is a DataArray"
+            )
+        x_new = xarray.DataArray(x_new, dims=dims, coords={tck.spline_dim: x_new})
 
     dim = tck.spline_dim
     t = tck.t
@@ -160,21 +170,23 @@ def splev(x_new: xarray.DataArray, tck: xarray.Dataset,
 
     invalid_dims = {*x_new.dims} & {*c.dims} - {dim}
     if invalid_dims:
-        raise ValueError("Overlapping dims between interpolated "
-                         "array and x_new: %s" % ",".join(str(d) for d in invalid_dims))
+        raise ValueError(
+            "Overlapping dims between interpolated "
+            "array and x_new: %s" % ",".join(str(d) for d in invalid_dims)
+        )
 
-    if t.shape != (c.sizes[dim] + k + 1, ):
+    if t.shape != (c.sizes[dim] + k + 1,):
         raise ValueError("Interpolated dimension has been sliced")
 
-    if x_new.dtype.kind == 'M':
+    if x_new.dtype.kind == "M":
         # Note that we're modifying the x_new values, not the x_new coords
         # xarray datetime objects are always in ns
         x_new = x_new.astype(float)
 
-    if extrapolate == 'clip':
+    if extrapolate == "clip":
         x = tck.coords[dim].values
-        if x.dtype.kind == 'M':
-            x = x.astype('M8[ns]').astype(float)
+        if x.dtype.kind == "M":
+            x = x.astype("M8[ns]").astype(float)
         x_new = np.clip(x_new, x[0].tolist(), x[-1].tolist())
         extrapolate = False
 
@@ -184,10 +196,12 @@ def splev(x_new: xarray.DataArray, tck: xarray.Dataset,
     if any(isinstance(v.data, dask_array_type) for v in (x_new, t, c)):
         if t.chunks and len(t.chunks[0]) > 1:
             raise NotImplementedError(
-                "Unsupported: multiple chunks on interpolation dim")
+                "Unsupported: multiple chunks on interpolation dim"
+            )
         if c.chunks and len(c.chunks[0]) > 1:
             raise NotImplementedError(
-                "Unsupported: multiple chunks on interpolation dim")
+                "Unsupported: multiple chunks on interpolation dim"
+            )
 
         try:
             from dask.array import blockwise
@@ -196,25 +210,28 @@ def splev(x_new: xarray.DataArray, tck: xarray.Dataset,
             from dask.array import atop as blockwise  # type: ignore
 
         # omitting t and c
-        x_new_axes = 'abdefghijklm'[:x_new.ndim]
-        c_axes = 'nopqrsuvwxyz'[:c.ndim - 1]
+        x_new_axes = "abdefghijklm"[: x_new.ndim]
+        c_axes = "nopqrsuvwxyz"[: c.ndim - 1]
 
-        y_new = blockwise(kernels.splev,
-                          x_new_axes + c_axes,
-                          x_new.data, x_new_axes,
-                          t.data, 't',
-                          c.data, 'c' + c_axes,
-                          k=k, extrapolate=extrapolate,
-                          concatenate=True, dtype=float)
+        y_new = blockwise(
+            kernels.splev,
+            x_new_axes + c_axes,
+            x_new.data,
+            x_new_axes,
+            t.data,
+            "t",
+            c.data,
+            "c" + c_axes,
+            k=k,
+            extrapolate=extrapolate,
+            concatenate=True,
+            dtype=float,
+        )
     else:
-        y_new = kernels.splev(x_new.values, t.values, c.values, k,
-                              extrapolate=extrapolate)
+        y_new = kernels.splev(
+            x_new.values, t.values, c.values, k, extrapolate=extrapolate
+        )
 
-    y_new = xarray.DataArray(
-        y_new, dims=x_new.dims + c.dims[1:],
-        coords=x_new.coords)
-    y_new.coords.update({
-        k: c
-        for k, c in c.coords.items()
-        if dim not in c.dims})
+    y_new = xarray.DataArray(y_new, dims=x_new.dims + c.dims[1:], coords=x_new.coords)
+    y_new.coords.update({k: c for k, c in c.coords.items() if dim not in c.dims})
     return y_new

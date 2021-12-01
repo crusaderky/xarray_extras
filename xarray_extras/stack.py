@@ -2,11 +2,11 @@
 """
 from collections import OrderedDict
 from typing import Hashable, MutableMapping, TypeVar
+
 import pandas
 import xarray
 
-
-T = TypeVar('T', xarray.DataArray, xarray.Dataset)
+T = TypeVar("T", xarray.DataArray, xarray.Dataset)
 
 
 def proper_unstack(array: T, dim: Hashable) -> T:

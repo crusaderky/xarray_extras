@@ -3,10 +3,10 @@
 .. codeauthor:: Guido Imperiale
 """
 from typing import Iterable, Optional, Tuple, Union
+
 import numpy as np
 from scipy.interpolate import BSpline, make_interp_spline
-from scipy.interpolate._bsplines import (
-    _as_float_array, _not_a_knot, _augknt)
+from scipy.interpolate._bsplines import _as_float_array, _augknt, _not_a_knot
 
 
 def _memoryview_safe(x: np.ndarray) -> np.ndarray:
@@ -16,7 +16,7 @@ def _memoryview_safe(x: np.ndarray) -> np.ndarray:
     """
     if not x.flags.writeable:
         if not x.flags.owndata:
-            x = x.copy(order='C')
+            x = x.copy(order="C")
         x.setflags(write=True)
     return x
 
@@ -25,8 +25,9 @@ Boundary = Iterable[Tuple[int, float]]
 BCType = Union[Tuple[Boundary, Boundary], str, None]
 
 
-def make_interp_knots(x: np.ndarray, k: int = 3, bc_type: BCType = None,
-                      check_finite: bool = True) -> np.ndarray:
+def make_interp_knots(
+    x: np.ndarray, k: int = 3, bc_type: BCType = None, check_finite: bool = True
+) -> np.ndarray:
     """Compute the knots of the B-spline.
 
     .. note::
@@ -73,10 +74,8 @@ def make_interp_knots(x: np.ndarray, k: int = 3, bc_type: BCType = None,
         if k == 2:
             # OK, it's a bit ad hoc: Greville sites + omit
             # 2nd and 2nd-to-last points, a la not-a-knot
-            t = (x[1:] + x[:-1]) / 2.
-            t = np.r_[(x[0],) * (k + 1),
-                      t[1:-1],
-                      (x[-1],) * (k + 1)]
+            t = (x[1:] + x[:-1]) / 2.0
+            t = np.r_[(x[0],) * (k + 1), t[1:-1], (x[-1],) * (k + 1)]
         else:
             t = _not_a_knot(x, k)
     else:
@@ -85,10 +84,15 @@ def make_interp_knots(x: np.ndarray, k: int = 3, bc_type: BCType = None,
     return _as_float_array(t, check_finite)
 
 
-def make_interp_coeffs(x: np.ndarray, y: np.ndarray, k: int = 3,
-                       t: Optional[np.ndarray] = None, bc_type: BCType = None,
-                       axis: int = 0, check_finite: bool = True
-                       ) -> np.ndarray:
+def make_interp_coeffs(
+    x: np.ndarray,
+    y: np.ndarray,
+    k: int = 3,
+    t: Optional[np.ndarray] = None,
+    bc_type: BCType = None,
+    axis: int = 0,
+    check_finite: bool = True,
+) -> np.ndarray:
     """Compute the knots of the B-spline.
 
     .. note::
@@ -114,11 +118,17 @@ def make_interp_coeffs(x: np.ndarray, y: np.ndarray, k: int = 3,
         t = _memoryview_safe(t)
 
     return make_interp_spline(
-        x, y, k, t, bc_type=bc_type, axis=axis, check_finite=check_finite).c
+        x, y, k, t, bc_type=bc_type, axis=axis, check_finite=check_finite
+    ).c
 
 
-def splev(x_new: np.ndarray, t: np.ndarray, c: np.ndarray, k: int = 3,
-          extrapolate: Union[bool, str] = True) -> np.ndarray:
+def splev(
+    x_new: np.ndarray,
+    t: np.ndarray,
+    c: np.ndarray,
+    k: int = 3,
+    extrapolate: Union[bool, str] = True,
+) -> np.ndarray:
     """Generate a BSpline object on the fly from knots and coefficients and
     evaluate it on x_new.
 

@@ -2,11 +2,11 @@
 """Extensions to numba
 """
 from typing import Any, Callable
+
 import numba
 
 
-def guvectorize(signature: str, layout: str, **kwds
-                ) -> Callable[[Callable], Any]:
+def guvectorize(signature: str, layout: str, **kwds) -> Callable[[Callable], Any]:
     """Convenience wrapper around :func:`numba.guvectorize`.
     Generate signature for all possible data types and set a few healthy
     defaults.
@@ -38,14 +38,22 @@ def guvectorize(signature: str, layout: str, **kwds
     DTYPES = [
         # uint needs to appear before signed int:
         # https://github.com/numba/numba/issues/2934
-        'uint8', 'uint16', 'uint32', 'uint64',
-        'int8', 'int16', 'int32', 'int64',
-        'float32', 'float64',
-        'complex64', 'complex128'
+        "uint8",
+        "uint16",
+        "uint32",
+        "uint64",
+        "int8",
+        "int16",
+        "int32",
+        "int64",
+        "float32",
+        "float64",
+        "complex64",
+        "complex128",
     ]
-    if '{T}' in signature:
+    if "{T}" in signature:
         signatures = [signature.format(T=dtype) for dtype in DTYPES]
     else:
         signatures = [signature]
-    kwds.setdefault('cache', True)
+    kwds.setdefault("cache", True)
     return numba.guvectorize(signatures, layout, **kwds)
