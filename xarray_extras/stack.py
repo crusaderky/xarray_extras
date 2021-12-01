@@ -32,13 +32,8 @@ def proper_unstack(array: T, dim: Hashable) -> T:
 
     levels = []
     codes = []
-    try:
-        mindex_codes = mindex.codes
-    except AttributeError:
-        # pandas < 0.24
-        mindex_codes = mindex.labels
 
-    for levels_i, codes_i in zip(mindex.levels, mindex_codes):
+    for levels_i, codes_i in zip(mindex.levels, mindex.codes):
         level_map = OrderedDict()  # type: MutableMapping[Hashable, int]
 
         for code in codes_i:

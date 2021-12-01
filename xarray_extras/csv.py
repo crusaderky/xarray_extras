@@ -4,10 +4,10 @@ with full support for `dask <http://dask.org/>`_ and `dask distributed
 """
 from typing import Callable, Dict, Optional, Union
 
-import dask
 import xarray
 from dask.base import tokenize
 from dask.delayed import Delayed
+from dask.highlevelgraph import HighLevelGraph
 
 from .kernels import csv as kernels
 
@@ -152,21 +152,8 @@ def to_csv(x: xarray.DataArray, path: str, *, nogil: bool = True, **kwargs):
     # Rename final key
     dsk[name4] = dsk.pop((name3, i))
 
-    return Delayed(name4, _graph_from_collections(name4, dsk, (x,)))
-
-
-def _graph_from_collections(name: str, layer: dict, dependencies):
-    """Create a new :class:`~dask.highlevelgraph.HighLevelGraph` (dask >= 1.1)
-    or a new :class:`~dask.sharedict.ShareDict` (dask <= 1.0)
-    """
-    if dask.__version__ >= "1.1":
-        from dask.highlevelgraph import HighLevelGraph
-
-        return HighLevelGraph.from_collections(name, layer, dependencies)
-    else:
-        from dask import sharedict
-
-        return sharedict.merge(layer, *(d.__dask_graph__() for d in dependencies))
+    hlg = HighLevelGraph.from_collections(name4, dsk, (x,))
+    return Delayed(name4, hlg)
 
 
 def _compress_func(
