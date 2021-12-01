@@ -59,7 +59,7 @@ jobs:
       - name: pytest
         shell: bash -l {0}
         run: |
-          pytest -v --cov=xarray_extras --cov-config ci/.coveragerc --cov-report term-missing
+          pytest -v --cov=xarray_extras --cov-report term-missing
           coverage xml
 
       - name: codecov.io

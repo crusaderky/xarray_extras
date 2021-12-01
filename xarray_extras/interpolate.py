@@ -2,6 +2,7 @@
 """
 from typing import Hashable, Union
 
+import dask.array as da
 import numpy as np
 import xarray
 from xarray.core.pycompat import dask_array_type
@@ -203,17 +204,11 @@ def splev(
                 "Unsupported: multiple chunks on interpolation dim"
             )
 
-        try:
-            from dask.array import blockwise
-        except ImportError:
-            # dask < 1.1
-            from dask.array import atop as blockwise  # type: ignore
-
         # omitting t and c
         x_new_axes = "abdefghijklm"[: x_new.ndim]
         c_axes = "nopqrsuvwxyz"[: c.ndim - 1]
 
-        y_new = blockwise(
+        y_new = da.blockwise(
             kernels.splev,
             x_new_axes + c_axes,
             x_new.data,

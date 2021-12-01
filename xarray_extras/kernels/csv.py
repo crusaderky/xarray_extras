@@ -42,7 +42,8 @@ def to_csv(
     elif x.ndim == 2:
         x_pd = pd.DataFrame(x, index, columns)
     else:
-        assert False  # proper ValueError already raised in wrapper
+        # proper ValueError already raised in wrapper
+        assert False, "unreachable"  # pragma: nocover
 
     encoding = kwargs.pop("encoding", "utf-8")
     header = kwargs.pop("header", True)
