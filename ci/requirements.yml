@@ -1,13 +1,13 @@
-name: test_env
+name: xarray-extras
 channels:
   - conda-forge
   - defaults
 dependencies:
-  - coverage
   - dask
   - numba
   - numpy
   - pandas
   - pytest
+  - pytest-cov
   - scipy
   - xarray

@@ -31,7 +31,7 @@ jobs:
           use-mamba: true
           python-version: ${{ matrix.python-version }}
           environment-file: ci/requirements.yml
-          activate-environment: xarray_extras
+          activate-environment: xarray-extras
 
       - name: Install Linux compile env
         shell: bash -l {0}
@@ -62,7 +62,7 @@ jobs:
       - name: pytest
         shell: bash -l {0}
         run: |
-          coverage run -m pytest -v
+          pytest -v --cov=xarray_extras --cov-config ci/.coveragerc --cov-report term-missing
           coverage xml
 
       - name: codecov.io

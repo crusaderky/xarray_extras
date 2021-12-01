@@ -22,7 +22,7 @@ jobs:
           use-mamba: true
           python-version: 3.8
           environment-file: ci/requirements-docs.yml
-          activate-environment: xarray_extras-docs
+          activate-environment: xarray-extras-docs
 
       - name: Show conda options
         shell: bash -l {0}

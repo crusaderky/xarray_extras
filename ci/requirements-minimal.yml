@@ -1,14 +1,14 @@
-name: test_env
+name: xarray-extras-minimal
 channels:
   - conda-forge
   - defaults
 dependencies:
-  - coverage
   - python=3.7
   - dask=2020.12
   - numba=0.52
   - numpy=1.18
   - pandas=1.1
   - pytest
+  - pytest-cov
   - scipy=1.5
   - xarray=0.16

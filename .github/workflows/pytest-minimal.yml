@@ -28,7 +28,7 @@ jobs:
           use-mamba: true
           python-version: 3.7
           environment-file: ci/requirements-minimal.yml
-          activate-environment: xarray_extras-minimal
+          activate-environment: xarray-extras-minimal
 
       - name: Install Linux compile env
         shell: bash -l {0}
