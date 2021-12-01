@@ -13,15 +13,17 @@ v0.5.0 (Unreleased)
   ========== ====== ======
   Dependency v0.4.2 v0.5.0
   ========== ====== ======
-  Python     3.5    3.7
+  python     3.5    3.7
   dask       0.19   2021.4
   numba      0.34   0.52
   numpy      1.13   1.18
   pandas     0.21   1.1
   scipy      1.0    1.5
   xarray     0.10.1 0.16
+  ========== ====== ======
 
 - Added support for Python 3.8 and 3.9
+- Removed ``xarray_extras.backports`` module
 - Migrated to github workflows for CI
 - Added code linters: pyupgrade, isort, black
 - Run all code linters through pre-commit

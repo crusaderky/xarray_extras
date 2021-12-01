@@ -309,3 +309,10 @@ intersphinx_mapping = {
     "scipy": ("https://docs.scipy.org/doc/scipy/reference/", None),
     "xarray": ("https://xarray.pydata.org/en/stable/", None),
 }
+
+# Work around intersphinx issue
+import xarray
+
+xarray.DataArray.__module__ = "xarray"
+xarray.Dataset.__module__ = "xarray"
+xarray.Variable.__module__ = "xarray"

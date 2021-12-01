@@ -66,6 +66,9 @@ def take_along_axis(a: Union[np.ndarray, da.Array],
         res = np_take_along_axis(a, ind, axis=-1)
         return res
 
+    # a and/or ind are dask arrays. This is not yet implemented upstream.
+    # Upstream tracker: https://github.com/dask/dask/issues/3663
+
     # This is going to be an ugly and slow mess, as dask does not support
     # fancy indexing.
 

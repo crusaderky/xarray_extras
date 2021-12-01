@@ -42,7 +42,7 @@ Time required: about an hour.
 13. Update the docs. Login to https://readthedocs.org/projects/xarray_extras/versions/
     and switch your new release tag (at the bottom) from "Inactive" to "Active".
     It should now build automatically.
-14. Update conda-forge. Clone https://github.com/conda-forge/xarray_extras-feedstock
+14. Update conda-forge. Clone https://github.com/conda-forge/xarray-extras-feedstock
     and update the version number and sha256 in meta.yaml. (On OS X, you can
     calculate sha256 with `shasum -a 256 xarray_extras-0.X.Y.tar.gz`). Submit a pull
     request (and merge it, once CI passes).
