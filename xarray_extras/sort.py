@@ -7,10 +7,11 @@ from .duck import sort as duck
 __all__ = ('topk', 'argtopk', 'take_along_dim')
 
 
-T = TypeVar('T', xarray.DataArray, xarray.Dataset, xarray.Variable)
+T = TypeVar('T', xarray.DataArray, xarray.Dataset)
+TV = TypeVar('TV', xarray.DataArray, xarray.Dataset, xarray.Variable)
 
 
-def topk(a: T, k: int, dim: Hashable, split_every: Optional[int] = None) -> T:
+def topk(a: TV, k: int, dim: Hashable, split_every: Optional[int] = None) -> TV:
     """Extract the k largest elements from a on the given dimension, and return
     them sorted from largest to smallest. If k is negative, extract the -k
     smallest elements instead, and return them sorted from smallest to largest.
@@ -26,8 +27,8 @@ def topk(a: T, k: int, dim: Hashable, split_every: Optional[int] = None) -> T:
         dask='allowed').rename({'__temp_topk__': dim})
 
 
-def argtopk(a: T, k: int, dim: Hashable, split_every: Optional[int] = None
-            ) -> T:
+def argtopk(a: TV, k: int, dim: Hashable, split_every: Optional[int] = None
+            ) -> TV:
     """Extract the indexes of the k largest elements from a on the given
     dimension, and return them sorted from largest to smallest. If k is
     negative, extract the -k smallest elements instead, and return them
@@ -48,7 +49,7 @@ def take_along_dim(a: T, ind: T, dim: Hashable) -> T:
     """Use the output of :func:`argtopk` to pick points from a.
 
     :param a:
-        any xarray object
+        xarray.DataArray or xarray.Dataset
     :param ind:
         array of ints, as returned by :func:`argtopk`
     :param dim:

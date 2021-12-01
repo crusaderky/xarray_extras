@@ -12,24 +12,10 @@ from __future__ import annotations
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 import datetime
-import importlib
-import sys
+
+import xarray
 
 import xarray_extras
-
-allowed_failures = set()
-
-print("python exec:", sys.executable)
-print("sys.path:", sys.path)
-for name in ("numpy", "numba", "scipy", "pandas", "dask", "xarray"):
-    try:
-        module = importlib.import_module(name)
-        fname = module.__file__.rstrip("__init__.py")
-        print(f"{name}: {module.__version__}, {fname}")
-    except ImportError:
-        print("no %s" % name)
-
-print(f"xarray_extras: {xarray_extras.__version__}, {xarray_extras.__file__}")
 
 # -- General configuration ------------------------------------------------
 
@@ -311,8 +297,6 @@ intersphinx_mapping = {
 }
 
 # Work around intersphinx issue
-import xarray
-
 xarray.DataArray.__module__ = "xarray"
 xarray.Dataset.__module__ = "xarray"
 xarray.Variable.__module__ = "xarray"

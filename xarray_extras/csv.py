@@ -29,7 +29,7 @@ def to_csv(x: xarray.DataArray, path: str, *, nogil: bool = True, **kwargs):
     dimensions will be merged ahead of computation.
 
     :param x:
-        :class:`xarray.DataArray` with one or two dimensions
+        :class:`~xarray.DataArray` with one or two dimensions
     :param str path:
         Output file path
     :param bool nogil:
@@ -113,6 +113,7 @@ def to_csv(x: xarray.DataArray, path: str, *, nogil: bool = True, **kwargs):
 
     dsk = {}  # type: Dict[Union[str, tuple], tuple]
 
+    assert x.chunks
     assert x.chunks[0]
     offset = 0
     for i, size in enumerate(x.chunks[0]):

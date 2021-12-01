@@ -5,7 +5,6 @@ from typing import Optional, Union, TypeVar
 import dask.array as da
 from dask.array.slicing import slice_with_int_dask_array_on_axis
 import numpy as np
-from numpy import take_along_axis as np_take_along_axis
 from xarray.core.duck_array_ops import broadcast_to
 
 
@@ -47,8 +46,8 @@ def argtopk(a: T, k: int, split_every: Optional[int] = None) -> T:
     else:
         idx = idx[..., :-k]
 
-    a = np_take_along_axis(a, idx, axis=-1)
-    idx = np_take_along_axis(idx, a.argsort(), axis=-1)
+    a = np.take_along_axis(a, idx, axis=-1)
+    idx = np.take_along_axis(idx, a.argsort(), axis=-1)
     if k > 0:
         # Sort from greatest to smallest
         return idx[..., ::-1]
@@ -63,7 +62,7 @@ def take_along_axis(a: Union[np.ndarray, da.Array],
     if isinstance(a, np.ndarray) and isinstance(ind, np.ndarray):
         a = a.reshape((1,) * (ind.ndim - a.ndim) + a.shape)
         ind = ind.reshape((1, ) * (a.ndim - ind.ndim) + ind.shape)
-        res = np_take_along_axis(a, ind, axis=-1)
+        res = np.take_along_axis(a, ind, axis=-1)
         return res
 
     # a and/or ind are dask arrays. This is not yet implemented upstream.
