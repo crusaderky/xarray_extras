@@ -42,7 +42,7 @@ jobs:
 
       - name: Build docs
         shell: bash -l {0}
-        run: sphinx-build -W -n -j auto -b html -d build/doctrees doc build/html
+        run: sphinx-build -W -j auto -b html -d build/doctrees doc build/html
 
       - uses: actions/upload-artifact@v1
         with:
