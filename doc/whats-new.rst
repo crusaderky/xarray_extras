@@ -21,7 +21,7 @@ v0.5.0 (Unreleased)
   scipy      1.0    1.5
   xarray     0.10.1 0.16
 
-- Added support for Python 3.8, 3.9, and 3.10
+- Added support for Python 3.8 and 3.9
 - Migrated to github workflows for CI
 - Added code linters: pyupgrade, isort, black
 - Run all code linters through pre-commit
