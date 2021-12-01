@@ -1,12 +1,11 @@
 name: test_env
 channels:
-  - anaconda
+  - conda-forge
+  - defaults
 dependencies:
-  - python=3.6
-  - dask
   - gcc_linux-64
+  - dask
   - numba
   - pytest
-  - pytest-cov
   - scipy
   - xarray

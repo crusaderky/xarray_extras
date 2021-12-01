@@ -40,6 +40,7 @@ Index
 .. toctree::
 
    installing
+   develop
    whats-new
    api/csv
    api/cumulatives
