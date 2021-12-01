@@ -29,7 +29,7 @@ def to_csv(x: xarray.DataArray, path: str, *, nogil: bool = True, **kwargs):
     dimensions will be merged ahead of computation.
 
     :param x:
-        xarray.DataArray with one or two dimensions
+        :class:`~xarray.DataArray` with one or two dimensions
     :param str path:
         Output file path
     :param bool nogil:
@@ -51,10 +51,9 @@ def to_csv(x: xarray.DataArray, path: str, *, nogil: bool = True, **kwargs):
     - When running with nogil=True, the following parameters are ignored:
       columns, quoting, quotechar, doublequote, escapechar, chunksize, decimal
 
-    **Distributed**
+    **Distributed computing**
 
-    This function supports `dask distributed
-    <https://distributed.readthedocs.io/>`_, with the caveat that all workers
+    This function supports `dask distributed`_, with the caveat that all workers
     must write to the same shared mountpoint and that the shared filesystem
     must strictly guarantee **close-open coherency**, meaning that one must be
     able to call write() and then close() on a file descriptor from one host
@@ -114,6 +113,7 @@ def to_csv(x: xarray.DataArray, path: str, *, nogil: bool = True, **kwargs):
 
     dsk = {}  # type: Dict[Union[str, tuple], tuple]
 
+    assert x.chunks
     assert x.chunks[0]
     offset = 0
     for i, size in enumerate(x.chunks[0]):

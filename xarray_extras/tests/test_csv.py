@@ -10,7 +10,6 @@ import pytest
 import xarray
 
 from xarray_extras.csv import to_csv
-from xarray_extras.backport.pandas import to_csv as pd_to_csv
 
 
 def assert_to_csv(x, chunks, nogil, dtype, open_func=open, float_format='%f',
@@ -19,8 +18,7 @@ def assert_to_csv(x, chunks, nogil, dtype, open_func=open, float_format='%f',
     if chunks:
         x = x.chunk(chunks)
     with tempfile.TemporaryDirectory() as tmp:
-        pd_to_csv(x.to_pandas(), tmp + '/1.' + ext,
-                  float_format=float_format, **kwargs)
+        x.to_pandas().to_csv(tmp + '/1.' + ext, float_format=float_format, **kwargs)
         f = to_csv(x, tmp + '/2.' + ext, nogil=nogil,
                    float_format=float_format, **kwargs)
         dask.compute(f)
@@ -257,7 +255,7 @@ def test_none_fmt():
 def test_pickle():
     x = xarray.DataArray([1, 2])
     with tempfile.TemporaryDirectory() as tmp:
-        pd_to_csv(x.to_pandas(), tmp + '/1.csv')
+        x.to_pandas().to_csv(tmp + '/1.csv')
         d = to_csv(x.chunk(1), tmp + '/2.csv')
         d = pickle.loads(pickle.dumps(d))
         d.compute()

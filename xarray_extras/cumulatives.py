@@ -15,15 +15,14 @@ T = TypeVar('T', xarray.DataArray, xarray.Dataset)
 TV = TypeVar('TV', xarray.DataArray, xarray.Dataset, xarray.Variable)
 
 
-def cummean(x: TV, dim: Hashable, skipna: Optional[bool] = None) -> TV:
+def cummean(x: T, dim: Hashable, skipna: Optional[bool] = None) -> T:
     """
     .. math::
 
         y_{i} = mean(x_{0}, x_{1}, ... x_{i})
 
     :param x:
-        :class:`xarray.DataArray`, :class:`xarray.Dataset`, or
-        :class:`xarray.Variable`
+        :class:`~xarray.DataArray` or :class:`~xarray.Dataset`
     :param hashable dim:
         dimension along which to calculate the mean
     :param bool skipna:
@@ -37,8 +36,11 @@ def cummean(x: TV, dim: Hashable, skipna: Optional[bool] = None) -> TV:
     if skipna is False or (skipna is None and x.dtype.kind not in 'fc'):
         # n is a simple arange
         if x.chunks:
-            n = da.arange(1, x.sizes[dim] + 1,
-                          chunks=x.chunks[x.dims.index(dim)])
+            if isinstance(x, xarray.DataArray):
+                chunks = x.chunks[x.dims.index(dim)]
+            else:
+                chunks = x.chunks[dim]
+            n = da.arange(1, x.sizes[dim] + 1, chunks=chunks)
         else:
             n = np.arange(1, x.sizes[dim] + 1)
         n = xarray.DataArray(n, dims=[dim], coords={dim: x.coords[dim]})
@@ -54,7 +56,7 @@ def compound_sum(x: T, c: xarray.DataArray, xdim: Hashable, cdim: Hashable
     """Compound sum on arbitrary points of x along dim.
 
     :param x:
-        :class:`xarray.DataArray` or :class:`xarray.Dataset` containing the
+        :class:`~xarray.DataArray` or :class:`~xarray.Dataset` containing the
         data to be compounded
     :param xarray.DataArray c:
         array where every row contains elements of x.coords[xdim] and

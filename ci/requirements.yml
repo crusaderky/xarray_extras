@@ -1,11 +1,12 @@
-name: test_env
+name: xarray-extras
 channels:
-  - anaconda
+  - conda-forge
+  - defaults
 dependencies:
-  - python=3.6
   - dask
-  - gcc_linux-64
   - numba
+  - numpy
+  - pandas
   - pytest
   - pytest-cov
   - scipy

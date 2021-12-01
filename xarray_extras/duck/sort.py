@@ -7,11 +7,6 @@ from dask.array.slicing import slice_with_int_dask_array_on_axis
 import numpy as np
 from xarray.core.duck_array_ops import broadcast_to
 
-try:
-    from numpy import take_along_axis as np_take_along_axis
-except ImportError:
-    from ..backport.numpy import take_along_axis as np_take_along_axis
-
 
 T = TypeVar('T', np.ndarray, da.Array)
 
@@ -51,8 +46,8 @@ def argtopk(a: T, k: int, split_every: Optional[int] = None) -> T:
     else:
         idx = idx[..., :-k]
 
-    a = np_take_along_axis(a, idx, axis=-1)
-    idx = np_take_along_axis(idx, a.argsort(), axis=-1)
+    a = np.take_along_axis(a, idx, axis=-1)
+    idx = np.take_along_axis(idx, a.argsort(), axis=-1)
     if k > 0:
         # Sort from greatest to smallest
         return idx[..., ::-1]
@@ -67,8 +62,11 @@ def take_along_axis(a: Union[np.ndarray, da.Array],
     if isinstance(a, np.ndarray) and isinstance(ind, np.ndarray):
         a = a.reshape((1,) * (ind.ndim - a.ndim) + a.shape)
         ind = ind.reshape((1, ) * (a.ndim - ind.ndim) + ind.shape)
-        res = np_take_along_axis(a, ind, axis=-1)
+        res = np.take_along_axis(a, ind, axis=-1)
         return res
+
+    # a and/or ind are dask arrays. This is not yet implemented upstream.
+    # Upstream tracker: https://github.com/dask/dask/issues/3663
 
     # This is going to be an ugly and slow mess, as dask does not support
     # fancy indexing.

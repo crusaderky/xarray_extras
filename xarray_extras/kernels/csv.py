@@ -5,7 +5,6 @@ import os
 import numpy as np
 import pandas as pd
 from .np_to_csv_py import snprintcsvd, snprintcsvi
-from ..backport.pandas import to_csv as pd_to_csv
 
 
 def to_csv(x: np.ndarray, index: pd.Index, columns: pd.Index,
@@ -42,8 +41,7 @@ def to_csv(x: np.ndarray, index: pd.Index, columns: pd.Index,
     line_terminator = kwargs.pop('line_terminator', os.linesep)
 
     if not nogil or not x.size:
-        out = pd_to_csv(x_pd, header=header, line_terminator=line_terminator,
-                        **kwargs)
+        out = x_pd.to_csv(header=header, line_terminator=line_terminator, **kwargs)
         bout = out.encode(encoding)
         if encoding == 'utf-16' and not first_chunk:
             # utf-16 contains a bang at the beginning of the text. However,
@@ -62,8 +60,7 @@ def to_csv(x: np.ndarray, index: pd.Index, columns: pd.Index,
     else:
         x_df = x_pd
 
-    index_csv = pd_to_csv(x_df.iloc[:, :0], header=False, line_terminator='\n',
-                          **kwargs)
+    index_csv = x_df.iloc[:, :0].to_csv(header=False, line_terminator='\n', **kwargs)
     index_csv = index_csv.strip().split('\n')
     if len(index_csv) != x.shape[0]:
         index_csv = '\n' * x.shape[0]
@@ -81,8 +78,8 @@ def to_csv(x: np.ndarray, index: pd.Index, columns: pd.Index,
                                   "nogil=True")
 
     if header is not False:
-        header_bytes = pd_to_csv(
-            x_df.iloc[:0, :], header=header, line_terminator='\n', **kwargs
+        header_bytes = x_df.iloc[:0, :].to_csv(
+            header=header, line_terminator='\n', **kwargs
         ).encode('utf-8')
         body_bytes = header_bytes + body_bytes
 

@@ -1,0 +1,69 @@
+name: Test latest
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: ['*']
+
+jobs:
+  build:
+    name: ${{ matrix.python-version }} ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu, macos, windows]
+        python-version: ['3.7', '3.8', '3.9']
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Setup Conda Environment
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          miniforge-variant: Mambaforge
+          miniforge-version: latest
+          condarc-file: ci/condarc
+          use-mamba: true
+          python-version: ${{ matrix.python-version }}
+          environment-file: ci/requirements.yml
+          activate-environment: xarray-extras
+
+      - name: Install Linux compile env
+        shell: bash -l {0}
+        if: ${{ matrix.os == 'linux' }}
+        run: mamba install gcc_linux-64
+
+      - name: Install MacOS compile env
+        shell: bash -l {0}
+        if: ${{ matrix.os == 'macosx' }}
+        run: mamba install clang_osx-64
+
+      - name: Show conda options
+        shell: bash -l {0}
+        run: conda config --show
+
+      - name: conda info
+        shell: bash -l {0}
+        run: conda info
+
+      - name: conda list
+        shell: bash -l {0}
+        run: conda list
+
+      - name: Install
+        shell: bash -l {0}
+        run: python -m pip install --no-deps -e .
+
+      - name: pytest
+        shell: bash -l {0}
+        run: |
+          pytest -v --cov=xarray_extras --cov-config ci/.coveragerc --cov-report term-missing
+          coverage xml
+
+      - name: codecov.io
+        uses: codecov/codecov-action@v1

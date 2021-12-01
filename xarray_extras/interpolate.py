@@ -161,7 +161,7 @@ def splev(x_new: xarray.DataArray, tck: xarray.Dataset,
     invalid_dims = {*x_new.dims} & {*c.dims} - {dim}
     if invalid_dims:
         raise ValueError("Overlapping dims between interpolated "
-                         "array and x_new: %s" % ",".join(invalid_dims))
+                         "array and x_new: %s" % ",".join(str(d) for d in invalid_dims))
 
     if t.shape != (c.sizes[dim] + k + 1, ):
         raise ValueError("Interpolated dimension has been sliced")

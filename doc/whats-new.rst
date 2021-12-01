@@ -8,12 +8,32 @@ What's New
 
 v0.5.0 (Unreleased)
 -------------------
+- Bumped minimum version of all dependencies:
 
+  ========== ====== ======
+  Dependency v0.4.2 v0.5.0
+  ========== ====== ======
+  python     3.5    3.7
+  dask       0.19   2021.4
+  numba      0.34   0.52
+  numpy      1.13   1.18
+  pandas     0.21   1.1
+  scipy      1.0    1.5
+  xarray     0.10.1 0.16
+  ========== ====== ======
+
+- Added support for Python 3.8 and 3.9
+- Removed ``xarray_extras.backports`` module
+- Migrated to github workflows for CI
+- Run all code linters through pre-commit
+- Use setuptools-scm for versioning
+- Moved the whole contents of setup.py to setup.cfg
 
 .. _whats-new.0.4.2:
 
 v0.4.2 (2019-06-03)
 -------------------
+
 - Type annotations
 - Mandatory mypy validation in CI
 - CI unit tests for Windows now run on Python 3.7
@@ -35,6 +55,7 @@ v0.4.2 (2019-06-03)
 
 v0.4.1 (2019-02-02)
 -------------------
+
 - Fixed build regression in `readthedocs <https://readthedocs.com>`_
 
 
@@ -42,6 +63,7 @@ v0.4.1 (2019-02-02)
 
 v0.4.0 (2019-02-02)
 -------------------
+
 - Moved ``recursive_diff``, ``recursive_eq`` and ``ncdiff``
   to their own package `recursive_diff <http://recursive_diff.readthedocs.io>`_
 - Fixed bug in :func:`~xarray_extras.stack.proper_unstack` where unstacking
