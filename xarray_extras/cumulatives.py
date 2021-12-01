@@ -1,18 +1,18 @@
 """Advanced cumulative sum/productory/mean functions
 """
 from typing import Callable, Hashable, Optional, TypeVar
+
 import dask.array as da
 import numpy as np
 import xarray
 
 from .kernels import cumulatives as kernels
 
+__all__ = ("cummean", "compound_sum", "compound_prod", "compound_mean")
 
-__all__ = ('cummean', 'compound_sum', 'compound_prod', 'compound_mean')
 
-
-T = TypeVar('T', xarray.DataArray, xarray.Dataset)
-TV = TypeVar('TV', xarray.DataArray, xarray.Dataset, xarray.Variable)
+T = TypeVar("T", xarray.DataArray, xarray.Dataset)
+TV = TypeVar("TV", xarray.DataArray, xarray.Dataset, xarray.Variable)
 
 
 def cummean(x: T, dim: Hashable, skipna: Optional[bool] = None) -> T:
@@ -33,7 +33,7 @@ def cummean(x: T, dim: Hashable, skipna: Optional[bool] = None) -> T:
     :returns:
         xarray object of the same type, dtype, and shape as x
     """
-    if skipna is False or (skipna is None and x.dtype.kind not in 'fc'):
+    if skipna is False or (skipna is None and x.dtype.kind not in "fc"):
         # n is a simple arange
         if x.chunks:
             if isinstance(x, xarray.DataArray):
@@ -51,8 +51,7 @@ def cummean(x: T, dim: Hashable, skipna: Optional[bool] = None) -> T:
     return x.cumsum(dim, skipna=skipna) / n
 
 
-def compound_sum(x: T, c: xarray.DataArray, xdim: Hashable, cdim: Hashable
-                 ) -> T:
+def compound_sum(x: T, c: xarray.DataArray, xdim: Hashable, cdim: Hashable) -> T:
     """Compound sum on arbitrary points of x along dim.
 
     :param x:
@@ -93,24 +92,27 @@ def compound_sum(x: T, c: xarray.DataArray, xdim: Hashable, cdim: Hashable
     return _compound(x, c, xdim, cdim, kernels.compound_sum)
 
 
-def compound_prod(x: T, c: xarray.DataArray, xdim: Hashable, cdim: Hashable
-                  ) -> T:
+def compound_prod(x: T, c: xarray.DataArray, xdim: Hashable, cdim: Hashable) -> T:
     """Compound product among arbitrary points of x along dim
     See :func:`compound_sum`.
     """
     return _compound(x, c, xdim, cdim, kernels.compound_prod)
 
 
-def compound_mean(x: T, c: xarray.DataArray, xdim: Hashable, cdim: Hashable
-                  ) -> T:
+def compound_mean(x: T, c: xarray.DataArray, xdim: Hashable, cdim: Hashable) -> T:
     """Compound mean among arbitrary points of x along dim
     See :func:`compound_sum`.
     """
     return _compound(x, c, xdim, cdim, kernels.compound_mean)
 
 
-def _compound(x: T, c: xarray.DataArray, xdim: Hashable, cdim: Hashable,
-              kernel: Callable[[T, xarray.DataArray], T]) -> T:
+def _compound(
+    x: T,
+    c: xarray.DataArray,
+    xdim: Hashable,
+    cdim: Hashable,
+    kernel: Callable[[T, xarray.DataArray], T],
+) -> T:
     """Implementation of all compound functions
 
     :param kernel:
@@ -119,22 +121,23 @@ def _compound(x: T, c: xarray.DataArray, xdim: Hashable, cdim: Hashable,
         containing the indices along x.coords[xdim] or -1 where c is null.
     """
     # Convert coord points to indexes of x.coords[dim]
-    idx = xarray.DataArray(
-        x.coords[xdim].searchsorted(c),
-        dims=c.dims, coords=c.coords)
+    idx = xarray.DataArray(x.coords[xdim].searchsorted(c), dims=c.dims, coords=c.coords)
     # searchsorted(NaN) returns 0; replace it with -1.
     # isnull('') returns False. We could have asked for None, however
     # searchsorted will refuse to compare strings and None's
-    if c.dtype.kind == 'U':
-        idx = idx.where(c != '', -1)
+    if c.dtype.kind == "U":
+        idx = idx.where(c != "", -1)
     else:
         idx = idx.where(~c.isnull(), -1)
 
     dtype = x.dtypes if isinstance(x, xarray.Dataset) else x.dtype
 
     return xarray.apply_ufunc(
-        kernel, x, idx,
+        kernel,
+        x,
+        idx,
         input_core_dims=[[xdim], [cdim]],
         output_core_dims=[[]],
-        dask='parallelized',
-        output_dtypes=[dtype])
+        dask="parallelized",
+        output_dtypes=[dtype],
+    )

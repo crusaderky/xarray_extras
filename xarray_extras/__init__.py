@@ -6,4 +6,4 @@ except Exception:  # pragma: nocover
     # Local copy, not installed with setuptools
     __version__ = "999"
 
-__all__ = ("__version__", )
+__all__ = ("__version__",)

@@ -3,21 +3,24 @@ This is a helper module of :mod:`xarray_extras.kernels.csv`.
 """
 import ctypes
 from typing import Optional
+
 import numpy as np
+
 from . import np_to_csv  # type: ignore
-np_to_csv = np.ctypeslib.load_library('np_to_csv', np_to_csv.__file__)
+
+np_to_csv = np.ctypeslib.load_library("np_to_csv", np_to_csv.__file__)
 
 
 np_to_csv.snprintcsvd.argtypes = [
     ctypes.c_char_p,  # char * buf
-    ctypes.c_int32,   # int bufsize
+    ctypes.c_int32,  # int bufsize
     # const double * array
-    np.ctypeslib.ndpointer(dtype=np.float64, ndim=2, flags='C_CONTIGUOUS'),
-    ctypes.c_int32,   # int h
-    ctypes.c_int32,   # int w
+    np.ctypeslib.ndpointer(dtype=np.float64, ndim=2, flags="C_CONTIGUOUS"),
+    ctypes.c_int32,  # int h
+    ctypes.c_int32,  # int w
     ctypes.c_char_p,  # const char * index
     ctypes.c_char_p,  # const char * fmt
-    ctypes.c_bool,    # bool trim_zeros
+    ctypes.c_bool,  # bool trim_zeros
     ctypes.c_char_p,  # const char * na_rep
 ]
 np_to_csv.snprintcsvd.restype = ctypes.c_int32
@@ -25,19 +28,24 @@ np_to_csv.snprintcsvd.restype = ctypes.c_int32
 
 np_to_csv.snprintcsvi.argtypes = [
     ctypes.c_char_p,  # char * buf
-    ctypes.c_int32,   # int bufsize
+    ctypes.c_int32,  # int bufsize
     # const int64_t * array
-    np.ctypeslib.ndpointer(dtype=np.int64, ndim=2, flags='C_CONTIGUOUS'),
-    ctypes.c_int32,   # int h
-    ctypes.c_int32,   # int w
+    np.ctypeslib.ndpointer(dtype=np.int64, ndim=2, flags="C_CONTIGUOUS"),
+    ctypes.c_int32,  # int h
+    ctypes.c_int32,  # int w
     ctypes.c_char_p,  # const char * index
-    ctypes.c_char,    # char sep
+    ctypes.c_char,  # char sep
 ]
 np_to_csv.snprintcsvi.restype = ctypes.c_int32
 
 
-def snprintcsvd(a: np.ndarray, index: str, sep: str = ',',
-                fmt: Optional[str] = None, na_rep: str = '') -> bytes:
+def snprintcsvd(
+    a: np.ndarray,
+    index: str,
+    sep: str = ",",
+    fmt: Optional[str] = None,
+    na_rep: str = "",
+) -> bytes:
     """Convert array to CSV.
 
     :param a:
@@ -57,26 +65,26 @@ def snprintcsvd(a: np.ndarray, index: str, sep: str = ',',
     """
     if a.ndim == 1:
         a = a.reshape((-1, 1))
-    if a.ndim != 2 or a.dtype.kind != 'f':
+    if a.ndim != 2 or a.dtype.kind != "f":
         raise ValueError("Expected 2d numpy array of floats")
     a = a.astype(np.float64)
     a = np.ascontiguousarray(a)
     if len(sep) != 1:
         raise ValueError("sep must be exactly 1 character")
-    bsep = sep.encode('ascii')
+    bsep = sep.encode("ascii")
 
     # Test fmt while in Python - much better to get
     # an Exception here than a segfault in C!
     if fmt is not None:
         fmt % 1.23  # noqa
-        bfmt = fmt.encode('ascii') + bsep
+        bfmt = fmt.encode("ascii") + bsep
         trim_zeros = False
     else:
-        bfmt = b'%f' + bsep
+        bfmt = b"%f" + bsep
         trim_zeros = True
-    bna_rep = na_rep.encode('ascii') + bsep
+    bna_rep = na_rep.encode("ascii") + bsep
     # We're relying on the fact that ascii is a strict subset of UTF-8
-    bindex = index.encode('utf-8')
+    bindex = index.encode("utf-8")
 
     # Blindly try ever-larger bufsizes until it fits
     # The first iteration should be sufficient in all but the most
@@ -86,14 +94,15 @@ def snprintcsvd(a: np.ndarray, index: str, sep: str = ',',
     while True:
         bufsize = cellsize * a.size + len(bindex)
         buf = ctypes.create_string_buffer(bufsize)
-        nchar = np_to_csv.snprintcsvd(buf, bufsize, a, a.shape[0], a.shape[1],
-                                      bindex, bfmt, trim_zeros, bna_rep)
+        nchar = np_to_csv.snprintcsvd(
+            buf, bufsize, a, a.shape[0], a.shape[1], bindex, bfmt, trim_zeros, bna_rep
+        )
         if nchar < bufsize:
             return bytes(buf[:nchar])  # type: ignore
         cellsize *= 2
 
 
-def snprintcsvi(a: np.ndarray, index: str, sep: str = ',') -> bytes:
+def snprintcsvi(a: np.ndarray, index: str, sep: str = ",") -> bytes:
     """Convert array to CSV.
 
     :param a:
@@ -108,20 +117,19 @@ def snprintcsvi(a: np.ndarray, index: str, sep: str = ',') -> bytes:
     """
     if a.ndim == 1:
         a = a.reshape((-1, 1))
-    if a.ndim != 2 or a.dtype.kind != 'i':
+    if a.ndim != 2 or a.dtype.kind != "i":
         raise ValueError("Expected 2d numpy array of ints")
     a = a.astype(np.int64)
     a = np.ascontiguousarray(a)
     if len(sep) != 1:
         raise ValueError("sep must be exactly 1 character")
-    bsep = sep.encode('ascii')
+    bsep = sep.encode("ascii")
     # We're relying on the fact that ascii is a strict subset of UTF-8
-    bindex = index.encode('utf-8')
+    bindex = index.encode("utf-8")
 
     cellsize = 22  # len('%d' % -2**64) + 1
     bufsize = cellsize * a.size + len(bindex)
     buf = ctypes.create_string_buffer(bufsize)
-    nchar = np_to_csv.snprintcsvi(
-        buf, bufsize, a, a.shape[0], a.shape[1], bindex, bsep)
+    nchar = np_to_csv.snprintcsvi(buf, bufsize, a, a.shape[0], a.shape[1], bindex, bsep)
     assert nchar < bufsize
     return bytes(buf[:nchar])  # type: ignore

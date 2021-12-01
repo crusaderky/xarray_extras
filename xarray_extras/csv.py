@@ -3,14 +3,15 @@ with full support for `dask <http://dask.org/>`_ and `dask distributed
 <http://distributed.dask.org/>`_.
 """
 from typing import Callable, Dict, Optional, Union
-import xarray
+
 import dask
+import xarray
 from dask.base import tokenize
 from dask.delayed import Delayed
+
 from .kernels import csv as kernels
 
-
-__all__ = ('to_csv', )
+__all__ = ("to_csv",)
 
 
 def to_csv(x: xarray.DataArray, path: str, *, nogil: bool = True, **kwargs):
@@ -72,10 +73,11 @@ def to_csv(x: xarray.DataArray, path: str, *, nogil: bool = True, **kwargs):
         raise ValueError("path_or_buf must be a file path")
 
     if x.ndim not in (1, 2):
-        raise ValueError('cannot convert arrays with %d dimensions into '
-                         'pandas objects' % x.ndim)
+        raise ValueError(
+            "cannot convert arrays with %d dimensions into " "pandas objects" % x.ndim
+        )
 
-    if nogil and x.dtype.kind not in 'if':
+    if nogil and x.dtype.kind not in "if":
         nogil = False
 
     # Extract row and columns indices
@@ -86,10 +88,10 @@ def to_csv(x: xarray.DataArray, path: str, *, nogil: bool = True, **kwargs):
         index = indices[0]
         columns = None
 
-    compression = kwargs.pop('compression', 'infer')
+    compression = kwargs.pop("compression", "infer")
     compress = _compress_func(path, compression)
-    mode = kwargs.pop('mode', 'w')
-    if mode not in 'wa':
+    mode = kwargs.pop("mode", "w")
+    if mode not in "wa":
         raise ValueError('mode: expected w or a; got "%s"' % mode)
 
     # Fast exit for numpy backend
@@ -97,19 +99,19 @@ def to_csv(x: xarray.DataArray, path: str, *, nogil: bool = True, **kwargs):
         bdata = kernels.to_csv(x.values, index, columns, True, nogil, kwargs)
         if compress:
             bdata = compress(bdata)
-        with open(path, mode + 'b') as fh:
+        with open(path, mode + "b") as fh:
             fh.write(bdata)
         return None
 
     # Merge chunks on all dimensions beyond the first
-    x = x.chunk((x.chunks[0],) + tuple((s, ) for s in x.shape[1:]))
+    x = x.chunk((x.chunks[0],) + tuple((s,) for s in x.shape[1:]))
 
     # Manually define the dask graph
     tok = tokenize(x.data, index, columns, compression, path, kwargs)
-    name1 = 'to_csv_encode-' + tok
-    name2 = 'to_csv_compress-' + tok
-    name3 = 'to_csv_write-' + tok
-    name4 = 'to_csv-' + tok
+    name1 = "to_csv_encode-" + tok
+    name2 = "to_csv_compress-" + tok
+    name3 = "to_csv_write-" + tok
+    name4 = "to_csv-" + tok
 
     dsk = {}  # type: Dict[Union[str, tuple], tuple]
 
@@ -118,21 +120,19 @@ def to_csv(x: xarray.DataArray, path: str, *, nogil: bool = True, **kwargs):
     offset = 0
     for i, size in enumerate(x.chunks[0]):
         # Slice index
-        index_i = index[offset:offset + size]
+        index_i = index[offset : offset + size]
         offset += size
 
-        x_i = (x.data.name, i) + (0, ) * (x.ndim - 1)
+        x_i = (x.data.name, i) + (0,) * (x.ndim - 1)
 
         # Step 1: convert to CSV and encode to binary blob
         if i == 0:
             # First chunk: print header
-            dsk[name1, i] = (kernels.to_csv, x_i, index_i, columns,
-                             True, nogil, kwargs)
+            dsk[name1, i] = (kernels.to_csv, x_i, index_i, columns, True, nogil, kwargs)
         else:
             kwargs_i = kwargs.copy()
-            kwargs_i['header'] = False
-            dsk[name1, i] = (kernels.to_csv, x_i, index_i, None,
-                             False, nogil, kwargs_i)
+            kwargs_i["header"] = False
+            dsk[name1, i] = (kernels.to_csv, x_i, index_i, None, False, nogil, kwargs_i)
 
         # Step 2 (optional): compress
         if compress:
@@ -144,52 +144,56 @@ def to_csv(x: xarray.DataArray, path: str, *, nogil: bool = True, **kwargs):
         # Step 3: write to file
         if i == 0:
             # First chunk: overwrite file if it already exists
-            dsk[name3, i] = kernels.to_file, path, mode + 'b', (prevname, i)
+            dsk[name3, i] = kernels.to_file, path, mode + "b", (prevname, i)
         else:
             # Next chunks: wait for previous chunk to complete and append
-            dsk[name3, i] = (kernels.to_file, path, 'ab', (prevname, i),
-                             (name3, i - 1))
+            dsk[name3, i] = (kernels.to_file, path, "ab", (prevname, i), (name3, i - 1))
 
     # Rename final key
     dsk[name4] = dsk.pop((name3, i))
 
-    return Delayed(name4, _graph_from_collections(name4, dsk, (x, )))
+    return Delayed(name4, _graph_from_collections(name4, dsk, (x,)))
 
 
 def _graph_from_collections(name: str, layer: dict, dependencies):
     """Create a new :class:`~dask.highlevelgraph.HighLevelGraph` (dask >= 1.1)
     or a new :class:`~dask.sharedict.ShareDict` (dask <= 1.0)
     """
-    if dask.__version__ >= '1.1':
+    if dask.__version__ >= "1.1":
         from dask.highlevelgraph import HighLevelGraph
+
         return HighLevelGraph.from_collections(name, layer, dependencies)
     else:
         from dask import sharedict
-        return sharedict.merge(
-            layer, *(d.__dask_graph__() for d in dependencies))
+
+        return sharedict.merge(layer, *(d.__dask_graph__() for d in dependencies))
 
 
-def _compress_func(path: str, compression: Optional[str]
-                   ) -> Optional[Callable[[bytes], bytes]]:
-    if compression == 'infer':
-        compression = path.split('.')[-1].lower()
-        if compression == 'gz':
-            compression = 'gzip'
-        elif compression == 'csv':
+def _compress_func(
+    path: str, compression: Optional[str]
+) -> Optional[Callable[[bytes], bytes]]:
+    if compression == "infer":
+        compression = path.split(".")[-1].lower()
+        if compression == "gz":
+            compression = "gzip"
+        elif compression == "csv":
             compression = None
 
     if compression is None:
         return None
-    elif compression == 'gzip':
+    elif compression == "gzip":
         import gzip
+
         return gzip.compress
-    elif compression == 'bz2':
+    elif compression == "bz2":
         import bz2
+
         return bz2.compress
-    elif compression == 'xz':
+    elif compression == "xz":
         import lzma
+
         return lzma.compress
-    elif compression == 'zip':
+    elif compression == "zip":
         raise NotImplementedError("zip compression is not supported")
     else:
         raise ValueError("Unrecognized compression: %s" % compression)

@@ -2,6 +2,7 @@
 """Numba kernels for :mod:`cumulatives`
 """
 import numpy as np
+
 from ..numba_extras import guvectorize
 
 

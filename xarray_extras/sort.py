@@ -1,14 +1,16 @@
 """Sorting functions
 """
 from typing import Hashable, Optional, TypeVar
+
 import xarray
+
 from .duck import sort as duck
 
-__all__ = ('topk', 'argtopk', 'take_along_dim')
+__all__ = ("topk", "argtopk", "take_along_dim")
 
 
-T = TypeVar('T', xarray.DataArray, xarray.Dataset)
-TV = TypeVar('TV', xarray.DataArray, xarray.Dataset, xarray.Variable)
+T = TypeVar("T", xarray.DataArray, xarray.Dataset)
+TV = TypeVar("TV", xarray.DataArray, xarray.Dataset, xarray.Variable)
 
 
 def topk(a: TV, k: int, dim: Hashable, split_every: Optional[int] = None) -> TV:
@@ -20,15 +22,16 @@ def topk(a: TV, k: int, dim: Hashable, split_every: Optional[int] = None) -> TV:
     chunk along the given axis.
     """
     return xarray.apply_ufunc(
-        duck.topk, a,
-        kwargs={'k': k, 'split_every': split_every},
+        duck.topk,
+        a,
+        kwargs={"k": k, "split_every": split_every},
         input_core_dims=[[dim]],
-        output_core_dims=[['__temp_topk__']],
-        dask='allowed').rename({'__temp_topk__': dim})
+        output_core_dims=[["__temp_topk__"]],
+        dask="allowed",
+    ).rename({"__temp_topk__": dim})
 
 
-def argtopk(a: TV, k: int, dim: Hashable, split_every: Optional[int] = None
-            ) -> TV:
+def argtopk(a: TV, k: int, dim: Hashable, split_every: Optional[int] = None) -> TV:
     """Extract the indexes of the k largest elements from a on the given
     dimension, and return them sorted from largest to smallest. If k is
     negative, extract the -k smallest elements instead, and return them
@@ -38,11 +41,13 @@ def argtopk(a: TV, k: int, dim: Hashable, split_every: Optional[int] = None
     chunk along the given axis.
     """
     return xarray.apply_ufunc(
-        duck.argtopk, a,
-        kwargs={'k': k, 'split_every': split_every},
+        duck.argtopk,
+        a,
+        kwargs={"k": k, "split_every": split_every},
         input_core_dims=[[dim]],
-        output_core_dims=[['__temp_topk__']],
-        dask='allowed').rename({'__temp_topk__': dim})
+        output_core_dims=[["__temp_topk__"]],
+        dask="allowed",
+    ).rename({"__temp_topk__": dim})
 
 
 def take_along_dim(a: T, ind: T, dim: Hashable) -> T:
@@ -55,10 +60,13 @@ def take_along_dim(a: T, ind: T, dim: Hashable) -> T:
     :param dim:
         dimension along which argtopk was executed
     """
-    a = a.rename({dim: '__temp_take_along_dim__'})
+    a = a.rename({dim: "__temp_take_along_dim__"})
 
     return xarray.apply_ufunc(
-        duck.take_along_axis, a, ind,
-        input_core_dims=[['__temp_take_along_dim__'], [dim]],
+        duck.take_along_axis,
+        a,
+        ind,
+        input_core_dims=[["__temp_take_along_dim__"], [dim]],
         output_core_dims=[[dim]],
-        dask='allowed')
+        dask="allowed",
+    )
