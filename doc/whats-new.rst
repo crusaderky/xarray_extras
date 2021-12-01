@@ -6,7 +6,7 @@ What's New
 
 .. _whats-new.0.5.0:
 
-v0.5.0 (Unreleased)
+v0.5.0 (2021-12-01)
 -------------------
 - Bumped minimum version of all dependencies:
 
