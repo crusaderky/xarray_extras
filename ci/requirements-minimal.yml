@@ -4,7 +4,7 @@ channels:
   - defaults
 dependencies:
   - python=3.7
-  - dask=2020.12
+  - dask=2021.4
   - numba=0.52
   - numpy=1.18
   - pandas=1.1
