@@ -5,12 +5,8 @@ from typing import Optional, Union, TypeVar
 import dask.array as da
 from dask.array.slicing import slice_with_int_dask_array_on_axis
 import numpy as np
+from numpy import take_along_axis as np_take_along_axis
 from xarray.core.duck_array_ops import broadcast_to
-
-try:
-    from numpy import take_along_axis as np_take_along_axis
-except ImportError:
-    from ..backport.numpy import take_along_axis as np_take_along_axis
 
 
 T = TypeVar('T', np.ndarray, da.Array)
