@@ -3,6 +3,7 @@ channels:
   - conda-forge
   - defaults
 dependencies:
+  - coverage
   - python=3.7
   - dask=2020.12
   - numba=0.52
