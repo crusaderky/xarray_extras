@@ -19,18 +19,19 @@ Install
 
 4. Install C compilation stack:
 
-   Linux:
-   .. code-block:: bash
+   Linux
+       .. code-block:: bash
 
-      conda install gcc_linux-64
+          conda install gcc_linux-64
 
-   MacOSX:
-   .. code-block:: bash
+   MacOSX
+        .. code-block:: bash
 
-      conda install clang_osx-64
+           conda install clang_osx-64
 
-   Windows: you need to manually install the Microsoft C compiler tools. Refer to
-   CPython documentation.
+   Windows
+        You need to manually install the Microsoft C compiler tools. Refer to CPython
+        documentation.
 
 
 To keep a fork in sync with the upstream source:
