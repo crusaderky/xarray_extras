@@ -2,11 +2,24 @@
 
 .. codeauthor:: Guido Imperiale
 """
-from typing import Iterable, Optional, Tuple, Union
+from __future__ import annotations
+
+from collections.abc import Iterable
+from typing import TYPE_CHECKING
 
 import numpy as np
 from scipy.interpolate import BSpline, make_interp_spline
 from scipy.interpolate._bsplines import _as_float_array, _augknt, _not_a_knot
+
+if TYPE_CHECKING:  # pragma: nocover
+    from typing import Tuple, Union
+
+    from typing_extensions import TypeAlias  # In typing since Python 3.10
+
+    # FIXME mypy should accept Python 3.9 notations
+    #       (tuple instead of Tuple and | instead of Union)
+    Boundary: TypeAlias = Iterable[Tuple[int, float]]
+    BCType: TypeAlias = Union[Tuple[Boundary, Boundary], str, None]
 
 
 def _memoryview_safe(x: np.ndarray) -> np.ndarray:
@@ -21,12 +34,8 @@ def _memoryview_safe(x: np.ndarray) -> np.ndarray:
     return x
 
 
-Boundary = Iterable[Tuple[int, float]]
-BCType = Union[Tuple[Boundary, Boundary], str, None]
-
-
 def make_interp_knots(
-    x: np.ndarray, k: int = 3, bc_type: BCType = None, check_finite: bool = True
+    x: np.ndarray, k: int = 3, bc_type: BCType | None = None, check_finite: bool = True
 ) -> np.ndarray:
     """Compute the knots of the B-spline.
 
@@ -88,7 +97,7 @@ def make_interp_coeffs(
     x: np.ndarray,
     y: np.ndarray,
     k: int = 3,
-    t: Optional[np.ndarray] = None,
+    t: np.ndarray | None = None,
     bc_type: BCType = None,
     axis: int = 0,
     check_finite: bool = True,
@@ -127,7 +136,7 @@ def splev(
     t: np.ndarray,
     c: np.ndarray,
     k: int = 3,
-    extrapolate: Union[bool, str] = True,
+    extrapolate: bool | str = True,
 ) -> np.ndarray:
     """Generate a BSpline object on the fly from knots and coefficients and
     evaluate it on x_new.

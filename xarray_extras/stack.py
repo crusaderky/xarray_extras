@@ -1,7 +1,9 @@
 """Utilities for stacking/unstacking dimensions
 """
-from collections import OrderedDict
-from typing import Hashable, MutableMapping, TypeVar
+from __future__ import annotations
+
+from collections.abc import Hashable
+from typing import TypeVar
 
 import pandas
 import xarray
@@ -34,7 +36,7 @@ def proper_unstack(array: T, dim: Hashable) -> T:
     codes = []
 
     for levels_i, codes_i in zip(mindex.levels, mindex.codes):
-        level_map = OrderedDict()  # type: MutableMapping[Hashable, int]
+        level_map: dict[Hashable, int] = {}
 
         for code in codes_i:
             if code not in level_map:

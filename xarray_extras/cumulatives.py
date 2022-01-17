@@ -1,6 +1,9 @@
 """Advanced cumulative sum/productory/mean functions
 """
-from typing import Callable, Hashable, Optional, TypeVar
+from __future__ import annotations
+
+from collections.abc import Callable, Hashable
+from typing import TypeVar
 
 import dask.array as da
 import numpy as np
@@ -15,7 +18,7 @@ T = TypeVar("T", xarray.DataArray, xarray.Dataset)
 TV = TypeVar("TV", xarray.DataArray, xarray.Dataset, xarray.Variable)
 
 
-def cummean(x: T, dim: Hashable, skipna: Optional[bool] = None) -> T:
+def cummean(x: T, dim: Hashable, skipna: bool | None = None) -> T:
     """
     .. math::
 

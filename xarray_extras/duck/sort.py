@@ -1,7 +1,9 @@
 """Helper functions for :mod:`xarray_extras.sort`, which accept either
 numpy arrays or dask arrays.
 """
-from typing import Optional, TypeVar, Union
+from __future__ import annotations
+
+from typing import TypeVar
 
 import dask.array as da
 import numpy as np
@@ -11,7 +13,7 @@ from xarray.core.duck_array_ops import broadcast_to
 T = TypeVar("T", np.ndarray, da.Array)
 
 
-def topk(a: T, k: int, split_every: Optional[int] = None) -> T:
+def topk(a: T, k: int, split_every: int | None = None) -> T:
     """If a is a :class:`dask.array.Array`, invoke a.topk; else reimplement
     the functionality in plain numpy.
     """
@@ -33,7 +35,7 @@ def topk(a: T, k: int, split_every: Optional[int] = None) -> T:
     return a
 
 
-def argtopk(a: T, k: int, split_every: Optional[int] = None) -> T:
+def argtopk(a: T, k: int, split_every: int | None = None) -> T:
     """If a is a :class:`dask.array.Array`, invoke a.argtopk; else reimplement
     the functionality in plain numpy.
     """
@@ -55,14 +57,13 @@ def argtopk(a: T, k: int, split_every: Optional[int] = None) -> T:
 
 
 def take_along_axis(
-    a: Union[np.ndarray, da.Array], ind: Union[np.ndarray, da.Array]
-) -> Union[np.ndarray, da.Array]:
+    a: np.ndarray | da.Array, ind: np.ndarray | da.Array
+) -> np.ndarray | da.Array:
     """Easily use the outputs of argsort on ND arrays to pick the results."""
     if isinstance(a, np.ndarray) and isinstance(ind, np.ndarray):
         a = a.reshape((1,) * (ind.ndim - a.ndim) + a.shape)
         ind = ind.reshape((1,) * (a.ndim - ind.ndim) + ind.shape)
-        res = np.take_along_axis(a, ind, axis=-1)
-        return res
+        return np.take_along_axis(a, ind, axis=-1)
 
     # a and/or ind are dask arrays. This is not yet implemented upstream.
     # Upstream tracker: https://github.com/dask/dask/issues/3663
@@ -105,7 +106,7 @@ def take_along_axis(
             res_i = a_i[..., ind_i]
         res.append(res_i)
 
-    res = da.stack(res, axis=-2)
+    res_arr = da.stack(res, axis=-2)
     # Un-flatten axis i
-    res = res.reshape(*final_shape)
-    return res
+    res_arr = res_arr.reshape(*final_shape)
+    return res_arr

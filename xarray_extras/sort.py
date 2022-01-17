@@ -1,6 +1,9 @@
 """Sorting functions
 """
-from typing import Hashable, Optional, TypeVar
+from __future__ import annotations
+
+from collections.abc import Hashable
+from typing import TypeVar
 
 import xarray
 
@@ -13,7 +16,7 @@ T = TypeVar("T", xarray.DataArray, xarray.Dataset)
 TV = TypeVar("TV", xarray.DataArray, xarray.Dataset, xarray.Variable)
 
 
-def topk(a: TV, k: int, dim: Hashable, split_every: Optional[int] = None) -> TV:
+def topk(a: TV, k: int, dim: Hashable, split_every: int | None = None) -> TV:
     """Extract the k largest elements from a on the given dimension, and return
     them sorted from largest to smallest. If k is negative, extract the -k
     smallest elements instead, and return them sorted from smallest to largest.
@@ -31,7 +34,7 @@ def topk(a: TV, k: int, dim: Hashable, split_every: Optional[int] = None) -> TV:
     ).rename({"__temp_topk__": dim})
 
 
-def argtopk(a: TV, k: int, dim: Hashable, split_every: Optional[int] = None) -> TV:
+def argtopk(a: TV, k: int, dim: Hashable, split_every: int | None = None) -> TV:
     """Extract the indexes of the k largest elements from a on the given
     dimension, and return them sorted from largest to smallest. If k is
     negative, extract the -k smallest elements instead, and return them
