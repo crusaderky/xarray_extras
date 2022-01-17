@@ -11,7 +11,7 @@ import numpy as np
 from scipy.interpolate import BSpline, make_interp_spline
 from scipy.interpolate._bsplines import _as_float_array, _augknt, _not_a_knot
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: nocover
     from typing import Tuple, Union
 
     from typing_extensions import TypeAlias  # In typing since Python 3.10
