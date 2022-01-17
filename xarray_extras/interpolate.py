@@ -1,6 +1,8 @@
 """xarray spline interpolation functions
 """
-from typing import Hashable, Union
+from __future__ import annotations
+
+from collections.abc import Hashable
 
 import dask.array as da
 import numpy as np
@@ -111,7 +113,7 @@ def splrep(a: xarray.DataArray, dim: Hashable, k: int = 3) -> xarray.Dataset:
 
 
 def splev(
-    x_new: xarray.DataArray, tck: xarray.Dataset, extrapolate: Union[bool, str] = True
+    x_new: xarray.DataArray, tck: xarray.Dataset, extrapolate: bool | str = True
 ) -> xarray.DataArray:
     """Evaluate the B-spline generated with :func:`splrep`.
 

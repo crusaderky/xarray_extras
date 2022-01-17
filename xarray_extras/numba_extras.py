@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 """Extensions to numba
 """
-from typing import Any, Callable
+from __future__ import annotations
+
+from collections.abc import Callable
+from typing import Any
 
 import numba
 

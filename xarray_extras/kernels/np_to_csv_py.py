@@ -1,8 +1,9 @@
 """Thin ctypes wrapper around :file:`np_to_csv.c`.
 This is a helper module of :mod:`xarray_extras.kernels.csv`.
 """
+from __future__ import annotations
+
 import ctypes
-from typing import Optional
 
 import numpy as np
 
@@ -43,7 +44,7 @@ def snprintcsvd(
     a: np.ndarray,
     index: str,
     sep: str = ",",
-    fmt: Optional[str] = None,
+    fmt: str | None = None,
     na_rep: str = "",
 ) -> bytes:
     """Convert array to CSV.

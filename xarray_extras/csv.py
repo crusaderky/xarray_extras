@@ -2,7 +2,9 @@
 with full support for `dask <http://dask.org/>`_ and `dask distributed
 <http://distributed.dask.org/>`_.
 """
-from typing import Callable, Dict, Optional, Union
+from __future__ import annotations
+
+from collections.abc import Callable
 
 import xarray
 from dask.base import tokenize
@@ -113,7 +115,7 @@ def to_csv(x: xarray.DataArray, path: str, *, nogil: bool = True, **kwargs):
     name3 = "to_csv_write-" + tok
     name4 = "to_csv-" + tok
 
-    dsk = {}  # type: Dict[Union[str, tuple], tuple]
+    dsk: dict[str | tuple, tuple] = {}
 
     assert x.chunks
     assert x.chunks[0]
@@ -157,8 +159,8 @@ def to_csv(x: xarray.DataArray, path: str, *, nogil: bool = True, **kwargs):
 
 
 def _compress_func(
-    path: str, compression: Optional[str]
-) -> Optional[Callable[[bytes], bytes]]:
+    path: str, compression: str | None
+) -> Callable[[bytes], bytes] | None:
     if compression == "infer":
         compression = path.split(".")[-1].lower()
         if compression == "gz":

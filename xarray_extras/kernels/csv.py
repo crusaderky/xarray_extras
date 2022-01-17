@@ -1,7 +1,8 @@
 """dask kernels for :mod:`xarray_extras.csv`
 """
+from __future__ import annotations
+
 import os
-from typing import Union
 
 import numpy as np
 import pandas as pd
@@ -109,7 +110,7 @@ def to_csv(
     return body_bytes
 
 
-def to_file(fname: str, mode: str, data: Union[str, bytes], rr_token=None) -> None:
+def to_file(fname: str, mode: str, data: str | bytes, rr_token=None) -> None:
     """Write data to file
 
     :param fname:
