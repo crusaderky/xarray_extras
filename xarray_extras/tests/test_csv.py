@@ -171,7 +171,7 @@ def test_empty(chunks, nogil, dtype):
     assert_to_csv(x, chunks, nogil, dtype)
 
 
-@pytest.mark.parametrize("x", [0, -(2 ** 63)])
+@pytest.mark.parametrize("x", [0, -(2**63)])
 @pytest.mark.parametrize("index", ["a", "a" * 1000])
 @pytest.mark.parametrize("nogil", [False, True])
 @pytest.mark.parametrize("chunks", [None, 1])

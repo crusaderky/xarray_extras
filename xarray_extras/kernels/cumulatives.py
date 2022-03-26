@@ -3,7 +3,7 @@
 """
 import numpy as np
 
-from ..numba_extras import guvectorize
+from xarray_extras.numba_extras import guvectorize
 
 
 @guvectorize("{T}[:], intp[:], {T}[:]", "(i),(j)->()")

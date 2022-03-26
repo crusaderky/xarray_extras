@@ -7,7 +7,7 @@ from typing import TypeVar
 
 import xarray
 
-from .duck import sort as duck
+from xarray_extras.duck import sort as duck
 
 __all__ = ("topk", "argtopk", "take_along_dim")
 

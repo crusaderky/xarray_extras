@@ -9,7 +9,7 @@ import numpy as np
 import xarray
 from xarray.core.pycompat import dask_array_type
 
-from .kernels import interpolate as kernels
+from xarray_extras.kernels import interpolate as kernels
 
 __all__ = ("splrep", "splev")
 

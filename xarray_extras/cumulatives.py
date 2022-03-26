@@ -9,7 +9,7 @@ import dask.array as da
 import numpy as np
 import xarray
 
-from .kernels import cumulatives as kernels
+from xarray_extras.kernels import cumulatives as kernels
 
 __all__ = ("cummean", "compound_sum", "compound_prod", "compound_mean")
 

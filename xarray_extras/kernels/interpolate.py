@@ -14,6 +14,7 @@ from scipy.interpolate._bsplines import _as_float_array, _augknt, _not_a_knot
 if TYPE_CHECKING:  # pragma: nocover
     # TODO Python 3.9 notations
     from typing import Tuple, Union
+
     # TODO import from typing (requires Python 3.10)
     from typing_extensions import TypeAlias
 
