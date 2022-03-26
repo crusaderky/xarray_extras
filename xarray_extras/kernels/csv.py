@@ -7,7 +7,7 @@ import os
 import numpy as np
 import pandas as pd
 
-from .np_to_csv_py import snprintcsvd, snprintcsvi
+from xarray_extras.kernels.np_to_csv_py import snprintcsvd, snprintcsvi
 
 
 def to_csv(

@@ -7,7 +7,7 @@ import ctypes
 
 import numpy as np
 
-from . import np_to_csv  # type: ignore
+from xarray_extras.kernels import np_to_csv  # type: ignore
 
 np_to_csv = np.ctypeslib.load_library("np_to_csv", np_to_csv.__file__)
 

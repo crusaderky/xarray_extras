@@ -9,6 +9,7 @@ v0.6.0 (Unreleased)
 -------------------
 - Added explicit CI tests for Python 3.10
   (v0.5.0 already supports it, although not formally).
+- Dropped support for Python 3.7
 
 .. _whats-new.0.5.0:
 

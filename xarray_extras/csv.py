@@ -11,7 +11,7 @@ from dask.base import tokenize
 from dask.delayed import Delayed
 from dask.highlevelgraph import HighLevelGraph
 
-from .kernels import csv as kernels
+from xarray_extras.kernels import csv as kernels
 
 __all__ = ("to_csv",)
 
