@@ -26,7 +26,7 @@ jobs:
           miniforge-version: latest
           condarc-file: ci/condarc
           use-mamba: true
-          python-version: 3.7
+          python-version: 3.8
           environment-file: ci/requirements-minimal.yml
           activate-environment: xarray-extras-minimal
 

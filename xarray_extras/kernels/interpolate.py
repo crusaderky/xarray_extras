@@ -12,12 +12,11 @@ from scipy.interpolate import BSpline, make_interp_spline
 from scipy.interpolate._bsplines import _as_float_array, _augknt, _not_a_knot
 
 if TYPE_CHECKING:  # pragma: nocover
+    # TODO Python 3.9 notations
     from typing import Tuple, Union
+    # TODO import from typing (requires Python 3.10)
+    from typing_extensions import TypeAlias
 
-    from typing_extensions import TypeAlias  # In typing since Python 3.10
-
-    # FIXME mypy should accept Python 3.9 notations
-    #       (tuple instead of Tuple and | instead of Union)
     Boundary: TypeAlias = Iterable[Tuple[int, float]]
     BCType: TypeAlias = Union[Tuple[Boundary, Boundary], str, None]
 
