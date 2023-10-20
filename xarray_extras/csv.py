@@ -7,6 +7,7 @@ from __future__ import annotations
 from collections.abc import Callable
 
 import xarray
+from pathlib import Path
 from dask.base import tokenize
 from dask.delayed import Delayed
 from dask.highlevelgraph import HighLevelGraph
@@ -16,7 +17,7 @@ from xarray_extras.kernels import csv as kernels
 __all__ = ("to_csv",)
 
 
-def to_csv(x: xarray.DataArray, path: str, *, nogil: bool = True, **kwargs):
+def to_csv(x: xarray.DataArray, path: Path, *, nogil: bool = True, **kwargs):
     """Print DataArray to CSV.
 
     When x has numpy backend, this function is functionally equivalent to (but
@@ -71,7 +72,7 @@ def to_csv(x: xarray.DataArray, path: str, *, nogil: bool = True, **kwargs):
         raise ValueError("first argument must be a DataArray")
 
     # Health checks
-    if not isinstance(path, str):
+    if not isinstance(path, Path):
         raise ValueError("path_or_buf must be a file path")
 
     if x.ndim not in (1, 2):
@@ -162,7 +163,7 @@ def _compress_func(
     path: str, compression: str | None
 ) -> Callable[[bytes], bytes] | None:
     if compression == "infer":
-        compression = path.split(".")[-1].lower()
+        compression = path.suffix[1:].lower()
         if compression == "gz":
             compression = "gzip"
         elif compression == "csv":
