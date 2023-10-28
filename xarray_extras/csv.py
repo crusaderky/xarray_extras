@@ -34,7 +34,7 @@ def to_csv(x: xarray.DataArray, path: Path, *, nogil: bool = True, **kwargs):
 
     :param x:
         :class:`~xarray.DataArray` with one or two dimensions
-    :param str path:
+    :param Path path:
         Output file path
     :param bool nogil:
         If True, use accelerated C implementation. Several kwargs won't be
@@ -110,7 +110,8 @@ def to_csv(x: xarray.DataArray, path: Path, *, nogil: bool = True, **kwargs):
     x = x.chunk((x.chunks[0],) + tuple((s,) for s in x.shape[1:]))
 
     # Manually define the dask graph
-    tok = tokenize(x.data, index, columns, compression, path, kwargs)
+    # note : convert Path to string
+    tok = tokenize(x.data, index, columns, compression, str(path), kwargs)
     name1 = "to_csv_encode-" + tok
     name2 = "to_csv_compress-" + tok
     name3 = "to_csv_write-" + tok
@@ -147,10 +148,10 @@ def to_csv(x: xarray.DataArray, path: Path, *, nogil: bool = True, **kwargs):
         # Step 3: write to file
         if i == 0:
             # First chunk: overwrite file if it already exists
-            dsk[name3, i] = kernels.to_file, path, mode + "b", (prevname, i)
+            dsk[name3, i] = kernels.to_file, str(path), mode + "b", (prevname, i)
         else:
             # Next chunks: wait for previous chunk to complete and append
-            dsk[name3, i] = (kernels.to_file, path, "ab", (prevname, i), (name3, i - 1))
+            dsk[name3, i] = (kernels.to_file, str(path), "ab", (prevname, i), (name3, i - 1))
 
     # Rename final key
     dsk[name4] = dsk.pop((name3, i))
@@ -160,7 +161,7 @@ def to_csv(x: xarray.DataArray, path: Path, *, nogil: bool = True, **kwargs):
 
 
 def _compress_func(
-    path: str, compression: str | None
+    path: Path, compression: str | None
 ) -> Callable[[bytes], bytes] | None:
     if compression == "infer":
         compression = path.suffix[1:].lower()
