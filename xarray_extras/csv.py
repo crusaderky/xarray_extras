@@ -17,7 +17,7 @@ from xarray_extras.kernels import csv as kernels
 __all__ = ("to_csv",)
 
 
-def to_csv(x: xarray.DataArray, path: Path, *, nogil: bool = True, **kwargs):
+def to_csv(x: xarray.DataArray, path: str | Path, *, nogil: bool = True, **kwargs):
     """Print DataArray to CSV.
 
     When x has numpy backend, this function is functionally equivalent to (but
@@ -73,7 +73,10 @@ def to_csv(x: xarray.DataArray, path: Path, *, nogil: bool = True, **kwargs):
 
     # Health checks
     if not isinstance(path, Path):
-        raise ValueError("path_or_buf must be a file path")
+        try:
+            path = Path(path)
+        except:
+            raise ValueError("path_or_buf must be a file path")
 
     if x.ndim not in (1, 2):
         raise ValueError(
