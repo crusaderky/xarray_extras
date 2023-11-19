@@ -72,11 +72,12 @@ def to_csv(x: xarray.DataArray, path: str | Path, *, nogil: bool = True, **kwarg
         raise ValueError("first argument must be a DataArray")
 
     # Health checks
-    if not isinstance(path, Path):
-        try:
-            path = Path(path)
-        except:
-            raise ValueError("path_or_buf must be a file path")
+    if not isinstance(path, (str, Path)):
+        raise TypeError("path_or_buf must be a string or a pathlib.Path object")
+
+    # Convert to Path if it's a string
+    if isinstance(path, str):
+        path = Path(path)
 
     if x.ndim not in (1, 2):
         raise ValueError(
