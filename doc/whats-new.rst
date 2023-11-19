@@ -11,6 +11,27 @@ v0.6.0 (Unreleased)
   (v0.5.0 already supports it, although not formally).
 - Dropped support for Python 3.7
 
+.. _whats-new.0.5.1:
+
+v0.5.1 (2023-11-19)
+-------------------
+- Bumped minimum version of Pandas:
+
+  ========== ====== ======
+  Dependency v0.5.0 v0.5.1
+  ========== ====== ======
+  python     3.5    3.7
+  dask       0.19   2021.4
+  numba      0.34   0.52
+  numpy      1.13   1.18
+  pandas     0.21   1.5
+  scipy      1.0    1.5
+  xarray     0.10.1 0.16
+  ========== ====== ======
+
+- Added support and test for pathlib.Path in to_csv()
+- Update addopts to `--strict-markers`
+
 .. _whats-new.0.5.0:
 
 v0.5.0 (2021-12-01)
