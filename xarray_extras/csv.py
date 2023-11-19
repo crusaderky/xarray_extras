@@ -71,6 +71,7 @@ def to_csv(x: xarray.DataArray, path: str | Path, *, nogil: bool = True, **kwarg
     if not isinstance(x, xarray.DataArray):
         raise ValueError("first argument must be a DataArray")
 
+
     # Health checks
     if not isinstance(path, (str, Path)):
         raise TypeError("path_or_buf must be a string or a pathlib.Path object")
@@ -115,7 +116,7 @@ def to_csv(x: xarray.DataArray, path: str | Path, *, nogil: bool = True, **kwarg
 
     # Manually define the dask graph
     # note : convert Path to string
-    tok = tokenize(x.data, index, columns, compression, str(path), kwargs)
+    tok = tokenize(x.data, index, columns, compression, path, kwargs)
     name1 = "to_csv_encode-" + tok
     name2 = "to_csv_compress-" + tok
     name3 = "to_csv_write-" + tok
