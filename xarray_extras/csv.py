@@ -34,7 +34,7 @@ def to_csv(x: xarray.DataArray, path: str | Path, *, nogil: bool = True, **kwarg
 
     :param x:
         :class:`~xarray.DataArray` with one or two dimensions
-    :param Path path:
+    :param path:
         Output file path
     :param bool nogil:
         If True, use accelerated C implementation. Several kwargs won't be
