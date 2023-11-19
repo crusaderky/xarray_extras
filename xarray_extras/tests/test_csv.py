@@ -36,25 +36,26 @@ def assert_to_csv(
 @pytest.mark.parametrize("nogil", [False, True])
 @pytest.mark.parametrize("chunks", [None, 1])
 @pytest.mark.parametrize("header", [False, True])
-@pytest.mark.parametrize("line_terminator", ["\n", "\r\n"])
-def test_series(chunks, nogil, dtype, header, line_terminator):
+@pytest.mark.parametrize("lineterminator", ["\n", "\r\n"])
+def test_series(chunks, nogil, dtype, header, lineterminator):
     x = xarray.DataArray([1, 2, 3, 4], dims=["x"], coords={"x": [10, 20, 30, 40]})
     assert_to_csv(
-        x, chunks, nogil, dtype, header=header, line_terminator=line_terminator
+        x, chunks, nogil, dtype, header=header, lineterminator=lineterminator
     )
 
 
+        x,  path_type, chunks, nogil, dtype,header=header, lineterminator=lineterminator
 @pytest.mark.parametrize("dtype", [np.int64, np.float64])
 @pytest.mark.parametrize("nogil", [False, True])
 @pytest.mark.parametrize("chunks", [None, 1])
-@pytest.mark.parametrize("line_terminator", ["\n", "\r\n"])
-def test_dataframe(chunks, nogil, dtype, line_terminator):
+@pytest.mark.parametrize("lineterminator", ["\n", "\r\n"])
+def test_dataframe(chunks, nogil, dtype, lineterminator):
     x = xarray.DataArray(
         [[1, 2, 3, 4], [5, 6, 7, 8]],
         dims=["r", "c"],
         coords={"r": ["a", "b"], "c": [10, 20, 30, 40]},
     )
-    assert_to_csv(x, chunks, nogil, dtype, line_terminator=line_terminator)
+    assert_to_csv(x, chunks, nogil, dtype, lineterminator=lineterminator)
 
 
 @pytest.mark.parametrize("dtype", [np.int64, np.float64])
@@ -95,15 +96,15 @@ def test_custom_header(chunks, nogil, dtype):
 @pytest.mark.parametrize("dtype", [np.int64, np.float64])
 @pytest.mark.parametrize("nogil", [False, True])
 @pytest.mark.parametrize("chunks", [None, 1])
-@pytest.mark.parametrize("line_terminator", ["\n", "\r\n"])
-def test_encoding(chunks, nogil, dtype, encoding, line_terminator):
+@pytest.mark.parametrize("lineterminator", ["\n", "\r\n"])
+def test_encoding(chunks, nogil, dtype, encoding, lineterminator):
     # Note: in Python 2.7, default encoding is ascii in pandas and utf-8 in
     # xarray_extras. Therefore we will not test the default.
     x = xarray.DataArray(
         [[1], [2]], dims=["r", "c"], coords={"r": ["crème", "foo"], "c": ["brûlée"]}
     )
     assert_to_csv(
-        x, chunks, nogil, dtype, encoding=encoding, line_terminator=line_terminator
+        x, chunks, nogil, dtype, encoding=encoding, lineterminator=lineterminator
     )
 
 
@@ -208,8 +209,8 @@ def test_buffer_overflow_float(chunks, nogil, float_format, na_rep, index, coord
 @pytest.mark.parametrize("encoding", ["utf-8", "utf-16"])
 @pytest.mark.parametrize("dtype", [str, object])
 @pytest.mark.parametrize("chunks", [None, 1])
-@pytest.mark.parametrize("line_terminator", ["\n", "\r\n"])
-def test_pandas_only(chunks, dtype, encoding, line_terminator):
+@pytest.mark.parametrize("lineterminator", ["\n", "\r\n"])
+def test_pandas_only(chunks, dtype, encoding, lineterminator):
     x = xarray.DataArray(["foo", "Crème brûlée"])
     assert_to_csv(
         x,
@@ -217,7 +218,7 @@ def test_pandas_only(chunks, dtype, encoding, line_terminator):
         nogil=False,
         dtype=dtype,
         encoding=encoding,
-        line_terminator=line_terminator,
+        lineterminator=lineterminator,
     )
 
 
