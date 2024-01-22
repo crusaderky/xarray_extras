@@ -7,6 +7,7 @@ from __future__ import annotations
 from collections.abc import Callable
 
 import xarray
+from pathlib import Path
 from dask.base import tokenize
 from dask.delayed import Delayed
 from dask.highlevelgraph import HighLevelGraph
@@ -16,7 +17,7 @@ from xarray_extras.kernels import csv as kernels
 __all__ = ("to_csv",)
 
 
-def to_csv(x: xarray.DataArray, path: str, *, nogil: bool = True, **kwargs):
+def to_csv(x: xarray.DataArray, path: str | Path, *, nogil: bool = True, **kwargs):
     """Print DataArray to CSV.
 
     When x has numpy backend, this function is functionally equivalent to (but
@@ -33,7 +34,7 @@ def to_csv(x: xarray.DataArray, path: str, *, nogil: bool = True, **kwargs):
 
     :param x:
         :class:`~xarray.DataArray` with one or two dimensions
-    :param str path:
+    :param path:
         Output file path
     :param bool nogil:
         If True, use accelerated C implementation. Several kwargs won't be
@@ -71,8 +72,10 @@ def to_csv(x: xarray.DataArray, path: str, *, nogil: bool = True, **kwargs):
         raise ValueError("first argument must be a DataArray")
 
     # Health checks
-    if not isinstance(path, str):
-        raise ValueError("path_or_buf must be a file path")
+    if not isinstance(path, (str, Path)):
+        raise TypeError("path_or_buf must be a string or a pathlib.Path object")
+
+    path = Path(path)
 
     if x.ndim not in (1, 2):
         raise ValueError(
@@ -146,10 +149,12 @@ def to_csv(x: xarray.DataArray, path: str, *, nogil: bool = True, **kwargs):
         # Step 3: write to file
         if i == 0:
             # First chunk: overwrite file if it already exists
-            dsk[name3, i] = kernels.to_file, path, mode + "b", (prevname, i)
+            # Convert PosixPath / WindowsPath to str to support dask Client
+            # on Windows and Worker on Linux or vice versa
+            dsk[name3, i] = kernels.to_file, str(path), mode + "b", (prevname, i)
         else:
             # Next chunks: wait for previous chunk to complete and append
-            dsk[name3, i] = (kernels.to_file, path, "ab", (prevname, i), (name3, i - 1))
+            dsk[name3, i] = (kernels.to_file, str(path), "ab", (prevname, i), (name3, i - 1))
 
     # Rename final key
     dsk[name4] = dsk.pop((name3, i))
@@ -159,10 +164,10 @@ def to_csv(x: xarray.DataArray, path: str, *, nogil: bool = True, **kwargs):
 
 
 def _compress_func(
-    path: str, compression: str | None
+    path: Path, compression: str | None
 ) -> Callable[[bytes], bytes] | None:
     if compression == "infer":
-        compression = path.split(".")[-1].lower()
+        compression = path.suffix[1:].lower()
         if compression == "gz":
             compression = "gzip"
         elif compression == "csv":

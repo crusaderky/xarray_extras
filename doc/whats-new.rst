@@ -10,6 +10,9 @@ v0.6.0 (Unreleased)
 - Added explicit CI tests for Python 3.10
   (v0.5.0 already supports it, although not formally).
 - Dropped support for Python 3.7
+- Bumped minimum version of Pandas  from 1.1 to 1.5
+- Added support for recent versions of Pandas (tested up to 2.2)
+- Added support for :cls:`pathlib.Path` in function arguments
 
 .. _whats-new.0.5.0:
 

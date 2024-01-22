@@ -48,10 +48,10 @@ def to_csv(
 
     encoding = kwargs.pop("encoding", "utf-8")
     header = kwargs.pop("header", True)
-    line_terminator = kwargs.pop("line_terminator", os.linesep)
+    lineterminator = kwargs.pop("lineterminator", os.linesep)
 
     if not nogil or not x.size:
-        out = x_pd.to_csv(header=header, line_terminator=line_terminator, **kwargs)
+        out = x_pd.to_csv(header=header, lineterminator=lineterminator, **kwargs)
         bout = out.encode(encoding)
         if encoding == "utf-16" and not first_chunk:
             # utf-16 contains a bang at the beginning of the text. However,
@@ -70,7 +70,7 @@ def to_csv(
     else:
         x_df = x_pd
 
-    index_csv = x_df.iloc[:, :0].to_csv(header=False, line_terminator="\n", **kwargs)
+    index_csv = x_df.iloc[:, :0].to_csv(header=False, lineterminator="\n", **kwargs)
     index_csv = index_csv.strip().split("\n")
     if len(index_csv) != x.shape[0]:
         index_csv = "\n" * x.shape[0]
@@ -88,7 +88,7 @@ def to_csv(
     if header is not False:
         header_bytes = (
             x_df.iloc[:0, :]
-            .to_csv(header=header, line_terminator="\n", **kwargs)
+            .to_csv(header=header, lineterminator="\n", **kwargs)
             .encode("utf-8")
         )
         body_bytes = header_bytes + body_bytes
@@ -96,16 +96,16 @@ def to_csv(
     if encoding not in {"ascii", "utf-8"}:
         # Everything is encoded in UTF-8 until this moment. Recode if needed.
         body_str = body_bytes.decode("utf-8")
-        if line_terminator != "\n":
-            body_str = body_str.replace("\n", line_terminator)
+        if lineterminator != "\n":
+            body_str = body_str.replace("\n", lineterminator)
         body_bytes = body_str.encode(encoding)
         if encoding == "utf-16" and not first_chunk:
             # utf-16 contains a bang at the beginning of the text. However,
             # when concatenating multiple chunks we don't want to replicate it.
             assert body_bytes[:2] == b"\xff\xfe"
             body_bytes = body_bytes[2:]
-    elif line_terminator != "\n":
-        body_bytes = body_bytes.replace(b"\n", line_terminator.encode("utf-8"))
+    elif lineterminator != "\n":
+        body_bytes = body_bytes.replace(b"\n", lineterminator.encode("utf-8"))
 
     return body_bytes
 

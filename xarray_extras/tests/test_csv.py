@@ -3,6 +3,7 @@ import gzip
 import lzma
 import pickle
 import tempfile
+from pathlib import Path
 
 import dask
 import numpy as np
@@ -32,29 +33,65 @@ def assert_to_csv(
         assert d2 == d1
 
 
+def assert_to_csv_with_path_type(
+    x,  path_type, chunks, nogil, dtype, open_func=open, float_format="%f", ext="csv", **kwargs
+):
+    x = x.astype(dtype)
+    if chunks:
+        x = x.chunk(chunks)
+    with tempfile.TemporaryDirectory() as tmp:
+        path_1 = tmp + "/1." + ext if path_type == "str" else Path(tmp) / ("1." + ext)
+        path_2 = tmp + "/2." + ext if path_type == "str" else Path(tmp) / ("2." + ext)
+        x.to_pandas().to_csv(path_1, float_format=float_format, **kwargs)
+        f = to_csv(
+            x, path_2, nogil=nogil, float_format=float_format, **kwargs
+        )
+        dask.compute(f)
+
+        with open_func(tmp + "/1." + ext, "rb") as fh:
+            d1 = fh.read()
+        with open_func(tmp + "/2." + ext, "rb") as fh:
+            d2 = fh.read()
+        assert d2 == d1
+
+
 @pytest.mark.parametrize("dtype", [np.int64, np.float64])
 @pytest.mark.parametrize("nogil", [False, True])
 @pytest.mark.parametrize("chunks", [None, 1])
 @pytest.mark.parametrize("header", [False, True])
-@pytest.mark.parametrize("line_terminator", ["\n", "\r\n"])
-def test_series(chunks, nogil, dtype, header, line_terminator):
+@pytest.mark.parametrize("lineterminator", ["\n", "\r\n"])
+def test_series(chunks, nogil, dtype, header, lineterminator):
     x = xarray.DataArray([1, 2, 3, 4], dims=["x"], coords={"x": [10, 20, 30, 40]})
     assert_to_csv(
-        x, chunks, nogil, dtype, header=header, line_terminator=line_terminator
+        x, chunks, nogil, dtype, header=header, lineterminator=lineterminator
+    )
+
+
+@pytest.mark.parametrize("path_type", ["path", "str"])
+@pytest.mark.parametrize("dtype", [np.int64, np.float64])
+@pytest.mark.parametrize("nogil", [False, True])
+@pytest.mark.parametrize("chunks", [None, 1])
+@pytest.mark.parametrize("header", [False, True])
+@pytest.mark.parametrize("lineterminator", ["\n", "\r\n"])
+def test_series_with_path(path_type, chunks, nogil, dtype, header, lineterminator):
+    x = xarray.DataArray([1, 2, 3, 4], dims=["x"], coords={"x": [10, 20, 30, 40]})
+    print(f'Path type = \'{path_type}\' of type {type(path_type)}')
+    assert_to_csv_with_path_type(
+        x,  path_type, chunks, nogil, dtype,header=header, lineterminator=lineterminator
     )
 
 
 @pytest.mark.parametrize("dtype", [np.int64, np.float64])
 @pytest.mark.parametrize("nogil", [False, True])
 @pytest.mark.parametrize("chunks", [None, 1])
-@pytest.mark.parametrize("line_terminator", ["\n", "\r\n"])
-def test_dataframe(chunks, nogil, dtype, line_terminator):
+@pytest.mark.parametrize("lineterminator", ["\n", "\r\n"])
+def test_dataframe(chunks, nogil, dtype, lineterminator):
     x = xarray.DataArray(
         [[1, 2, 3, 4], [5, 6, 7, 8]],
         dims=["r", "c"],
         coords={"r": ["a", "b"], "c": [10, 20, 30, 40]},
     )
-    assert_to_csv(x, chunks, nogil, dtype, line_terminator=line_terminator)
+    assert_to_csv(x, chunks, nogil, dtype, lineterminator=lineterminator)
 
 
 @pytest.mark.parametrize("dtype", [np.int64, np.float64])
@@ -95,15 +132,15 @@ def test_custom_header(chunks, nogil, dtype):
 @pytest.mark.parametrize("dtype", [np.int64, np.float64])
 @pytest.mark.parametrize("nogil", [False, True])
 @pytest.mark.parametrize("chunks", [None, 1])
-@pytest.mark.parametrize("line_terminator", ["\n", "\r\n"])
-def test_encoding(chunks, nogil, dtype, encoding, line_terminator):
+@pytest.mark.parametrize("lineterminator", ["\n", "\r\n"])
+def test_encoding(chunks, nogil, dtype, encoding, lineterminator):
     # Note: in Python 2.7, default encoding is ascii in pandas and utf-8 in
     # xarray_extras. Therefore we will not test the default.
     x = xarray.DataArray(
         [[1], [2]], dims=["r", "c"], coords={"r": ["crème", "foo"], "c": ["brûlée"]}
     )
     assert_to_csv(
-        x, chunks, nogil, dtype, encoding=encoding, line_terminator=line_terminator
+        x, chunks, nogil, dtype, encoding=encoding, lineterminator=lineterminator
     )
 
 
@@ -208,8 +245,8 @@ def test_buffer_overflow_float(chunks, nogil, float_format, na_rep, index, coord
 @pytest.mark.parametrize("encoding", ["utf-8", "utf-16"])
 @pytest.mark.parametrize("dtype", [str, object])
 @pytest.mark.parametrize("chunks", [None, 1])
-@pytest.mark.parametrize("line_terminator", ["\n", "\r\n"])
-def test_pandas_only(chunks, dtype, encoding, line_terminator):
+@pytest.mark.parametrize("lineterminator", ["\n", "\r\n"])
+def test_pandas_only(chunks, dtype, encoding, lineterminator):
     x = xarray.DataArray(["foo", "Crème brûlée"])
     assert_to_csv(
         x,
@@ -217,7 +254,7 @@ def test_pandas_only(chunks, dtype, encoding, line_terminator):
         nogil=False,
         dtype=dtype,
         encoding=encoding,
-        line_terminator=line_terminator,
+        lineterminator=lineterminator,
     )
 
 
