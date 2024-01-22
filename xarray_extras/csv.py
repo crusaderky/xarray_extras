@@ -71,14 +71,11 @@ def to_csv(x: xarray.DataArray, path: str | Path, *, nogil: bool = True, **kwarg
     if not isinstance(x, xarray.DataArray):
         raise ValueError("first argument must be a DataArray")
 
-
     # Health checks
     if not isinstance(path, (str, Path)):
         raise TypeError("path_or_buf must be a string or a pathlib.Path object")
 
-    # Convert to Path if it's a string
-    if isinstance(path, str):
-        path = Path(path)
+    path = Path(path)
 
     if x.ndim not in (1, 2):
         raise ValueError(
@@ -115,7 +112,6 @@ def to_csv(x: xarray.DataArray, path: str | Path, *, nogil: bool = True, **kwarg
     x = x.chunk((x.chunks[0],) + tuple((s,) for s in x.shape[1:]))
 
     # Manually define the dask graph
-    # note : convert Path to string
     tok = tokenize(x.data, index, columns, compression, path, kwargs)
     name1 = "to_csv_encode-" + tok
     name2 = "to_csv_compress-" + tok
@@ -153,6 +149,8 @@ def to_csv(x: xarray.DataArray, path: str | Path, *, nogil: bool = True, **kwarg
         # Step 3: write to file
         if i == 0:
             # First chunk: overwrite file if it already exists
+            # Convert PosixPath / WindowsPath to str to support dask Client
+            # on Windows and Worker on Linux or vice versa
             dsk[name3, i] = kernels.to_file, str(path), mode + "b", (prevname, i)
         else:
             # Next chunks: wait for previous chunk to complete and append
