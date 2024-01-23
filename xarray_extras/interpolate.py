@@ -7,9 +7,16 @@ from collections.abc import Hashable
 import dask.array as da
 import numpy as np
 import xarray
-from xarray.core.pycompat import dask_array_type
 
 from xarray_extras.kernels import interpolate as kernels
+
+try:
+    from xarray.core.pycompat import array_type
+
+    dask_array_type = array_type("dask")
+except ImportError:  # xarray <2022.11.0
+    from xarray.core.pycompat import dask_array_type  # type: ignore
+
 
 __all__ = ("splrep", "splev")
 
@@ -113,7 +120,7 @@ def splrep(a: xarray.DataArray, dim: Hashable, k: int = 3) -> xarray.Dataset:
 
 
 def splev(
-    x_new: xarray.DataArray, tck: xarray.Dataset, extrapolate: bool | str = True
+    x_new: object, tck: xarray.Dataset, extrapolate: bool | str = True
 ) -> xarray.DataArray:
     """Evaluate the B-spline generated with :func:`splrep`.
 

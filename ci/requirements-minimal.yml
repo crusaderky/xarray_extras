@@ -2,11 +2,11 @@ name: xarray-extras-minimal
 channels:
   - conda-forge
 dependencies:
-  - dask=2021.4
-  - numba=0.52
-  - numpy=1.18
+  - dask=2022.6.0
+  - numba=0.56
+  - numpy=1.23
   - pandas=1.5
   - pytest
   - pytest-cov
-  - scipy=1.5
-  - xarray=0.16
+  - scipy=1.9
+  - xarray=2022.6.0

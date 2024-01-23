@@ -50,7 +50,7 @@ def proper_unstack(array: T, dim: Hashable) -> T:
     array.coords[dim] = mindex
 
     # Invoke builtin unstack
-    array = array.unstack(dim)
+    array = array.unstack((dim,))
 
     # Convert numpy arrays of Python objects to numpy arrays of C floats, ints,
     # strings, etc.
