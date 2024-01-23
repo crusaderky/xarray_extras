@@ -21,10 +21,8 @@ v0.6.0 (Unreleased)
   xarray     0.16     2022.6.0
   ========== ======   ========
 
-- Added explicit CI tests for Python 3.10 and 3.11
-  (v0.5.0 already supports it, although not formally).
-- Added support for recent versions of Pandas (tested up to 2.2)
-  and xarray
+- Added support for Python 3.10 and 3.11
+- Added support for recent versions of Pandas (tested up to 2.2) and xarray
 - Added support for :cls:`pathlib.Path` in function arguments
 
 .. _whats-new.0.5.0:
