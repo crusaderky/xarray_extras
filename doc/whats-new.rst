@@ -7,11 +7,22 @@ What's New
 
 v0.6.0 (Unreleased)
 -------------------
-- Added explicit CI tests for Python 3.10 and 3.11
-  (v0.5.0 already supports it, although not formally).
-- Dropped support for Python 3.7
-- Added support for recent versions of Pandas (tested up to 2.2)
-- Increased minimum version of Pandas  from 1.1 to 1.5
+- Bumped minimum version of all dependencies:
+
+  ========== ======   ========
+  Dependency v0.5.0   v0.6.0
+  ========== ======   ========
+  python     3.7      3.8
+  dask       2021.4.0 2022.6.0
+  numba      0.52     0.56
+  numpy      1.18     1.23
+  pandas     1.1      1.5
+  scipy      1.5      1.9
+  xarray     0.16     2022.6.0
+  ========== ======   ========
+
+- Added support for Python 3.10 and 3.11
+- Added support for recent versions of Pandas (tested up to 2.2) and xarray
 - Added support for :cls:`pathlib.Path` in function arguments
 
 .. _whats-new.0.5.0:
@@ -20,17 +31,17 @@ v0.5.0 (2021-12-01)
 -------------------
 - Bumped minimum version of all dependencies:
 
-  ========== ====== ======
+  ========== ====== ========
   Dependency v0.4.2 v0.5.0
-  ========== ====== ======
+  ========== ====== ========
   python     3.5    3.7
-  dask       0.19   2021.4
+  dask       0.19   2021.4.0
   numba      0.34   0.52
   numpy      1.13   1.18
   pandas     0.21   1.1
   scipy      1.0    1.5
   xarray     0.10.1 0.16
-  ========== ====== ======
+  ========== ====== ========
 
 - Added support for Python 3.8 and 3.9
 - Removed ``xarray_extras.backports`` module

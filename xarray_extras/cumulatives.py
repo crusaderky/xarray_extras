@@ -49,9 +49,9 @@ def cummean(x: T, dim: Hashable, skipna: bool | None = None) -> T:
         n = xarray.DataArray(n, dims=[dim], coords={dim: x.coords[dim]})
     else:
         # heavier computation
-        n = (~x.isnull()).cumsum(dim, skipna=False)
+        n = (~x.isnull()).cumsum((dim,), skipna=False)
 
-    return x.cumsum(dim, skipna=skipna) / n
+    return x.cumsum((dim,), skipna=skipna) / n
 
 
 def compound_sum(x: T, c: xarray.DataArray, xdim: Hashable, cdim: Hashable) -> T:

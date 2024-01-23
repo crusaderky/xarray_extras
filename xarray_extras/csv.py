@@ -6,7 +6,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any, cast
 
 import xarray
 from dask.base import tokenize
@@ -17,8 +17,14 @@ from xarray_extras.kernels import csv as kernels
 
 __all__ = ("to_csv",)
 
+if TYPE_CHECKING:
+    # TODO remove TYPE_CHECKING (requires dask >=2023.9.1)
+    from dask.typing import DaskCollection, Key
 
-def to_csv(x: xarray.DataArray, path: str | Path, *, nogil: bool = True, **kwargs: Any):
+
+def to_csv(
+    x: xarray.DataArray, path: str | Path, *, nogil: bool = True, **kwargs: Any
+) -> Any:
     """Print DataArray to CSV.
 
     When x has numpy backend, this function is functionally equivalent to (but
@@ -110,7 +116,7 @@ def to_csv(x: xarray.DataArray, path: str | Path, *, nogil: bool = True, **kwarg
         return None
 
     # Merge chunks on all dimensions beyond the first
-    x = x.chunk((x.chunks[0],) + tuple((s,) for s in x.shape[1:]))
+    x = x.chunk((x.chunks[0], *((s,) for s in x.shape[1:])))  # type: ignore[arg-type]
 
     # Manually define the dask graph
     tok = tokenize(x.data, index, columns, compression, path, kwargs)
@@ -119,7 +125,7 @@ def to_csv(x: xarray.DataArray, path: str | Path, *, nogil: bool = True, **kwarg
     name3 = "to_csv_write-" + tok
     name4 = "to_csv-" + tok
 
-    dsk: dict[str | tuple, tuple] = {}
+    dsk: dict[Key, Any] = {}
 
     assert x.chunks
     assert x.chunks[0]
@@ -172,7 +178,7 @@ def to_csv(x: xarray.DataArray, path: str | Path, *, nogil: bool = True, **kwarg
     # Rename final key
     dsk[name4] = dsk.pop((name3, i))
 
-    hlg = HighLevelGraph.from_collections(name4, dsk, (x,))
+    hlg = HighLevelGraph.from_collections(name4, dsk, [cast("DaskCollection", x)])
     return Delayed(name4, hlg)
 
 
