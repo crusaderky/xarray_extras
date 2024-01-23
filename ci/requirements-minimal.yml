@@ -1,9 +1,7 @@
 name: xarray-extras-minimal
 channels:
   - conda-forge
-  - defaults
 dependencies:
-  - python=3.8
   - dask=2021.4
   - numba=0.52
   - numpy=1.18

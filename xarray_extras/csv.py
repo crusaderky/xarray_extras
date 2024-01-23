@@ -5,9 +5,10 @@ with full support for `dask <http://dask.org/>`_ and `dask distributed
 from __future__ import annotations
 
 from collections.abc import Callable
+from pathlib import Path
+from typing import Any
 
 import xarray
-from pathlib import Path
 from dask.base import tokenize
 from dask.delayed import Delayed
 from dask.highlevelgraph import HighLevelGraph
@@ -17,7 +18,7 @@ from xarray_extras.kernels import csv as kernels
 __all__ = ("to_csv",)
 
 
-def to_csv(x: xarray.DataArray, path: str | Path, *, nogil: bool = True, **kwargs):
+def to_csv(x: xarray.DataArray, path: str | Path, *, nogil: bool = True, **kwargs: Any):
     """Print DataArray to CSV.
 
     When x has numpy backend, this function is functionally equivalent to (but
@@ -151,10 +152,22 @@ def to_csv(x: xarray.DataArray, path: str | Path, *, nogil: bool = True, **kwarg
             # First chunk: overwrite file if it already exists
             # Convert PosixPath / WindowsPath to str to support dask Client
             # on Windows and Worker on Linux or vice versa
-            dsk[name3, i] = kernels.to_file, str(path), mode + "b", (prevname, i)
+            dsk[name3, i] = (
+                kernels.to_file,
+                str(path),
+                mode + "b",
+                (prevname, i),
+                None,
+            )
         else:
             # Next chunks: wait for previous chunk to complete and append
-            dsk[name3, i] = (kernels.to_file, str(path), "ab", (prevname, i), (name3, i - 1))
+            dsk[name3, i] = (
+                kernels.to_file,
+                str(path),
+                "ab",
+                (prevname, i),
+                (name3, i - 1),
+            )
 
     # Rename final key
     dsk[name4] = dsk.pop((name3, i))

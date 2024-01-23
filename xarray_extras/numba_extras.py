@@ -9,7 +9,9 @@ from typing import Any
 import numba
 
 
-def guvectorize(signature: str, layout: str, **kwds) -> Callable[[Callable], Any]:
+def guvectorize(
+    signature: str, layout: str, **kwargs: Any
+) -> Callable[[Callable], Any]:
     """Convenience wrapper around :func:`numba.guvectorize`.
     Generate signature for all possible data types and set a few healthy
     defaults.
@@ -18,7 +20,7 @@ def guvectorize(signature: str, layout: str, **kwds) -> Callable[[Callable], Any
         numba signature, containing {T}
     :param str layout:
         as in :func:`numba.guvectorize`
-    :param kwds:
+    :param kwargs:
         passed verbatim to :func:`numba.guvectorize`.
         This function changes the default for cache from False to True.
 
@@ -58,5 +60,5 @@ def guvectorize(signature: str, layout: str, **kwds) -> Callable[[Callable], Any
         signatures = [signature.format(T=dtype) for dtype in DTYPES]
     else:
         signatures = [signature]
-    kwds.setdefault("cache", True)
-    return numba.guvectorize(signatures, layout, **kwds)
+    kwargs.setdefault("cache", True)
+    return numba.guvectorize(signatures, layout, **kwargs)

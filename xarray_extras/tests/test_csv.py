@@ -34,7 +34,15 @@ def assert_to_csv(
 
 
 def assert_to_csv_with_path_type(
-    x,  path_type, chunks, nogil, dtype, open_func=open, float_format="%f", ext="csv", **kwargs
+    x,
+    path_type,
+    chunks,
+    nogil,
+    dtype,
+    open_func=open,
+    float_format="%f",
+    ext="csv",
+    **kwargs,
 ):
     x = x.astype(dtype)
     if chunks:
@@ -43,9 +51,7 @@ def assert_to_csv_with_path_type(
         path_1 = tmp + "/1." + ext if path_type == "str" else Path(tmp) / ("1." + ext)
         path_2 = tmp + "/2." + ext if path_type == "str" else Path(tmp) / ("2." + ext)
         x.to_pandas().to_csv(path_1, float_format=float_format, **kwargs)
-        f = to_csv(
-            x, path_2, nogil=nogil, float_format=float_format, **kwargs
-        )
+        f = to_csv(x, path_2, nogil=nogil, float_format=float_format, **kwargs)
         dask.compute(f)
 
         with open_func(tmp + "/1." + ext, "rb") as fh:
@@ -62,9 +68,7 @@ def assert_to_csv_with_path_type(
 @pytest.mark.parametrize("lineterminator", ["\n", "\r\n"])
 def test_series(chunks, nogil, dtype, header, lineterminator):
     x = xarray.DataArray([1, 2, 3, 4], dims=["x"], coords={"x": [10, 20, 30, 40]})
-    assert_to_csv(
-        x, chunks, nogil, dtype, header=header, lineterminator=lineterminator
-    )
+    assert_to_csv(x, chunks, nogil, dtype, header=header, lineterminator=lineterminator)
 
 
 @pytest.mark.parametrize("path_type", ["path", "str"])
@@ -75,9 +79,9 @@ def test_series(chunks, nogil, dtype, header, lineterminator):
 @pytest.mark.parametrize("lineterminator", ["\n", "\r\n"])
 def test_series_with_path(path_type, chunks, nogil, dtype, header, lineterminator):
     x = xarray.DataArray([1, 2, 3, 4], dims=["x"], coords={"x": [10, 20, 30, 40]})
-    print(f'Path type = \'{path_type}\' of type {type(path_type)}')
+    print(f"Path type = '{path_type}' of type {type(path_type)}")
     assert_to_csv_with_path_type(
-        x,  path_type, chunks, nogil, dtype,header=header, lineterminator=lineterminator
+        x, path_type, chunks, nogil, dtype, header=header, lineterminator=lineterminator
     )
 
 
@@ -224,7 +228,6 @@ def test_buffer_overflow_int(chunks, nogil, index, x):
 @pytest.mark.parametrize("nogil", [False, True])
 @pytest.mark.parametrize("chunks", [None, 1])
 def test_buffer_overflow_float(chunks, nogil, float_format, na_rep, index, coord, x):
-
     if nogil and not index and np.isnan(x) and na_rep == "":
         # Expected: b'""\n'
         # Actual: b'\n'
