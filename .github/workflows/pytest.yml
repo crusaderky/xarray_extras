@@ -82,7 +82,7 @@ jobs:
         run: python -m pip install --no-deps -e .
 
       - name: pytest
-        run: py.test --verbose --cov=TEMPLATE --cov-report=xml
+        run: py.test --verbose --cov=xarray_extras --cov-report=xml
 
       - name: codecov.io
         uses: codecov/codecov-action@v3
