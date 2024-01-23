@@ -1,7 +1,13 @@
+include HOW_TO_RELEASE
 include LICENSE
-include xarray_extras/py.typed
+include *.md
+include *.py
+recursive-include ci *
 recursive-include doc *
+include xarray_extras *
 prune doc/_build
-prune doc/generated
+global-exclude __pycache__
+global-exclude *.pyc
 global-exclude .DS_Store
-exclude doc/environment.yml
+global-exclude .ipynb_checkpoints
+global-exclude dask-worker-space

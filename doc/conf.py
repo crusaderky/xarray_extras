@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-#
-# xarray_extras documentation build configuration file, created by
+# documentation build configuration file, created by
 # sphinx-quickstart on Thu Feb  6 18:57:54 2014.
 #
 # This file is execfile()d with the current directory set to its
@@ -13,10 +12,17 @@ from __future__ import annotations
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 import datetime
+import os
+import sys
 
 import xarray
 
 import xarray_extras
+
+print("python exec:", sys.executable)
+print("sys.path:", sys.path)
+print("xarray_extras version: ", xarray_extras.__version__)
+
 
 # -- General configuration ------------------------------------------------
 
@@ -114,9 +120,7 @@ html_theme = "sphinx_rtd_theme"
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
-html_theme_options = {
-    "logo_only": True,
-}
+html_theme_options = {"logo_only": True}
 
 # Add any paths that contain custom themes here, relative to this directory.
 # html_theme_path = []
@@ -130,7 +134,7 @@ html_theme_options = {
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-# html_logo = "_static/xarray_extras-logo.png"
+# html_logo = "_static/logo.png"
 
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
@@ -141,6 +145,15 @@ html_theme_options = {
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["_static"]
+
+# Sometimes the savefig directory doesn't exist and needs to be created
+# https://github.com/ipython/ipython/issues/8733
+# becomes obsolete when we can pin ipython>=5.2; see doc/environment.yml
+ipython_savefig_dir = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), "_build", "html", "_static"
+)
+if not os.path.exists(ipython_savefig_dir):
+    os.makedirs(ipython_savefig_dir)
 
 # Add any extra paths that contain custom files (such as robots.txt or
 # .htaccess) here, relative to this directory. These files are copied

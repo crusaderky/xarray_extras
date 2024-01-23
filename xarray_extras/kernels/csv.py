@@ -110,7 +110,7 @@ def to_csv(
     return body_bytes
 
 
-def to_file(fname: str, mode: str, data: str | bytes, rr_token=None) -> None:
+def to_file(fname: str, mode: str, data: str | bytes, rr_token: object) -> None:
     """Write data to file
 
     :param fname:
