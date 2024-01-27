@@ -44,7 +44,7 @@ def to_csv(
         x_pd = pd.DataFrame(x, index, columns)
     else:
         # proper ValueError already raised in wrapper
-        assert False, "unreachable"  # pragma: nocover
+        raise AssertionError("unreachable")  # pragma: nocover
 
     encoding = kwargs.pop("encoding", "utf-8")
     header = kwargs.pop("header", True)
@@ -83,7 +83,7 @@ def to_csv(
     elif x.dtype.kind == "f":
         body_bytes = snprintcsvd(x, index_csv, sep, fmt, na_rep)
     else:
-        raise NotImplementedError("only int and float are supported when " "nogil=True")
+        raise NotImplementedError("only int and float are supported when nogil=True")
 
     if header is not False:
         header_bytes = (

@@ -77,7 +77,7 @@ def snprintcsvd(
     # Test fmt while in Python - much better to get
     # an Exception here than a segfault in C!
     if fmt is not None:
-        fmt % 1.23  # noqa
+        fmt % 1.23
         bfmt = fmt.encode("ascii") + bsep
         trim_zeros = False
     else:

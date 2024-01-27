@@ -231,7 +231,7 @@ def test_buffer_overflow_float(chunks, nogil, float_format, na_rep, index, coord
     if nogil and not index and np.isnan(x) and na_rep == "":
         # Expected: b'""\n'
         # Actual: b'\n'
-        pytest.xfail("pandas prints useless " " for empty lines")
+        pytest.xfail("pandas prints useless  for empty lines")
 
     a = xarray.DataArray([x], dims=["x"], coords={"x": [coord]})
     assert_to_csv(

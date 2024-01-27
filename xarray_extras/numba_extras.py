@@ -40,7 +40,7 @@ def guvectorize(
        Discussing upstream fix; see
        `<https://github.com/numba/numba/issues/2936>`_.
     """
-    DTYPES = [
+    dtypes = [
         # uint needs to appear before signed int:
         # https://github.com/numba/numba/issues/2934
         "uint8",
@@ -57,7 +57,7 @@ def guvectorize(
         "complex128",
     ]
     if "{T}" in signature:
-        signatures = [signature.format(T=dtype) for dtype in DTYPES]
+        signatures = [signature.format(T=dtype) for dtype in dtypes]
     else:
         signatures = [signature]
     kwargs.setdefault("cache", True)

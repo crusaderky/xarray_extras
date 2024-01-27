@@ -86,7 +86,7 @@ def to_csv(
 
     if x.ndim not in (1, 2):
         raise ValueError(
-            "cannot convert arrays with %d dimensions into " "pandas objects" % x.ndim
+            "cannot convert arrays with %d dimensions into pandas objects" % x.ndim
         )
 
     if nogil and x.dtype.kind not in "if":
