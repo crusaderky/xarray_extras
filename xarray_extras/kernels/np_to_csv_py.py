@@ -4,13 +4,15 @@ This is a helper module of :mod:`xarray_extras.kernels.csv`.
 from __future__ import annotations
 
 import ctypes
+import warnings
 
 import numpy as np
 
 from xarray_extras.kernels import np_to_csv  # type: ignore
 
-np_to_csv = np.ctypeslib.load_library("np_to_csv", np_to_csv.__file__)
-
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore", category=DeprecationWarning)
+    np_to_csv = np.ctypeslib.load_library("np_to_csv", np_to_csv.__file__)
 
 np_to_csv.snprintcsvd.argtypes = [
     ctypes.c_char_p,  # char * buf

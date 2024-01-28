@@ -191,6 +191,7 @@ def test_nonfloat(x_dtype, x_new_dtype):
     assert_equal(expect, y_new)
 
 
+@pytest.mark.filterwarnings("ignore:Converting non-nanosecond precision datetime ")
 @pytest.mark.parametrize("x_new_dtype", ["<M8[D]", "<M8[s]", "<M8[ns]"])
 @pytest.mark.parametrize("x_dtype", ["<M8[D]", "<M8[s]", "<M8[ns]"])
 def test_dates(x_dtype, x_new_dtype):
