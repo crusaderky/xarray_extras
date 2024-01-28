@@ -1,0 +1,118 @@
+[project]
+name = "xarray_extras"
+authors = [{name = "Guido Imperiale", email = "crusaderky@gmail.com"}]
+license = {text = "Apache"}
+description = "Advanced / experimental algorithms for xarray"
+keywords = ["xarray"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+]
+requires-python = ">=3.8"
+dependencies = [
+    "dask >= 2022.6",
+    "numba >= 0.56",
+    "numpy >= 1.23",
+    "pandas >= 1.5",
+    "scipy >= 1.9",
+    "xarray >= 2022.6.0",
+]
+dynamic = ["version"]
+
+[project.urls]
+Homepage = "https://github.com/crusaderky/xarray_extras"
+
+[tool.setuptools]
+packages = ["xarray_extras"]
+zip-safe = false  # https://mypy.readthedocs.io/en/latest/installed_packages.html
+include-package-data = true
+
+[tool.setuptools_scm]
+# Use hardcoded version when .git has been removed and this is not a package created
+# by sdist. This is the case e.g. of a remote deployment with PyCharm.
+fallback_version = "9999"
+
+[tool.setuptools.package-data]
+xarray_extras = [
+    "py.typed",
+    "tests/data/*",
+]
+
+[build-system]
+requires = [
+    "setuptools>=66",
+    "setuptools_scm[toml]",
+]
+build-backend = "setuptools.build_meta"
+
+[tool.pytest.ini_options]
+addopts = "--strict-markers --strict-config -v -r sxfE --color=yes"
+xfail_strict = true
+python_files = ["test_*.py"]
+testpaths = ["xarray_extras/tests"]
+
+[tool.coverage.report]
+show_missing = true
+exclude_lines = [
+    "pragma: nocover",
+    "pragma: no cover",
+    "TYPE_CHECKING",
+    "except ImportError",
+    "@overload",
+    '@(abc\.)?abstractmethod',
+    '@(numba\.)?jit',
+    '@(numba\.)?vectorize',
+    '@(numba\.)?guvectorize',
+]
+
+[tool.ruff]
+builtins = ["ellipsis"]
+exclude = [".eggs"]
+target-version = "py38"
+
+[tool.ruff.lint]
+ignore = [
+  "E402",  # module level import not at top of file
+  "SIM108",  # use ternary operator instead of if-else block
+]
+select = [
+  "F",    # Pyflakes
+  "B",    # flake8-bugbear
+  "C4",   # flake8-comprehensions
+  "ISC",  # flake8-implicit-str-concat
+  "SIM",  # flake8-simplify
+  "E",    # Pycodestyle
+  "W",    # Pycodestyle
+  "I",    # isort
+  "N",    # pep8-naming
+  "UP",   # Pyupgrade
+  "RUF",  # unused-noqa
+  "EXE001",  #  Shebang is present but file is not executable
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["xarray_extras"]
+
+[tool.mypy]
+allow_incomplete_defs = false
+allow_untyped_decorators = false
+allow_untyped_defs = false
+ignore_missing_imports = true
+no_implicit_optional = true
+show_error_codes = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_unreachable = true
+
+[[tool.mypy.overrides]]
+module = ["*.tests.*"]
+allow_untyped_defs = true

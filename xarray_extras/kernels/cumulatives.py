@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """Numba kernels for :mod:`cumulatives`
 """
 import numpy as np
@@ -39,7 +38,7 @@ def compound_mean(x: np.ndarray, c: np.ndarray, y: np.ndarray) -> None:
     """
     acc = 0
     j = 0  # Initialise j explicitly for when x.shape == (0, )
-    for j, i in enumerate(c):
+    for j, i in enumerate(c):  # noqa: B007
         if i == -1:
             break
         acc += x[i]

@@ -169,7 +169,7 @@ def splev(
             dims = [tck.spline_dim]
         else:
             raise ValueError(
-                "N-dimensional x_new is only supported if " "x_new is a DataArray"
+                "N-dimensional x_new is only supported if x_new is a DataArray"
             )
         x_new = xarray.DataArray(x_new, dims=dims, coords={tck.spline_dim: x_new})
 

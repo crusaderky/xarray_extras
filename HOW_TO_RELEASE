@@ -13,17 +13,10 @@ Time required: about an hour.
       git commit -a -m 'Release v0.X.Y'
  5. Tag the release:
       git tag -a v0.X.Y -m 'v0.X.Y'
- 6. Build source for pypi:
-      python setup.py sdist
- 7. Use twine to register and upload the release on pypi. Be careful, you can't
-    take this back!
-      twine upload dist/xarray_extras-0.X.Y*
-    You will need to be listed as a package owner at
-    https://pypi.python.org/pypi/xarray_extras for this to work.
- 8. Push your changes to main:
+ 6. Push your changes to main:
       git push origin main
       git push origin --tags
- 9. Update the stable branch (used by ReadTheDocs) and switch back to main:
+ 7. Update the stable branch (used by ReadTheDocs) and switch back to main:
       git checkout stable
       git rebase main
       git push origin stable
@@ -31,14 +24,20 @@ Time required: about an hour.
     It's OK to force push to 'stable' if necessary.
     We also update the stable branch with `git cherrypick` for documentation
     only fixes that apply the current released version.
-10. Add a section for the next release (v.X.(Y+1)) to doc/whats-new.rst.
-11. Commit your changes and push to main again:
+ 8. Add a section for the next release (v.X.(Y+1)) to doc/whats-new.rst.
+ 9. Commit your changes and push to main again:
       git commit -a -m 'Revert to dev version'
       git push origin main
     You're done pushing to main!
-12. Issue the release on GitHub. Open https://github.com/crusaderky/xarray_extras/releases;
+10. Issue the release on GitHub. Open https://github.com/crusaderky/xarray_extras/releases;
     the new release should have automatically appeared. Otherwise, click on
     "Draft a new release" and paste in the latest from whats-new.rst.
+11. Download the .tar.gz package for the release
+12. Use twine to register and upload the release on pypi. Be careful, you can't
+    take this back!
+      twine upload xarray_extras-*.tar.gz
+    You will need to be listed as a package owner at
+    https://pypi.python.org/pypi/xarray_extras for this to work.
 13. Update the docs. Login to https://readthedocs.org/projects/xarray_extras/versions/
     and switch your new release tag (at the bottom) from "Inactive" to "Active".
     It should now build automatically.

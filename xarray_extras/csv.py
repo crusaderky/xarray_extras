@@ -18,7 +18,7 @@ from xarray_extras.kernels import csv as kernels
 __all__ = ("to_csv",)
 
 if TYPE_CHECKING:
-    # TODO remove TYPE_CHECKING (requires dask >=2023.9.1)
+    # TODO: remove TYPE_CHECKING (requires dask >=2023.9.1)
     from dask.typing import DaskCollection, Key
 
 
@@ -76,7 +76,7 @@ def to_csv(
     and concatenate the partial outputs.
     """
     if not isinstance(x, xarray.DataArray):
-        raise ValueError("first argument must be a DataArray")
+        raise TypeError("first argument must be a DataArray")
 
     # Health checks
     if not isinstance(path, (str, Path)):
@@ -86,7 +86,7 @@ def to_csv(
 
     if x.ndim not in (1, 2):
         raise ValueError(
-            "cannot convert arrays with %d dimensions into " "pandas objects" % x.ndim
+            "cannot convert arrays with %d dimensions into pandas objects" % x.ndim
         )
 
     if nogil and x.dtype.kind not in "if":

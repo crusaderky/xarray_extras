@@ -79,7 +79,6 @@ def test_series(chunks, nogil, dtype, header, lineterminator):
 @pytest.mark.parametrize("lineterminator", ["\n", "\r\n"])
 def test_series_with_path(path_type, chunks, nogil, dtype, header, lineterminator):
     x = xarray.DataArray([1, 2, 3, 4], dims=["x"], coords={"x": [10, 20, 30, 40]})
-    print(f"Path type = '{path_type}' of type {type(path_type)}")
     assert_to_csv_with_path_type(
         x, path_type, chunks, nogil, dtype, header=header, lineterminator=lineterminator
     )
@@ -231,7 +230,7 @@ def test_buffer_overflow_float(chunks, nogil, float_format, na_rep, index, coord
     if nogil and not index and np.isnan(x) and na_rep == "":
         # Expected: b'""\n'
         # Actual: b'\n'
-        pytest.xfail("pandas prints useless " " for empty lines")
+        pytest.xfail("pandas prints useless  for empty lines")
 
     a = xarray.DataArray([x], dims=["x"], coords={"x": [coord]})
     assert_to_csv(

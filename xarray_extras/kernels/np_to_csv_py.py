@@ -79,7 +79,7 @@ def snprintcsvd(
     # Test fmt while in Python - much better to get
     # an Exception here than a segfault in C!
     if fmt is not None:
-        fmt % 1.23  # noqa
+        fmt % 1.23
         bfmt = fmt.encode("ascii") + bsep
         trim_zeros = False
     else:
@@ -135,4 +135,4 @@ def snprintcsvi(a: np.ndarray, index: str, sep: str = ",") -> bytes:
     buf = ctypes.create_string_buffer(bufsize)
     nchar = np_to_csv.snprintcsvi(buf, bufsize, a, a.shape[0], a.shape[1], bindex, bsep)
     assert nchar < bufsize
-    return bytes(buf[:nchar])  # type: ignore
+    return bytes(buf[:nchar])  # type: ignore[arg-type]

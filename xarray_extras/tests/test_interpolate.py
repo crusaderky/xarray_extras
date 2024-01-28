@@ -264,7 +264,7 @@ def test_chunked_x():
 
     with pytest.raises(NotImplementedError) as excinfo:
         splrep(y, "x", 1)
-    assert str(excinfo.value) == "Unsupported: multiple chunks on " "interpolation dim"
+    assert str(excinfo.value) == "Unsupported: multiple chunks on interpolation dim"
 
 
 def test_distributed():
