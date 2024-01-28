@@ -68,6 +68,9 @@ exclude_lines = [
     "except ImportError",
     "@overload",
     '@(abc\.)?abstractmethod',
+    '@(numba\.)?jit',
+    '@(numba\.)?vectorize',
+    '@(numba\.)?guvectorize',
 ]
 
 [tool.ruff]
