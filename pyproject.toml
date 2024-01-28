@@ -55,7 +55,8 @@ requires = [
 build-backend = "setuptools.build_meta"
 
 [tool.pytest.ini_options]
-addopts = "--strict"
+addopts = "--strict-markers --strict-config -v -r sxfE --color=yes"
+xfail_strict = true
 python_files = ["test_*.py"]
 testpaths = ["xarray_extras/tests"]
 
