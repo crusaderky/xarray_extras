@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """Extensions to numba
 """
 from __future__ import annotations

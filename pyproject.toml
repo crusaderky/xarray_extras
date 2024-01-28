@@ -92,6 +92,7 @@ select = [
   "N",    # pep8-naming
   "UP",   # Pyupgrade
   "RUF",  # unused-noqa
+  "EXE001",  #  Shebang is present but file is not executable
 ]
 
 [tool.ruff.lint.isort]
@@ -108,6 +109,6 @@ warn_redundant_casts = true
 warn_unused_ignores = true
 warn_unreachable = true
 
-[tool.mypy.overrides]
+[[tool.mypy.overrides]]
 module = ["*.tests.*"]
 allow_untyped_defs = true

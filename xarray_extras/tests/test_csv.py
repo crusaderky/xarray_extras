@@ -79,7 +79,6 @@ def test_series(chunks, nogil, dtype, header, lineterminator):
 @pytest.mark.parametrize("lineterminator", ["\n", "\r\n"])
 def test_series_with_path(path_type, chunks, nogil, dtype, header, lineterminator):
     x = xarray.DataArray([1, 2, 3, 4], dims=["x"], coords={"x": [10, 20, 30, 40]})
-    print(f"Path type = '{path_type}' of type {type(path_type)}")
     assert_to_csv_with_path_type(
         x, path_type, chunks, nogil, dtype, header=header, lineterminator=lineterminator
     )

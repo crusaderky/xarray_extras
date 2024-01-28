@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """Numba kernels for :mod:`cumulatives`
 """
 import numpy as np

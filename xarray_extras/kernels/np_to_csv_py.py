@@ -133,4 +133,4 @@ def snprintcsvi(a: np.ndarray, index: str, sep: str = ",") -> bytes:
     buf = ctypes.create_string_buffer(bufsize)
     nchar = np_to_csv.snprintcsvi(buf, bufsize, a, a.shape[0], a.shape[1], bindex, bsep)
     assert nchar < bufsize
-    return bytes(buf[:nchar])  # type: ignore
+    return bytes(buf[:nchar])  # type: ignore[arg-type]
