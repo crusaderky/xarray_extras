@@ -2,7 +2,7 @@ name: xarray-extras-docs
 channels:
   - conda-forge
 dependencies:
-  - python=3.11
+  - python=3.12
   - sphinx
   - sphinx_rtd_theme
   - gcc_linux-64

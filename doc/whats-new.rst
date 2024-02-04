@@ -21,7 +21,7 @@ v0.6.0 (Unreleased)
   xarray     0.16     2022.6.0
   ========== ======   ========
 
-- Added support for Python 3.10 and 3.11
+- Added support for Python 3.10, 3.11, and 3.12
 - Added support for recent versions of Pandas (tested up to 2.2) and xarray
 - Added support for :cls:`pathlib.Path` in function arguments
 - Migrated from setup.cfg to pyproject.toml
