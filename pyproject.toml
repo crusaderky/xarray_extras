@@ -60,6 +60,7 @@ addopts = "--strict-markers --strict-config -v -r sxfE --color=yes"
 xfail_strict = true
 python_files = ["test_*.py"]
 testpaths = ["xarray_extras/tests"]
+filterwarnings = ["error"]
 
 [tool.coverage.report]
 show_missing = true

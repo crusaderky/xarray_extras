@@ -5,6 +5,12 @@ import xarray
 
 from xarray_extras.stack import proper_unstack
 
+# FIXME https://github.com/crusaderky/xarray_extras/issues/33
+pytestmark = pytest.mark.filterwarnings(
+    "ignore:Updating MultiIndexed coordinate .* would corrupt indices:FutureWarning",
+    "ignore:invalid value encountered in cast:RuntimeWarning",
+)
+
 
 def test_proper_unstack_order():
     # Note: using MultiIndex.from_tuples is NOT the same thing as
