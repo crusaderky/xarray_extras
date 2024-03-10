@@ -9,4 +9,4 @@ dependencies:
   - pytest
   - pytest-cov
   - scipy=1.9
-  - xarray=2022.6.0
+  - xarray=2022.11.0
