@@ -1,6 +1,9 @@
 import numpy
 import pytest
 
+# No numba available for numpy pre-releases
+pytestmark = pytest.mark.no_upstream
+
 from xarray_extras.numba_extras import guvectorize
 
 DTYPES = [

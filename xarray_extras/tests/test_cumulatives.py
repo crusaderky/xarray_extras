@@ -3,6 +3,9 @@ import pytest
 import xarray
 from xarray.testing import assert_equal
 
+# No numba available for numpy pre-releases
+pytestmark = pytest.mark.no_upstream
+
 import xarray_extras.cumulatives as cum
 
 # Skip 0 and 1 as they're neutral in addition and multiplication

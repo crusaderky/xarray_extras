@@ -67,6 +67,9 @@ filterwarnings = [
     'ignore:.*will no longer be implicitly promoted:FutureWarning',
     'ignore:.*updating coordinate .* with a PandasMultiIndex would leave the multi-index level coordinates .* in an inconsistent state:FutureWarning',
 ]
+markers = [
+    "no_upstream: marks tests that don't work with the upstream CI",
+]
 
 [tool.coverage.report]
 show_missing = true

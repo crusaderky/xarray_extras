@@ -16,4 +16,4 @@ dependencies:
       - git+https://github.com/dask/dask
       - git+https://github.com/dask/distributed
       - git+https://github.com/pydata/xarray
-      # numpy, pandas, pyarrows, and scipy are upgraded to nightly builds by pytest.yml
+      # numpy, pandas, pyarrow, and scipy are upgraded to nightly builds by pytest.yml
