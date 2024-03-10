@@ -1,0 +1,20 @@
+name: xarray-extras
+channels:
+  - defaults
+dependencies:
+  - dask
+  - numba
+  - numpy
+  - pandas
+  - pyarrow
+  - pytest
+  - pytest-cov
+  - scipy
+  - xarray
+  - pip
+  - pip:
+      - git+https://github.com/dask/dask
+      - git+https://github.com/dask/distributed
+      - git+https://github.com/pydata/xarray
+      - git+https://github.com/PyTables/PyTables  # numpy 2 support
+      # numpy, pandas, pyarrows, and scipy are upgraded to nightly builds by pytest.yml

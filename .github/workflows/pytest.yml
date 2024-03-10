@@ -44,7 +44,10 @@ jobs:
           - os: windows
             python-version: '3.8'
             requirements: minimal
-
+          # Test on nighlty builds of dependencies
+          - os: ubuntu
+            python-version: '3.12'
+            requirements: upstream
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -68,6 +71,20 @@ jobs:
       - name: Install MacOS compile env
         if: ${{ matrix.os == 'macosx' }}
         run: mamba install clang_osx-64
+
+      - name: Install nightly builds
+        if: ${{ matrix.requirements == 'upstream' }}
+        run: |
+          # Pick up https://github.com/mamba-org/mamba/pull/2903
+          mamba install -n base 'mamba>=1.5.2'
+      
+          mamba uninstall --force numpy pandas scipy pyarrow
+          python -m pip install --no-deps \
+              --extra-index-url https://pypi.fury.io/arrow-nightlies/ \
+              --prefer-binary --pre pyarrow
+          python -m pip install --no-deps --pre \
+              -i https://pypi.anaconda.org/scientific-python-nightly-wheels/simple \
+              numpy pandas scipy
 
       - name: Show conda options
         run: conda config --show
