@@ -1,10 +1,16 @@
-name: Test latest
+name: Test
 
 on:
   push:
     branches: [main]
   pull_request:
     branches: ['*']
+
+# When this workflow is queued, automatically cancel any previous running
+# or pending jobs from the same branch
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
 
 defaults:
   run:
@@ -44,6 +50,10 @@ jobs:
           - os: windows
             python-version: '3.8'
             requirements: minimal
+          # Test on nightly builds of requirements
+          - os: ubuntu
+            python-version: '3.12'
+            requirements: upstream
 
     steps:
       - name: Checkout
@@ -68,6 +78,20 @@ jobs:
       - name: Install MacOS compile env
         if: ${{ matrix.os == 'macosx' }}
         run: mamba install clang_osx-64
+
+      - name: Install nightly builds
+        if: ${{ matrix.requirements == 'upstream' }}
+        run: |
+          # Pick up https://github.com/mamba-org/mamba/pull/2903
+          mamba install -n base 'mamba>=1.5.2'
+      
+          mamba uninstall --force numpy pandas scipy pyarrow
+          python -m pip install --no-deps --pre --prefer-binary \
+              --extra-index-url https://pypi.fury.io/arrow-nightlies/ \
+              pyarrow
+          python -m pip install --no-deps --pre \
+              -i https://pypi.anaconda.org/scientific-python-nightly-wheels/simple \
+              numpy pandas scipy
 
       - name: Show conda options
         run: conda config --show

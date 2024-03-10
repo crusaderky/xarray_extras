@@ -116,7 +116,7 @@ def to_csv(
         return None
 
     # Merge chunks on all dimensions beyond the first
-    x = x.chunk((x.chunks[0], *((s,) for s in x.shape[1:])))  # type: ignore[arg-type]
+    x = x.chunk({dim: -1 for dim in x.dims[1:]})
 
     # Manually define the dask graph
     tok = tokenize(x.data, index, columns, compression, path, kwargs)

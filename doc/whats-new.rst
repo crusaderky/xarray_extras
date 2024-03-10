@@ -9,17 +9,17 @@ v0.6.0 (Unreleased)
 -------------------
 - Bumped minimum version of all dependencies:
 
-  ========== ======   ========
+  ========== ======   =========
   Dependency v0.5.0   v0.6.0
-  ========== ======   ========
+  ========== ======   =========
   python     3.7      3.8
   dask       2021.4.0 2022.6.0
   numba      0.52     0.56
   numpy      1.18     1.23
   pandas     1.1      1.5
   scipy      1.5      1.9
-  xarray     0.16     2022.6.0
-  ========== ======   ========
+  xarray     0.16     2022.11.0
+  ========== ======   =========
 
 - Added support for Python 3.10, 3.11, and 3.12
 - Added support for recent versions of Pandas (tested up to 2.2) and xarray

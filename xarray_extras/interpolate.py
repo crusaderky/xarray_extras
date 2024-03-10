@@ -8,15 +8,8 @@ import dask.array as da
 import numpy as np
 import xarray
 
+from xarray_extras.compat import dask_array_type
 from xarray_extras.kernels import interpolate as kernels
-
-try:
-    from xarray.core.pycompat import array_type
-
-    dask_array_type = array_type("dask")
-except ImportError:  # xarray <2022.11.0
-    from xarray.core.pycompat import dask_array_type  # type: ignore
-
 
 __all__ = ("splrep", "splev")
 

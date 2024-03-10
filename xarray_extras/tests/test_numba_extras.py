@@ -1,6 +1,8 @@
 import numpy
 import pytest
 
+pytest.importorskip("numba")  # Not available in upstream CI
+
 from xarray_extras.numba_extras import guvectorize
 
 DTYPES = [

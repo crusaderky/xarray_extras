@@ -1,0 +1,19 @@
+name: xarray-extras
+channels:
+  - conda-forge
+dependencies:
+  - dask
+  # - numba  # Not compatible with numpy 2
+  - numpy
+  - pandas
+  - pyarrow
+  - pytest
+  - pytest-cov
+  - scipy
+  - xarray
+  - pip
+  - pip:
+      - git+https://github.com/dask/dask
+      - git+https://github.com/dask/distributed
+      - git+https://github.com/pydata/xarray
+      # numpy, pandas, pyarrow, and scipy are upgraded to nightly builds by pytest.yml
