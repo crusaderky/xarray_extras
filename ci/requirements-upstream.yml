@@ -1,6 +1,6 @@
 name: xarray-extras
 channels:
-  - defaults
+  - conda-forge
 dependencies:
   - dask
   - numba
