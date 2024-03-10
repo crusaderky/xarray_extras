@@ -63,7 +63,7 @@ def assert_to_csv_with_path_type(
 
 @pytest.mark.parametrize("dtype", [np.int64, np.float64])
 @pytest.mark.parametrize("nogil", [False, True])
-@pytest.mark.parametrize("chunks", [None, 1])
+@pytest.mark.parametrize("chunks", [None, {"x": 1}])
 @pytest.mark.parametrize("header", [False, True])
 @pytest.mark.parametrize("lineterminator", ["\n", "\r\n"])
 def test_series(chunks, nogil, dtype, header, lineterminator):
@@ -74,7 +74,7 @@ def test_series(chunks, nogil, dtype, header, lineterminator):
 @pytest.mark.parametrize("path_type", ["path", "str"])
 @pytest.mark.parametrize("dtype", [np.int64, np.float64])
 @pytest.mark.parametrize("nogil", [False, True])
-@pytest.mark.parametrize("chunks", [None, 1])
+@pytest.mark.parametrize("chunks", [None, {"x": 1}])
 @pytest.mark.parametrize("header", [False, True])
 @pytest.mark.parametrize("lineterminator", ["\n", "\r\n"])
 def test_series_with_path(path_type, chunks, nogil, dtype, header, lineterminator):
@@ -86,7 +86,7 @@ def test_series_with_path(path_type, chunks, nogil, dtype, header, lineterminato
 
 @pytest.mark.parametrize("dtype", [np.int64, np.float64])
 @pytest.mark.parametrize("nogil", [False, True])
-@pytest.mark.parametrize("chunks", [None, 1])
+@pytest.mark.parametrize("chunks", [None, {"r": 1, "c": 1}])
 @pytest.mark.parametrize("lineterminator", ["\n", "\r\n"])
 def test_dataframe(chunks, nogil, dtype, lineterminator):
     x = xarray.DataArray(
@@ -99,7 +99,7 @@ def test_dataframe(chunks, nogil, dtype, lineterminator):
 
 @pytest.mark.parametrize("dtype", [np.int64, np.float64])
 @pytest.mark.parametrize("nogil", [False, True])
-@pytest.mark.parametrize("chunks", [None, 1])
+@pytest.mark.parametrize("chunks", [None, {"r": 1, "c": 1}])
 def test_multiindex(chunks, nogil, dtype):
     x = xarray.DataArray(
         [[1, 2], [3, 4]],
@@ -117,24 +117,24 @@ def test_multiindex(chunks, nogil, dtype):
 
 @pytest.mark.parametrize("dtype", [np.int64, np.float64])
 @pytest.mark.parametrize("nogil", [False, True])
-@pytest.mark.parametrize("chunks", [None, 1])
+@pytest.mark.parametrize("chunks", [None, {"r": 1, "c": 1}])
 def test_no_header(chunks, nogil, dtype):
-    x = xarray.DataArray([[1, 2], [3, 4]])
+    x = xarray.DataArray([[1, 2], [3, 4]], dims=["r", "c"])
     assert_to_csv(x, chunks, nogil, dtype, index=False, header=False)
 
 
 @pytest.mark.parametrize("dtype", [np.int64, np.float64])
 @pytest.mark.parametrize("nogil", [False, True])
-@pytest.mark.parametrize("chunks", [None, 1])
+@pytest.mark.parametrize("chunks", [None, {"r": 1, "c": 1}])
 def test_custom_header(chunks, nogil, dtype):
-    x = xarray.DataArray([[1, 2], [3, 4]])
+    x = xarray.DataArray([[1, 2], [3, 4]], dims=["r", "c"])
     assert_to_csv(x, chunks, nogil, dtype, header=["foo", "bar"])
 
 
 @pytest.mark.parametrize("encoding", ["utf-8", "utf-16"])
 @pytest.mark.parametrize("dtype", [np.int64, np.float64])
 @pytest.mark.parametrize("nogil", [False, True])
-@pytest.mark.parametrize("chunks", [None, 1])
+@pytest.mark.parametrize("chunks", [None, {"r": 1, "c": 1}])
 @pytest.mark.parametrize("lineterminator", ["\n", "\r\n"])
 def test_encoding(chunks, nogil, dtype, encoding, lineterminator):
     # Note: in Python 2.7, default encoding is ascii in pandas and utf-8 in
@@ -151,17 +151,17 @@ def test_encoding(chunks, nogil, dtype, encoding, lineterminator):
 @pytest.mark.parametrize("float_format", ["%f", "%.2f", "%.15f", "%.5e"])
 @pytest.mark.parametrize("dtype", [np.int32, np.int64, np.float32, np.float64])
 @pytest.mark.parametrize("nogil", [False, True])
-@pytest.mark.parametrize("chunks", [None, 1])
+@pytest.mark.parametrize("chunks", [None, {"x": 1}])
 def test_kwargs(chunks, nogil, dtype, float_format, sep):
-    x = xarray.DataArray([1.0, 1.1, 1.000000000000001, 123.456789])
+    x = xarray.DataArray([1.0, 1.1, 1.000000000000001, 123.456789], dims=["x"])
     assert_to_csv(x, chunks, nogil, dtype, float_format=float_format, sep=sep)
 
 
 @pytest.mark.parametrize("na_rep", ["", "nan"])
 @pytest.mark.parametrize("nogil", [False, True])
-@pytest.mark.parametrize("chunks", [None, 1])
+@pytest.mark.parametrize("chunks", [None, {"x": 1}])
 def test_na_rep(chunks, nogil, na_rep):
-    x = xarray.DataArray([np.nan, 1])
+    x = xarray.DataArray([np.nan, 1], dims=["x"])
     assert_to_csv(x, chunks, nogil, np.float64, na_rep=na_rep)
 
 
@@ -176,9 +176,9 @@ def test_na_rep(chunks, nogil, na_rep):
 )
 @pytest.mark.parametrize("dtype", [np.int64, np.float64])
 @pytest.mark.parametrize("nogil", [False, True])
-@pytest.mark.parametrize("chunks", [None, 1])
+@pytest.mark.parametrize("chunks", [None, {"x": 1}])
 def test_compression(chunks, nogil, dtype, compression, open_func):
-    x = xarray.DataArray([1, 2])
+    x = xarray.DataArray([1, 2], dims=["x"])
     assert_to_csv(x, chunks, nogil, dtype, compression=compression, open_func=open_func)
 
 
@@ -192,9 +192,9 @@ def test_compression(chunks, nogil, dtype, compression, open_func):
     ],
 )
 @pytest.mark.parametrize("nogil", [False, True])
-@pytest.mark.parametrize("chunks", [None, 1])
+@pytest.mark.parametrize("chunks", [None, {"x": 1}])
 def test_compression_infer(ext, open_func, nogil, chunks):
-    x = xarray.DataArray([1, 2])
+    x = xarray.DataArray([1, 2], dims=["x"])
     assert_to_csv(
         x, chunks=chunks, nogil=nogil, dtype=np.float64, ext=ext, open_func=open_func
     )
@@ -202,7 +202,7 @@ def test_compression_infer(ext, open_func, nogil, chunks):
 
 @pytest.mark.parametrize("dtype", [np.int64, np.float64])
 @pytest.mark.parametrize("nogil", [False, True])
-@pytest.mark.parametrize("chunks", [None, 1])
+@pytest.mark.parametrize("chunks", [None, {"r": 1, "c": 1}])
 def test_empty(chunks, nogil, dtype):
     x = xarray.DataArray(
         [[1, 2, 3, 4]], dims=["r", "c"], coords={"c": [10, 20, 30, 40]}
@@ -214,7 +214,7 @@ def test_empty(chunks, nogil, dtype):
 @pytest.mark.parametrize("x", [0, -(2**63)])
 @pytest.mark.parametrize("index", ["a", "a" * 1000])
 @pytest.mark.parametrize("nogil", [False, True])
-@pytest.mark.parametrize("chunks", [None, 1])
+@pytest.mark.parametrize("chunks", [None, {"x": 1}])
 def test_buffer_overflow_int(chunks, nogil, index, x):
     a = xarray.DataArray([x], dims=["x"], coords={"x": [index]})
     assert_to_csv(a, chunks, nogil, np.int64)
@@ -225,7 +225,7 @@ def test_buffer_overflow_int(chunks, nogil, index, x):
 @pytest.mark.parametrize("na_rep", ["", "na" * 500])
 @pytest.mark.parametrize("float_format", ["%.16f", "%.1000f", "a" * 1000 + "%.0f"])
 @pytest.mark.parametrize("nogil", [False, True])
-@pytest.mark.parametrize("chunks", [None, 1])
+@pytest.mark.parametrize("chunks", [None, {"x": 1}])
 def test_buffer_overflow_float(chunks, nogil, float_format, na_rep, index, coord, x):
     if nogil and not index and np.isnan(x) and na_rep == "":
         # Expected: b'""\n'
@@ -246,10 +246,10 @@ def test_buffer_overflow_float(chunks, nogil, float_format, na_rep, index, coord
 
 @pytest.mark.parametrize("encoding", ["utf-8", "utf-16"])
 @pytest.mark.parametrize("dtype", [str, object])
-@pytest.mark.parametrize("chunks", [None, 1])
+@pytest.mark.parametrize("chunks", [None, {"x": 1}])
 @pytest.mark.parametrize("lineterminator", ["\n", "\r\n"])
 def test_pandas_only(chunks, dtype, encoding, lineterminator):
-    x = xarray.DataArray(["foo", "Crème brûlée"])
+    x = xarray.DataArray(["foo", "Crème brûlée"], dims=["x"])
     assert_to_csv(
         x,
         chunks=chunks,
@@ -261,17 +261,17 @@ def test_pandas_only(chunks, dtype, encoding, lineterminator):
 
 
 @pytest.mark.parametrize("dtype", [np.complex64, np.complex128])
-@pytest.mark.parametrize("chunks", [None, 1])
+@pytest.mark.parametrize("chunks", [None, {"x": 1}])
 def test_pandas_only_complex(chunks, dtype):
-    x = xarray.DataArray([1 + 2j])
+    x = xarray.DataArray([1 + 2j], dims=["x"])
     assert_to_csv(x, chunks=chunks, nogil=False, dtype=dtype)
 
 
 @pytest.mark.parametrize("nogil", [False, True])
-@pytest.mark.parametrize("chunks", [None, 1])
+@pytest.mark.parametrize("chunks", [None, {"x": 1}])
 def test_mode(chunks, nogil):
-    x = xarray.DataArray([1, 2])
-    y = xarray.DataArray([3, 4])
+    x = xarray.DataArray([1, 2], dims=["x"])
+    y = xarray.DataArray([3, 4], dims=["x"])
     if chunks:
         x = x.chunk(chunks)
         y = y.chunk(chunks)
