@@ -62,7 +62,8 @@ python_files = ["test_*.py"]
 testpaths = ["xarray_extras/tests"]
 filterwarnings = [
     "error",
-    "ignore:datetime.datetime.utcfromtimestamp():DeprecationWarning",
+    # FIXME these need to be fixed in xarray
+    "ignore:__array_wrap__ must accept context and return_scalar arguments:DeprecationWarning:xarray",
     # FIXME these need to be looked at
     'ignore:.*will no longer be implicitly promoted:FutureWarning',
     'ignore:.*updating coordinate .* with a PandasMultiIndex would leave the multi-index level coordinates .* in an inconsistent state:FutureWarning',
