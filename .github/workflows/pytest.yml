@@ -106,12 +106,7 @@ jobs:
         run: python -m pip install --no-deps -e .
 
       - name: pytest
-        if: ${{ matrix.requirements != 'upstream' }}
         run: py.test --verbose --cov=xarray_extras --cov-report=xml
-
-      - name: pytest upstream
-        if: ${{ matrix.requirements == 'upstream' }}
-        run: py.test -m 'not no_upstream' --verbose --cov=xarray_extras --cov-report=xml
 
       - name: codecov.io
         uses: codecov/codecov-action@v3

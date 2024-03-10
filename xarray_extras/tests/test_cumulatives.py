@@ -3,8 +3,7 @@ import pytest
 import xarray
 from xarray.testing import assert_equal
 
-# No numba available for numpy pre-releases
-pytestmark = pytest.mark.no_upstream
+pytest.importorskip("numba")  # Not available in upstream CI
 
 import xarray_extras.cumulatives as cum
 

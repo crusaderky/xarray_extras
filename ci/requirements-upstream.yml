@@ -3,7 +3,7 @@ channels:
   - conda-forge
 dependencies:
   - dask
-  - numba
+  # - numba  # Not compatible with numpy 2
   - numpy
   - pandas
   - pyarrow

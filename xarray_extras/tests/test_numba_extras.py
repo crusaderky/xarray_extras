@@ -1,8 +1,7 @@
 import numpy
 import pytest
 
-# No numba available for numpy pre-releases
-pytestmark = pytest.mark.no_upstream
+pytest.importorskip("numba")  # Not available in upstream CI
 
 from xarray_extras.numba_extras import guvectorize
 
