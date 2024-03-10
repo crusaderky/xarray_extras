@@ -1,4 +1,4 @@
-name: Test latest
+name: Test
 
 on:
   push:
@@ -79,9 +79,9 @@ jobs:
           mamba install -n base 'mamba>=1.5.2'
       
           mamba uninstall --force numpy pandas scipy pyarrow
-          python -m pip install --no-deps \
+          python -m pip install --no-deps --pre --prefer-binary \
               --extra-index-url https://pypi.fury.io/arrow-nightlies/ \
-              --prefer-binary --pre pyarrow
+              pyarrow
           python -m pip install --no-deps --pre \
               -i https://pypi.anaconda.org/scientific-python-nightly-wheels/simple \
               numpy pandas scipy
