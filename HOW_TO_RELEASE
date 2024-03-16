@@ -10,9 +10,9 @@ Time required: about an hour.
  3. If you have any doubts, run the full test suite one final time!
       py.test
  4. On the main branch, commit the release in git:
-      git commit -a -m 'Release v0.X.Y'
+      git commit -a -m 'Release vX.Y.Z'
  5. Tag the release:
-      git tag -a v0.X.Y -m 'v0.X.Y'
+      git tag -a vX.Y.Z -m 'vX.Y.Z'
  6. Push your changes to main:
       git push origin main
       git push origin --tags
@@ -24,24 +24,41 @@ Time required: about an hour.
     It's OK to force push to 'stable' if necessary.
     We also update the stable branch with `git cherrypick` for documentation
     only fixes that apply the current released version.
- 8. Add a section for the next release (v.X.(Y+1)) to doc/whats-new.rst.
- 9. Commit your changes and push to main again:
+ 8. Build and test the release package
+      python -m pip install --upgrade build twine
+      rm -rf dist
+      python -m build
+      python -m twine check dist/*
+ 9. Add a section for the next release to doc/whats-new.rst.
+10. Commit your changes and push to main again:
       git commit -a -m 'Revert to dev version'
       git push origin main
     You're done pushing to main!
-10. Issue the release on GitHub. Open https://github.com/crusaderky/xarray_extras/releases;
+11. Issue the release on GitHub. Open https://github.com/crusaderky/xarray_extras/releases;
     the new release should have automatically appeared. Otherwise, click on
     "Draft a new release" and paste in the latest from whats-new.rst.
-11. Download the .tar.gz package for the release
 12. Use twine to register and upload the release on pypi. Be careful, you can't
     take this back!
-      twine upload xarray_extras-*.tar.gz
+      twine upload dist/*
     You will need to be listed as a package owner at
     https://pypi.python.org/pypi/xarray_extras for this to work.
 13. Update the docs. Login to https://readthedocs.org/projects/xarray_extras/versions/
     and switch your new release tag (at the bottom) from "Inactive" to "Active".
     It should now build automatically.
-14. Update conda-forge. Clone https://github.com/conda-forge/xarray-extras-feedstock
-    and update the version number and sha256 in meta.yaml. (On OS X, you can
-    calculate sha256 with `shasum -a 256 xarray_extras-0.X.Y.tar.gz`). Submit a pull
-    request (and merge it, once CI passes).
+    Make sure that both the new tagged version and 'stable' build successfully.
+14. Update conda-forge.
+14a.  Clone https://github.com/conda-forge/xarray_extras-feedstock
+14b.  Update the version number and sha256 in meta.yaml.
+      You can calculate sha256 with
+        sha256sum dist/*
+14c.  Double check dependencies in meta.yaml and update them to match pyproject.toml.
+14d.  Submit a pull request.
+14e.  Write a comment in the PR:
+        @conda-forge-admin, please rerender
+      Wait for the rerender commit (it may take a few minutes).
+14f.  Wait for CI to pass and merge.
+14g.  The next day, test the conda-forge release
+        conda search xarray_extras
+        conda create -n xarray_extras-test xarray_extras
+        conda list
+        python -m 'import xarray_extras'

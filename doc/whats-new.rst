@@ -5,7 +5,7 @@ What's New
 
 .. _whats-new.0.6.0:
 
-v0.6.0 (Unreleased)
+v0.6.0 (2024-03-16)
 -------------------
 - Bumped minimum version of all dependencies:
 
@@ -26,6 +26,7 @@ v0.6.0 (Unreleased)
 - Added support for :cls:`pathlib.Path` in function arguments
 - Migrated from setup.cfg to pyproject.toml
 - Migrated from flake8+isort+pyupgrade to ruff
+
 
 .. _whats-new.0.5.0:
 
@@ -52,6 +53,7 @@ v0.5.0 (2021-12-01)
 - Run all code linters through pre-commit
 - Use setuptools-scm for versioning
 - Moved the whole contents of setup.py to setup.cfg
+
 
 .. _whats-new.0.4.2:
 

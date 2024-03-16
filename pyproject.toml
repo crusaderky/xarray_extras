@@ -32,6 +32,10 @@ dynamic = ["version"]
 [project.urls]
 Homepage = "https://github.com/crusaderky/xarray_extras"
 
+[project.readme]
+text = "Advanced / experimental algorithms for xarray"
+content-type = "text/x-rst"
+
 [tool.setuptools]
 packages = ["xarray_extras"]
 zip-safe = false  # https://mypy.readthedocs.io/en/latest/installed_packages.html
