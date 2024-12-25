@@ -2,6 +2,7 @@
 with full support for `dask <http://dask.org/>`_ and `dask distributed
 <http://distributed.dask.org/>`_.
 """
+
 from __future__ import annotations
 
 from collections.abc import Callable
@@ -22,7 +23,7 @@ if TYPE_CHECKING:
     from dask.typing import DaskCollection, Key
 
 
-def to_csv(
+def to_csv(  # noqa: PLR0915
     x: xarray.DataArray, path: str | Path, *, nogil: bool = True, **kwargs: Any
 ) -> Any:
     """Print DataArray to CSV.
@@ -86,7 +87,7 @@ def to_csv(
 
     if x.ndim not in (1, 2):
         raise ValueError(
-            "cannot convert arrays with %d dimensions into pandas objects" % x.ndim
+            f"cannot convert arrays with {x.ndim} dimensions into pandas objects"
         )
 
     if nogil and x.dtype.kind not in "if":
@@ -104,7 +105,7 @@ def to_csv(
     compress = _compress_func(path, compression)
     mode = kwargs.pop("mode", "w")
     if mode not in "wa":
-        raise ValueError('mode: expected w or a; got "%s"' % mode)
+        raise ValueError(f"mode: expected w or a; got {mode!r}")
 
     # Fast exit for numpy backend
     if not x.chunks:
@@ -194,19 +195,18 @@ def _compress_func(
 
     if compression is None:
         return None
-    elif compression == "gzip":
+    if compression == "gzip":
         import gzip
 
         return gzip.compress
-    elif compression == "bz2":
+    if compression == "bz2":
         import bz2
 
         return bz2.compress
-    elif compression == "xz":
+    if compression == "xz":
         import lzma
 
         return lzma.compress
-    elif compression == "zip":
+    if compression == "zip":
         raise NotImplementedError("zip compression is not supported")
-    else:
-        raise ValueError("Unrecognized compression: %s" % compression)
+    raise ValueError(f"Unrecognized compression: {compression}")

@@ -61,7 +61,7 @@ master_doc = "index"
 
 # General information about the project.
 project = "xarray_extras"
-copyright = "2018-%s, xarray_extras Developers" % datetime.datetime.now().year
+copyright = f"2018-{datetime.datetime.now().year}, xarray_extras Developers"
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

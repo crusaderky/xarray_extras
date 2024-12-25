@@ -242,29 +242,29 @@ def test_dim_collision():
     )
     x_new = DataArray([1, 1], dims=["y"])
     tck = splrep(y, "x", 1)
-    with pytest.raises(ValueError) as excinfo:
+    with pytest.raises(
+        ValueError,
+        match="Overlapping dims between interpolated array and x_new: y",
+    ):
         splev(x_new, tck)
-    assert (
-        str(excinfo.value) == "Overlapping dims between interpolated "
-        "array and x_new: y"
-    )
 
 
 def test_duplicates():
     """x contains non-unique points"""
     y = DataArray([10, 20, 30], dims=["x"], coords={"x": [1, 1, 2]})
-    with pytest.raises(ValueError) as excinfo:
+    with pytest.raises(ValueError, match="Expect x to be a 1-D sorted array-like"):
         splrep(y, "x", 1)
-    assert str(excinfo.value) == "Expect x to be a 1-D sorted array-like."
 
 
 def test_chunked_x():
     """x is chunked"""
     y = DataArray([10, 20], dims=["x"], coords={"x": [1, 2]}).chunk(1)
 
-    with pytest.raises(NotImplementedError) as excinfo:
+    with pytest.raises(
+        NotImplementedError,
+        match="Unsupported: multiple chunks on interpolation dim",
+    ):
         splrep(y, "x", 1)
-    assert str(excinfo.value) == "Unsupported: multiple chunks on interpolation dim"
 
 
 def test_distributed():

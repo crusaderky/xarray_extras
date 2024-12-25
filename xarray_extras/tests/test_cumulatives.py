@@ -1,18 +1,18 @@
-import numpy
+import numpy as np
 import pytest
 import xarray
 from xarray.testing import assert_equal
 
 pytest.importorskip("numba")  # Not available in upstream CI
 
-import xarray_extras.cumulatives as cum
+import xarray_extras.cumulatives as cum  # noqa: E402
 
 # Skip 0 and 1 as they're neutral in addition and multiplication
 INPUT = xarray.DataArray(
     [[2, 20, 25], [3, 30, 35], [4, 40, 45], [5, 50, 55]],
     dims=["t", "s"],
     coords={
-        "t": numpy.array(
+        "t": np.array(
             ["1990-12-30", "2000-12-30", "2005-12-30", "2010-12-30"], dtype="M8[ns]"
         ),
         "s": ["s1", "s2", "s3"],
@@ -21,7 +21,7 @@ INPUT = xarray.DataArray(
 
 
 T_COMPOUND_MATRIX = xarray.DataArray(
-    numpy.array(
+    np.array(
         [
             ["1990-12-30", "NaT", "NaT"],
             ["1990-12-30", "2005-12-30", "NaT"],
@@ -136,7 +136,7 @@ def test_compound_s(func, meth, dtype, use_dask):
 def test_cummean(use_dask, skipna, dtype):
     x = INPUT.copy(deep=True).astype(dtype)
     if dtype in (float, "complex128"):
-        x[2, 1] = numpy.nan
+        x[2, 1] = np.nan
 
     expect = xarray.concat(
         [

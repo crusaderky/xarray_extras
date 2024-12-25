@@ -1,9 +1,9 @@
-import numpy
+import numpy as np
 import pytest
 
 pytest.importorskip("numba")  # Not available in upstream CI
 
-from xarray_extras.numba_extras import guvectorize
+from xarray_extras.numba_extras import guvectorize  # noqa: E402
 
 DTYPES = [
     # uint needs to appear before signed int:
@@ -31,7 +31,7 @@ def dumb_copy(x, y):
 
 @pytest.mark.parametrize("dtype", DTYPES)
 def test_guvectorize(dtype):
-    x = numpy.arange(3, dtype=dtype)
+    x = np.arange(3, dtype=dtype)
     y = dumb_copy(x)
-    numpy.testing.assert_equal(x, y)
+    np.testing.assert_equal(x, y)
     assert x.dtype == y.dtype

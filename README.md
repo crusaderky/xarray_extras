@@ -1,5 +1,5 @@
-xarray_extras
-=============
+# xarray_extras
+
 [![doc-badge](https://github.com/crusaderky/xarray_extras/actions/workflows/docs.yml/badge.svg)](https://github.com/crusaderky/xarray_extras/actions)
 [![pre-commit-badge](https://github.com/crusaderky/xarray_extras/actions/workflows/pre-commit.yml/badge.svg)](https://github.com/crusaderky/xarray_extras/actions)
 [![pytest-badge](https://github.com/crusaderky/xarray_extras/actions/workflows/pytest.yml/badge.svg)](https://github.com/crusaderky/xarray_extras/actions)

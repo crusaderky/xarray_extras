@@ -1,5 +1,5 @@
-"""Numba kernels for :mod:`cumulatives`
-"""
+"""Numba kernels for :mod:`cumulatives`"""
+
 import numpy as np
 
 from xarray_extras.numba_extras import guvectorize

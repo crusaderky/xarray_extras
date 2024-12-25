@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
   pull_request:
-    branches: ['*']
+    branches: ["*"]
   workflow_dispatch: # allows you to trigger manually
 
 # When this workflow is queued, automatically cancel any previous running
@@ -19,41 +19,42 @@ defaults:
 
 jobs:
   build:
-    name: ${{ matrix.os }} ${{ matrix.python-version }} ${{ matrix.requirements }}
+    name:
+      ${{ matrix.os }} ${{ matrix.python-version }} ${{ matrix.requirements }}
     runs-on: ${{ matrix.os }}-latest
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu]
-        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
         requirements: [latest]
         include:
           # Test on macos and windows (first and last version of python only)
           - os: macos
-            python-version: '3.8'
+            python-version: "3.8"
             requirements: latest
           - os: macos
-            python-version: '3.12'
+            python-version: "3.12"
             requirements: latest
           - os: windows
-            python-version: '3.8'
+            python-version: "3.8"
             requirements: latest
           - os: windows
-            python-version: '3.12'
+            python-version: "3.12"
             requirements: latest
           # Test on minimal requirements
           - os: ubuntu
-            python-version: '3.8'
+            python-version: "3.8"
             requirements: minimal
           - os: macos
-            python-version: '3.8'
+            python-version: "3.8"
             requirements: minimal
           - os: windows
-            python-version: '3.8'
+            python-version: "3.8"
             requirements: minimal
           # Test on nightly builds of requirements
           - os: ubuntu
-            python-version: '3.12'
+            python-version: "3.12"
             requirements: upstream
 
     steps:
@@ -65,7 +66,6 @@ jobs:
       - name: Setup Conda Environment
         uses: conda-incubator/setup-miniconda@v3
         with:
-          miniforge-variant: Mambaforge
           miniforge-version: latest
           use-mamba: true
           python-version: ${{ matrix.python-version }}
@@ -85,7 +85,7 @@ jobs:
         run: |
           # Pick up https://github.com/mamba-org/mamba/pull/2903
           mamba install -n base 'mamba>=1.5.2'
-      
+
           mamba uninstall --force numpy pandas scipy pyarrow
           python -m pip install --no-deps --pre --prefer-binary \
               --extra-index-url https://pypi.fury.io/arrow-nightlies/ \

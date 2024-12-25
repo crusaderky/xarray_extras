@@ -1,5 +1,5 @@
-"""Advanced cumulative sum/productory/mean functions
-"""
+"""Advanced cumulative sum/productory/mean functions"""
+
 from __future__ import annotations
 
 from collections.abc import Callable, Hashable
@@ -11,7 +11,7 @@ import xarray
 
 from xarray_extras.kernels import cumulatives as kernels
 
-__all__ = ("cummean", "compound_sum", "compound_prod", "compound_mean")
+__all__ = ("compound_mean", "compound_prod", "compound_sum", "cummean")
 
 
 T = TypeVar("T", xarray.DataArray, xarray.Dataset)
