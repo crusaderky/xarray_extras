@@ -1,5 +1,5 @@
-"""Sorting functions
-"""
+"""Sorting functions"""
+
 from __future__ import annotations
 
 from collections.abc import Hashable
@@ -9,7 +9,7 @@ import xarray
 
 from xarray_extras.duck import sort as duck
 
-__all__ = ("topk", "argtopk", "take_along_dim")
+__all__ = ("argtopk", "take_along_dim", "topk")
 
 
 T = TypeVar("T", xarray.DataArray, xarray.Dataset)

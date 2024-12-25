@@ -1,5 +1,5 @@
-"""dask kernels for :mod:`xarray_extras.csv`
-"""
+"""dask kernels for :mod:`xarray_extras.csv`"""
+
 from __future__ import annotations
 
 import os
@@ -61,7 +61,7 @@ def to_csv(
         return bout
 
     sep = kwargs.get("sep", ",")
-    fmt = kwargs.get("float_format", None)
+    fmt = kwargs.get("float_format")
     na_rep = kwargs.get("na_rep", "")
 
     # Use pandas to format index
@@ -110,7 +110,7 @@ def to_csv(
     return body_bytes
 
 
-def to_file(fname: str, mode: str, data: str | bytes, rr_token: object) -> None:
+def to_file(fname: str, mode: str, data: str | bytes, rr_token: object) -> None:  # noqa: ARG001
     """Write data to file
 
     :param fname:

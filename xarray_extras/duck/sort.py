@@ -1,6 +1,7 @@
 """Helper functions for :mod:`xarray_extras.sort`, which accept either
 numpy arrays or dask arrays.
 """
+
 from __future__ import annotations
 
 from typing import TypeVar
@@ -108,5 +109,4 @@ def take_along_axis(
 
     res_arr = da.stack(res, axis=-2)
     # Un-flatten axis i
-    res_arr = res_arr.reshape(*final_shape)
-    return res_arr
+    return res_arr.reshape(*final_shape)

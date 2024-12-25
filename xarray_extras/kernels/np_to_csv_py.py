@@ -1,6 +1,7 @@
 """Thin ctypes wrapper around :file:`np_to_csv.c`.
 This is a helper module of :mod:`xarray_extras.kernels.csv`.
 """
+
 from __future__ import annotations
 
 import ctypes
@@ -8,7 +9,7 @@ import warnings
 
 import numpy as np
 
-from xarray_extras.kernels import np_to_csv  # type: ignore
+from xarray_extras.kernels import np_to_csv  # type:ignore[attr-defined]
 
 with warnings.catch_warnings():
     warnings.simplefilter("ignore", category=DeprecationWarning)
@@ -101,7 +102,7 @@ def snprintcsvd(
             buf, bufsize, a, a.shape[0], a.shape[1], bindex, bfmt, trim_zeros, bna_rep
         )
         if nchar < bufsize:
-            return bytes(buf[:nchar])  # type: ignore
+            return bytes(buf[:nchar])  # type: ignore[arg-type]
         cellsize *= 2
 
 

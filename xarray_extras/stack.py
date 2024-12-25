@@ -1,11 +1,11 @@
-"""Utilities for stacking/unstacking dimensions
-"""
+"""Utilities for stacking/unstacking dimensions"""
+
 from __future__ import annotations
 
 from collections.abc import Hashable
 from typing import TypeVar
 
-import pandas
+import pandas as pd
 import xarray
 
 T = TypeVar("T", xarray.DataArray, xarray.Dataset)
@@ -45,7 +45,7 @@ def proper_unstack(array: T, dim: Hashable) -> T:
         levels.append([levels_i[k] for k in level_map])
         codes.append([level_map[k] for k in codes_i])
 
-    mindex = pandas.MultiIndex(levels, codes, names=mindex.names)
+    mindex = pd.MultiIndex(levels, codes, names=mindex.names)
     array = array.copy()
     array.coords[dim] = mindex
 
@@ -54,8 +54,8 @@ def proper_unstack(array: T, dim: Hashable) -> T:
 
     # Convert numpy arrays of Python objects to numpy arrays of C floats, ints,
     # strings, etc.
-    for dim in mindex.names:
-        if array.coords[dim].dtype == object:
-            array.coords[dim] = array.coords[dim].values.tolist()
+    for name in mindex.names:
+        if array.coords[name].dtype == object:
+            array.coords[name] = array.coords[name].values.tolist()
 
     return array

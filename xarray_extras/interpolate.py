@@ -1,5 +1,5 @@
-"""xarray spline interpolation functions
-"""
+"""xarray spline interpolation functions"""
+
 from __future__ import annotations
 
 from collections.abc import Hashable
@@ -11,7 +11,7 @@ import xarray
 from xarray_extras.compat import dask_array_type
 from xarray_extras.kernels import interpolate as kernels
 
-__all__ = ("splrep", "splev")
+__all__ = ("splev", "splrep")
 
 
 def splrep(a: xarray.DataArray, dim: Hashable, k: int = 3) -> xarray.Dataset:
@@ -175,7 +175,7 @@ def splev(
     if invalid_dims:
         raise ValueError(
             "Overlapping dims between interpolated "
-            "array and x_new: %s" % ",".join(str(d) for d in invalid_dims)
+            "array and x_new: " + ",".join(str(d) for d in invalid_dims)
         )
 
     if t.shape != (c.sizes[dim] + k + 1,):

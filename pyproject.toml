@@ -31,6 +31,8 @@ dynamic = ["version"]
 
 [project.urls]
 Homepage = "https://github.com/crusaderky/xarray_extras"
+"Bug Tracker" = "https://github.com/crusaderky/xarray_extras/issues"
+Changelog = "https://xarray-extras.readthedocs.io/en/latest/whats-new.html"
 
 [project.readme]
 text = "Advanced / experimental algorithms for xarray"
@@ -38,7 +40,7 @@ content-type = "text/x-rst"
 
 [tool.setuptools]
 packages = ["xarray_extras"]
-zip-safe = false  # https://mypy.readthedocs.io/en/latest/installed_packages.html
+zip-safe = false # https://mypy.readthedocs.io/en/latest/installed_packages.html
 include-package-data = true
 
 [tool.setuptools_scm]
@@ -72,6 +74,8 @@ filterwarnings = [
     # FIXME these need to be looked at
     'ignore:.*will no longer be implicitly promoted:FutureWarning',
     'ignore:.*updating coordinate .* with a PandasMultiIndex would leave the multi-index level coordinates .* in an inconsistent state:FutureWarning',
+    # xarray vs. pandas upstream
+    'ignore:Converting non-nanosecond precision datetime:UserWarning',
 ]
 
 [tool.coverage.report]
@@ -88,27 +92,52 @@ exclude_lines = [
     '@(numba\.)?guvectorize',
 ]
 
+[tool.codespell]
+ignore-words-list = ["ND"]
+
 [tool.ruff]
-builtins = ["ellipsis"]
 exclude = [".eggs"]
 target-version = "py38"
 
 [tool.ruff.lint]
 ignore = [
-  "E402",  # module level import not at top of file
-  "SIM108",  # use ternary operator instead of if-else block
+  "EM101",    # Exception must not use a string literal, assign to variable first
+  "EM102",    # Exception must not use an f-string literal, assign to variable first
+  "N802",     # Function name should be lowercase
+  "N803",     # Argument name should be lowercase
+  "N806",     # Variable should be lowercase
+  "N816",     # Variable in global scope should not be mixedCase
+  "PD901",    # Avoid using the generic variable name `df` for DataFrames
+  "PT006",    # Wrong type passed to first argument of `pytest.mark.parametrize`; expected `tuple`
+  "PLC0414",  # Import alias does not rename original package
+  "PLR0912",  # Too many branches
+  "PLR0913",  # Too many arguments in function definition
+  "PLR2004",  # Magic value used in comparison, consider replacing `123` with a constant variable
+  "PLW2901",  # for loop variable overwritten by assignment target
+  "SIM108",   # Use ternary operator instead of if-else block
 ]
 select = [
-  "F",    # Pyflakes
+  "YTT",  # flake8-2020
   "B",    # flake8-bugbear
   "C4",   # flake8-comprehensions
-  "ISC",  # flake8-implicit-str-concat
+  "EM",   # flake8-errmsg
+  "EXE",  # flake8-executable
+  "ICN",  # flake8-import-conventions
+  "G",    # flake8-logging-format
+  "PIE",  # flake8-pie
+  "PT",   # flake8-pytest-style
+  "RET",  # flake8-return
   "SIM",  # flake8-simplify
+  "ARG",  # flake8-unused-arguments
+  "I",    # isort
+  "NPY",  # NumPy specific rules
+  "N",    # pep8-naming
   "E",    # Pycodestyle
   "W",    # Pycodestyle
-  "I",    # isort
-  "N",    # pep8-naming
-  "UP",   # Pyupgrade
+  "PGH",  # pygrep-hooks
+  "F",    # Pyflakes
+  "PL",   # pylint
+  "UP",   # pyupgrade
   "RUF",  # unused-noqa
   "EXE001",  #  Shebang is present but file is not executable
 ]
@@ -117,9 +146,9 @@ select = [
 known-first-party = ["xarray_extras"]
 
 [tool.mypy]
-allow_incomplete_defs = false
-allow_untyped_decorators = false
-allow_untyped_defs = false
+disallow_incomplete_defs = true
+disallow_untyped_decorators = true
+disallow_untyped_defs = true
 ignore_missing_imports = true
 no_implicit_optional = true
 show_error_codes = true
@@ -129,4 +158,4 @@ warn_unreachable = true
 
 [[tool.mypy.overrides]]
 module = ["*.tests.*"]
-allow_untyped_defs = true
+disallow_untyped_defs = false

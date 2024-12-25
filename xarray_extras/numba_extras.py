@@ -1,5 +1,5 @@
-"""Extensions to numba
-"""
+"""Extensions to numba"""
+
 from __future__ import annotations
 
 from collections.abc import Callable
