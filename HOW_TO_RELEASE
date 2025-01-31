@@ -60,5 +60,6 @@ Time required: about an hour.
 14g.  The next day, test the conda-forge release
         conda search xarray_extras
         conda create -n xarray_extras-test xarray_extras
+        conda activate xarray_extras-test
         conda list
-        python -m 'import xarray_extras'
+        python -c 'import xarray_extras'

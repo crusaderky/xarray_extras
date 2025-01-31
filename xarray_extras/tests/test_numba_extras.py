@@ -3,7 +3,7 @@ import pytest
 
 pytest.importorskip("numba")  # Not available in upstream CI
 
-from xarray_extras.numba_extras import guvectorize  # noqa: E402
+from xarray_extras.numba_extras import guvectorize
 
 DTYPES = [
     # uint needs to appear before signed int:
