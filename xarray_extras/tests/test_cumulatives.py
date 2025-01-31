@@ -5,7 +5,7 @@ from xarray.testing import assert_equal
 
 pytest.importorskip("numba")  # Not available in upstream CI
 
-import xarray_extras.cumulatives as cum  # noqa: E402
+import xarray_extras.cumulatives as cum
 
 # Skip 0 and 1 as they're neutral in addition and multiplication
 INPUT = xarray.DataArray(

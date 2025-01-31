@@ -22,21 +22,15 @@ repos:
         types_or: [yaml, markdown, html, css, scss, javascript, json]
         args: [--prose-wrap=always]
 
-  - repo: https://github.com/MarcoGorelli/absolufy-imports
-    rev: v0.3.1
-    hooks:
-      - id: absolufy-imports
-        name: absolufy-imports
-
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.8.4
+    rev: v0.9.4
     hooks:
+      - id: ruff-format
       - id: ruff
         args: ["--fix", "--show-fixes"]
-      - id: ruff-format
 
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.3.0
+    rev: v2.4.1
     hooks:
       - id: codespell
         additional_dependencies:
@@ -54,13 +48,13 @@ repos:
         additional_dependencies: ["validate-pyproject-schema-store[all]"]
 
   - repo: https://github.com/python-jsonschema/check-jsonschema
-    rev: "0.30.0"
+    rev: "0.31.1"
     hooks:
       - id: check-dependabot
       - id: check-github-workflows
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.14.0
+    rev: v1.14.1
     hooks:
       - id: mypy
         additional_dependencies:
