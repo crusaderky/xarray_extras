@@ -76,6 +76,7 @@ filterwarnings = [
     # These have been fixed; still needed for Python 3.9 CI
     "ignore:__array__ implementation doesn't accept a copy keyword, so passing copy=False failed:DeprecationWarning",
     'ignore:Converting non-nanosecond precision datetime:UserWarning',
+    'ignore:Converting non-nanosecond precision timedelta:UserWarning',
 ]
 
 [tool.coverage.report]
