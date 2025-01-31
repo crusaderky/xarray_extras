@@ -185,7 +185,6 @@ def splev(
 
     if x_new.dtype.kind == "M":  # datetime
         # Note that we're modifying the x_new values, not the x_new coords
-        # xarray datetime objects are always in ns
         x_new = x_new.astype("M8[ns]").astype(float)
     elif x_new.dtype.kind == "m":  # timedelta
         x_new = x_new.astype("m8[ns]").astype(float)
