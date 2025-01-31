@@ -68,10 +68,12 @@ def splrep(a: xarray.DataArray, dim: Hashable, k: int = 3) -> xarray.Dataset:
     a = a.transpose(dim, *[d for d in a.dims if d != dim])
     x = a.coords[dim].values
 
-    if x.dtype.kind == "M":
+    if x.dtype.kind == "M":  # datetime
         # Same treatment will be applied to x_new.
         # Allow x_new.dtype==M8[D] and x.dtype==M8[ns], or vice versa
         x = x.astype("M8[ns]").astype(float)
+    elif x.dtype.kind == "m":  # timedelta
+        x = x.astype("m8[ns]").astype(float)
 
     t = kernels.make_interp_knots(x, k, check_finite=False)
     if k < 2:
@@ -181,15 +183,21 @@ def splev(
     if t.shape != (c.sizes[dim] + k + 1,):
         raise ValueError("Interpolated dimension has been sliced")
 
-    if x_new.dtype.kind == "M":
+    if x_new.dtype.kind == "M":  # datetime
         # Note that we're modifying the x_new values, not the x_new coords
         # xarray datetime objects are always in ns
-        x_new = x_new.astype(float)
+        x_new = x_new.astype("M8[ns]").astype(float)
+    elif x_new.dtype.kind == "m":  # timedelta
+        x_new = x_new.astype("m8[ns]").astype(float)
 
     if extrapolate == "clip":
         x = tck.coords[dim].values
-        if x.dtype.kind == "M":
+
+        if x.dtype.kind == "M":  # datetime
             x = x.astype("M8[ns]").astype(float)
+        elif x.dtype.kind == "m":  # timedelta
+            x = x.astype("m8[ns]").astype(float)
+
         x_new = np.clip(x_new, x[0].tolist(), x[-1].tolist())
         extrapolate = False
 

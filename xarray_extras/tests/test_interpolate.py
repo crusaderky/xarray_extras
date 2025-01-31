@@ -192,8 +192,8 @@ def test_nonfloat(x_dtype, x_new_dtype):
 
 
 @pytest.mark.filterwarnings("ignore:Converting non-nanosecond precision datetime ")
-@pytest.mark.parametrize("x_new_dtype", ["<M8[D]", "<M8[s]", "<M8[ns]"])
-@pytest.mark.parametrize("x_dtype", ["<M8[D]", "<M8[s]", "<M8[ns]"])
+@pytest.mark.parametrize("x_new_dtype", ["M8[D]", "M8[s]", "M8[ns]"])
+@pytest.mark.parametrize("x_dtype", ["M8[D]", "M8[s]", "M8[ns]"])
 def test_dates(x_dtype, x_new_dtype):
     """
     - Test mismatched date formats on x and x_new
@@ -202,15 +202,36 @@ def test_dates(x_dtype, x_new_dtype):
     y = DataArray(
         [10, 20],
         dims=["x"],
-        coords={"x": np.array(["2000-01-01", "2001-01-01"]).astype(x_dtype)},
+        coords={"x": np.array(["2000-01-01", "2001-01-01"], dtype=x_dtype)},
     )
-    x_new = np.array(["2000-04-20", "2002-07-28"]).astype(x_new_dtype)
-    expect = DataArray(
-        [13.00546448, 20.0], dims=["x"], coords={"x": x_new.astype("<M8[ns]")}
-    )
+    x_new = np.array(["2000-04-20", "2002-07-28"], dtype=x_new_dtype)
+    expect = DataArray([13.00546448, 20.0], dims=["x"], coords={"x": x_new})
 
     tck = splrep(y, "x", k=1)
     y_new = splev(x_new, tck, extrapolate="clip")
+    assert y_new.x.dtype == expect.x.dtype
+    assert_allclose(expect, y_new, atol=1e-6, rtol=0)
+
+
+@pytest.mark.filterwarnings("ignore:Converting non-nanosecond precision datetime ")
+@pytest.mark.parametrize("x_new_dtype", ["m8[D]", "m8[s]", "m8[ns]"])
+@pytest.mark.parametrize("x_dtype", ["m8[D]", "m8[s]", "m8[ns]"])
+def test_timedeltas(x_dtype, x_new_dtype):
+    """
+    - Test mismatched date formats on x and x_new
+    - Test clip extrapolation on test_dates
+    """
+    y = DataArray(
+        [10, 20],
+        dims=["x"],
+        coords={"x": np.array([30, 50], dtype="m8[D]").astype(x_dtype)},
+    )
+    x_new = np.array([35, 45], dtype="m8[D]").astype(x_new_dtype)
+    expect = DataArray([12.5, 17.5], dims=["x"], coords={"x": x_new})
+
+    tck = splrep(y, "x", k=1)
+    y_new = splev(x_new, tck, extrapolate="clip")
+    assert y_new.x.dtype == expect.x.dtype
     assert_allclose(expect, y_new, atol=1e-6, rtol=0)
 
 
