@@ -70,12 +70,13 @@ filterwarnings = [
     "error",
     # FIXME these need to be fixed in xarray
     "ignore:__array_wrap__ must accept context and return:DeprecationWarning",
-    "ignore:__array__ implementation doesn't accept a copy keyword, so passing copy=False failed:DeprecationWarning",
     # FIXME these need to be looked at
     'ignore:.*will no longer be implicitly promoted:FutureWarning',
     'ignore:.*updating coordinate .* with a PandasMultiIndex would leave the multi-index level coordinates .* in an inconsistent state:FutureWarning',
-    # xarray vs. pandas upstream
+    # These have been fixed; still needed for Python 3.9 CI
+    "ignore:__array__ implementation doesn't accept a copy keyword, so passing copy=False failed:DeprecationWarning",
     'ignore:Converting non-nanosecond precision datetime:UserWarning',
+    'ignore:Converting non-nanosecond precision timedelta:UserWarning',
 ]
 
 [tool.coverage.report]

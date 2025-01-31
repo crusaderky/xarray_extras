@@ -7,6 +7,8 @@ What's New
 
 v0.7.0 (unreleased)
 -------------------
+- ``interpolate``: Added support for timedelta coordinates;
+  fixed support for datetime coordinates other than ``M8[ns]`` in xarray 2025.1.2.
 
 
 .. _whats-new.0.6.0:
